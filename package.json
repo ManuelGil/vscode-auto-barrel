@@ -1,0 +1,239 @@
+{
+	"name": "vscode-auto-barrel",
+	"displayName": "Auto Barrel",
+	"description": "🛢️ Automatically generate index files for your project.",
+	"version": "1.0.0",
+	"preview": true,
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#eff1f3",
+		"theme": "dark"
+	},
+	"pricing": "Free",
+	"license": "MIT",
+	"publisher": "imgildev",
+	"author": "ManuelGil",
+	"sponsor": {
+		"url": "https://github.com/sponsors/ManuelGil"
+	},
+	"engines": {
+		"vscode": "^1.87.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"boilerplate",
+		"extension",
+		"kit",
+		"plugin",
+		"project",
+		"starter-kit",
+		"starter",
+		"template",
+		"typescript",
+		"vscode",
+		"vsxpert"
+	],
+	"homepage": "https://github.com/ManuelGil/vscode-auto-barrel",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ManuelGil/vscode-auto-barrel"
+	},
+	"bugs": {
+		"url": "https://github.com/ManuelGil/vscode-auto-barrel/issues"
+	},
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Auto Barrel",
+			"properties": {
+				"autoBarrel.files.include": {
+					"type": "array",
+					"default": [
+						"ts",
+						"js",
+						"json",
+						"html",
+						"css",
+						"scss",
+						"less"
+					],
+					"scope": "resource",
+					"description": "Glob patterns to include in the package. The default is ts, js, json, html, css, scss, less."
+				},
+				"autoBarrel.files.exclude": {
+					"type": "array",
+					"default": [
+						"**/node_modules/**",
+						"**/dist/**",
+						"**/out/**",
+						"**/build/**",
+						"**/.*/**"
+					],
+					"scope": "resource",
+					"description": "Glob patterns to exclude from the package. The default is node_modules, dist, out, build, and any hidden files."
+				},
+				"autoBarrel.files.showPath": {
+					"type": "boolean",
+					"default": true,
+					"scope": "resource",
+					"description": "Show the path of the file in the name of the list of generated files"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "autoBarrel.getFilesInFolder",
+				"title": "Get Files in Folder",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.aboutUs",
+				"title": "About Us",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.documentation",
+				"title": "Documentation",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.reportIssues",
+				"title": "Report Issues",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.rateUs",
+				"title": "Rate Us",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.followUs",
+				"title": "Follow Us",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.feedback.supportUs",
+				"title": "Support Us",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.listFiles.refreshList",
+				"title": "Refresh List",
+				"category": "Auto Barrel",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "autoBarrel.listFiles.openFile",
+				"title": "Open File",
+				"category": "Auto Barrel"
+			}
+		],
+		"submenus": [
+			{
+				"id": "autoBarrel.explorer.submenu",
+				"label": "Auto Barrel"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "autoBarrel.listFiles.refreshList",
+					"when": "view == autoBarrel.listFilesView",
+					"group": "navigation"
+				}
+			],
+			"explorer/context": [
+				{
+					"submenu": "autoBarrel.explorer.submenu",
+					"group": "2_workspace",
+					"when": "explorerViewletFocus && explorerResourceIsFolder && !explorerResourceIsRoot"
+				}
+			],
+			"autoBarrel.explorer.submenu": [
+				{
+					"command": "autoBarrel.getFilesInFolder",
+					"alt": "Get Files in Folder",
+					"group": "vscode-auto-barrel@1"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "autoBarrel.listFilesView",
+				"contents": "To effectively capture files, ensure you include the file type within the workspace settings.\n[Open Workspace Setting](command:workbench.action.openWorkspaceSettingsFile)\nTo learn more about how to use the Starter Kit [read our docs](https://github.com/ManuelGil/vscode-auto-barrel)."
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "auto-barel-view",
+					"title": "Secondary View",
+					"icon": "./assets/logo.svg"
+				}
+			]
+		},
+		"views": {
+			"auto-barel-view": [
+				{
+					"id": "autoBarrel.listFilesView",
+					"name": "List of Files",
+					"visibility": "collapsed"
+				},
+				{
+					"id": "autoBarrel.feedbackView",
+					"name": "Help and Feedback",
+					"visibility": "visible"
+				}
+			]
+		},
+		"jsonValidation": [
+			{
+				"fileMatch": ".vscode/settings.json",
+				"url": "./schemas/config.schema.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "rimraf out && tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"format": "prettier --write 'src/**/*.ts'",
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --ext .ts --fix",
+		"test": "node ./out/test/runTest.js",
+		"compodoc": "npx compodoc -p tsconfig.doc.json -d compodoc --theme readthedocs -s",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^19.2.1",
+		"@commitlint/config-conventional": "^19.1.0",
+		"@compodoc/compodoc": "^1.1.23",
+		"@types/glob": "^8.1.0",
+		"@types/minimatch": "3.0.5",
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^20.12.5",
+		"@types/vscode": "^1.88.0",
+		"@typescript-eslint/eslint-plugin": "6.21.0",
+		"@typescript-eslint/parser": "6.21.0",
+		"eslint": "8.57.0",
+		"eslint-config-standard-with-typescript": "^43.0.1",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-promise": "^6.1.1",
+		"glob": "^10.3.12",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"mocha": "^10.4.0",
+		"prettier": "3.2.5",
+		"rimraf": "^5.0.5",
+		"typescript": "^5.4.4",
+		"vscode-test": "^1.5.0"
+	},
+	"dependencies": {
+		"@vscode/codicons": "^0.0.35"
+	}
+}
