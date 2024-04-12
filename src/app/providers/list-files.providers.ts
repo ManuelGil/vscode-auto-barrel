@@ -2,7 +2,6 @@ import {
   Event,
   EventEmitter,
   ProviderResult,
-  ThemeIcon,
   TreeDataProvider,
   TreeItem,
 } from 'vscode';
@@ -129,7 +128,7 @@ export class ListFilesProvider implements TreeDataProvider<NodeModel> {
    *
    * @function refresh
    * @public
-   * @memberof FeedbackProvider
+   * @memberof ListFilesProvider
    * @example
    * provider.refresh();
    *
@@ -158,33 +157,6 @@ export class ListFilesProvider implements TreeDataProvider<NodeModel> {
       return;
     }
 
-    const nodes: NodeModel[] = [];
-
-    const fileTypes = this.controller.config.include;
-
-    for (const fileType of fileTypes) {
-      const children = files.filter((file) =>
-        file.label.toString().includes(`.${fileType}`),
-      );
-
-      if (children.length !== 0) {
-        const node = new NodeModel(
-          `${fileType}: ${children.length}`,
-          new ThemeIcon('folder-opened'),
-          undefined,
-          undefined,
-          fileType,
-          children,
-        );
-
-        nodes.push(node);
-      }
-    }
-
-    if (nodes.length === 0) {
-      return;
-    }
-
-    return nodes;
+    return files;
   }
 }

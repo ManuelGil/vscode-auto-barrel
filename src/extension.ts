@@ -4,8 +4,8 @@ import * as vscode from 'vscode';
 
 // Import the Configs, Controllers, and Providers
 import { EXTENSION_ID, ExtensionConfig } from './app/configs';
-import { FeedbackController, ListFilesController } from './app/controllers';
-import { FeedbackProvider, ListFilesProvider } from './app/providers';
+import { ListFilesController } from './app/controllers';
+import { ListFilesProvider } from './app/providers';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -38,12 +38,17 @@ export function activate(context: vscode.ExtensionContext) {
   // Create a new ListFilesController
   const listFilesController = new ListFilesController(config);
 
+  const disposableGetFilesInFolder = vscode.commands.registerCommand(
+    `${EXTENSION_ID}.getFilesInFolder`,
+    (args) => listFilesController.getFilesInFolder(args),
+  );
+
   const disposableOpenFile = vscode.commands.registerCommand(
     `${EXTENSION_ID}.listFiles.openFile`,
     (uri) => listFilesController.openFile(uri),
   );
 
-  context.subscriptions.push(disposableOpenFile);
+  context.subscriptions.push(disposableGetFilesInFolder, disposableOpenFile);
 
   // -----------------------------------------------------------------
   // Register ListFilesProvider and list commands
@@ -87,57 +92,6 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace.onDidSaveTextDocument(() => {
     listFilesProvider.refresh();
   });
-
-  // -----------------------------------------------------------------
-  // Register FeedbackProvider and Feedback commands
-  // -----------------------------------------------------------------
-
-  // Create a new FeedbackProvider
-  const feedbackProvider = new FeedbackProvider(new FeedbackController());
-
-  // Register the feedback provider
-  const feedbackTreeView = vscode.window.createTreeView(
-    `${EXTENSION_ID}.feedbackView`,
-    {
-      treeDataProvider: feedbackProvider,
-    },
-  );
-
-  // Register the commands
-  const disposableAboutUs = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.aboutUs`,
-    () => feedbackProvider.controller.aboutUs(),
-  );
-  const disposableDocumentation = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.documentation`,
-    () => feedbackProvider.controller.documentation(),
-  );
-  const disposableReportIssues = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.reportIssues`,
-    () => feedbackProvider.controller.reportIssues(),
-  );
-  const disposableRateUs = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.rateUs`,
-    () => feedbackProvider.controller.rateUs(),
-  );
-  const disposableFollowUs = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.followUs`,
-    () => feedbackProvider.controller.followUs(),
-  );
-  const disposableSupportUs = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.feedback.supportUs`,
-    () => feedbackProvider.controller.supportUs(),
-  );
-
-  context.subscriptions.push(
-    feedbackTreeView,
-    disposableAboutUs,
-    disposableDocumentation,
-    disposableReportIssues,
-    disposableRateUs,
-    disposableFollowUs,
-    disposableSupportUs,
-  );
 }
 
 // this method is called when your extension is deactivated

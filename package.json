@@ -52,16 +52,10 @@
 				"autoBarrel.files.include": {
 					"type": "array",
 					"default": [
-						"ts",
-						"js",
-						"json",
-						"html",
-						"css",
-						"scss",
-						"less"
+						"*/**/*.ts"
 					],
 					"scope": "resource",
-					"description": "Glob patterns to include in the package. The default is ts, js, json, html, css, scss, less."
+					"description": "Glob patterns to include in the package. The default is ts."
 				},
 				"autoBarrel.files.exclude": {
 					"type": "array",
@@ -86,37 +80,7 @@
 		"commands": [
 			{
 				"command": "autoBarrel.getFilesInFolder",
-				"title": "Get Files in Folder",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.aboutUs",
-				"title": "About Us",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.documentation",
-				"title": "Documentation",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.reportIssues",
-				"title": "Report Issues",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.rateUs",
-				"title": "Rate Us",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.followUs",
-				"title": "Follow Us",
-				"category": "Auto Barrel"
-			},
-			{
-				"command": "autoBarrel.feedback.supportUs",
-				"title": "Support Us",
+				"title": "Create Barrel File",
 				"category": "Auto Barrel"
 			},
 			{
@@ -148,7 +112,6 @@
 			"explorer/context": [
 				{
 					"submenu": "autoBarrel.explorer.submenu",
-					"group": "2_workspace",
 					"when": "explorerViewletFocus && explorerResourceIsFolder && !explorerResourceIsRoot"
 				}
 			],
@@ -166,26 +129,12 @@
 				"contents": "To effectively capture files, ensure you include the file type within the workspace settings.\n[Open Workspace Setting](command:workbench.action.openWorkspaceSettingsFile)\nTo learn more about how to use the Starter Kit [read our docs](https://github.com/ManuelGil/vscode-auto-barrel)."
 			}
 		],
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "auto-barel-view",
-					"title": "Secondary View",
-					"icon": "./assets/logo.svg"
-				}
-			]
-		},
 		"views": {
-			"auto-barel-view": [
+			"explorer": [
 				{
 					"id": "autoBarrel.listFilesView",
 					"name": "List of Files",
 					"visibility": "collapsed"
-				},
-				{
-					"id": "autoBarrel.feedbackView",
-					"name": "Help and Feedback",
-					"visibility": "visible"
 				}
 			]
 		},

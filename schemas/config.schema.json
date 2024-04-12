@@ -4,9 +4,9 @@
 	"properties": {
 		"vscode-auto-barrel.files.include": {
 			"type": "array",
-			"default": ["ts", "js", "json", "html", "css", "scss", "less"],
+			"default": ["*/**/*.ts"],
 			"scope": "resource",
-			"description": "Glob patterns to include in the package. The default is ts, js, json, html, css, scss, less."
+			"description": "Glob patterns to include in the package. The default is ts"
 		},
 		"vscode-auto-barrel.files.exclude": {
 			"type": "array",
