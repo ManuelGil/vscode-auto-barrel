@@ -2,29 +2,53 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"type": "object",
 	"properties": {
-		"vscode-auto-barrel.files.include": {
-			"type": "array",
-			"default": ["*/**/*.ts"],
+		"autoBarrel.language.defaultLanguage": {
+			"type": "string",
+			"default": "typescript",
+			"enum": ["TypeScript", "JavaScript"],
+			"enumDescriptions": [
+				"Create a TypeScript barrel",
+				"Create a JavaScript barrel"
+			],
 			"scope": "resource",
-			"description": "Glob patterns to include in the package. The default is ts"
+			"description": "Default language to use when creating the barrel file."
 		},
-		"vscode-auto-barrel.files.exclude": {
+		"autoBarrel.files.includeExtensionOnExport": {
+			"type": "array",
+			"default": ["ts", "tsx"],
+			"scope": "resource",
+			"description": "Extensions to include on the export. This is used to filter the files to export."
+		},
+		"autoBarrel.files.ignoreFilePathPatternOnExport": {
 			"type": "array",
 			"default": [
 				"**/node_modules/**",
 				"**/dist/**",
 				"**/out/**",
 				"**/build/**",
-				"**/.*/**"
+				"**/coverage/**",
+				"**/.*/**",
+				"**/*.spec.*",
+				"**/*.test.*",
+				"**/*.e2e.*",
+				"**/*.d.ts",
+				"**/tsconfig.*",
+				"**/index.*"
 			],
 			"scope": "resource",
-			"description": "Glob patterns to exclude from the package. The default is node_modules, dist, out, build, and any hidden files."
+			"description": "Glob patterns to ignore on the export. This is used to filter the files to export."
 		},
-		"vscode-auto-barrel.files.showPath": {
+		"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
+			"type": "boolean",
+			"default": false,
+			"scope": "resource",
+			"description": "Exclude the semicolon at the end of the line."
+		},
+		"autoBarrel.formatting.useSingleQuotes": {
 			"type": "boolean",
 			"default": true,
 			"scope": "resource",
-			"description": "Show the path of the file in the name of the list of generated files"
+			"description": "Use single quotes instead of double quotes."
 		}
 	}
 }

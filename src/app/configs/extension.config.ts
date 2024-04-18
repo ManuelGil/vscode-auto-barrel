@@ -1,6 +1,12 @@
 import { WorkspaceConfiguration } from 'vscode';
 
-import { EXCLUDE, INCLUDE, SHOW_PATH } from './constants.config';
+import {
+  DEFAULT_LANGUAGE,
+  EXCLUDE_PATTERNS,
+  EXCLUDE_SEMICOLON,
+  INCLUDE_EXTENSIONS,
+  USE_SINGLE_QUOTES,
+} from './constants.config';
 
 /**
  * The Config class.
@@ -15,7 +21,7 @@ import { EXCLUDE, INCLUDE, SHOW_PATH } from './constants.config';
  * @property {{ apiKey: string; model: string; }} openai - The OpenAI API key
  * @example
  * const config = new Config(workspace.getConfiguration());
- * console.log(config.include);
+ * console.log(config.includeExtensionOnExport);
  * console.log(config.exclude);
  */
 export class ExtensionConfig {
@@ -25,48 +31,59 @@ export class ExtensionConfig {
 
   // Public properties
   /**
-   * The files to include.
-   * @type {string[]}
-   * @public
-   * @memberof Config
-   * @example
-   * const config = new Config(workspace.getConfiguration());
-   * console.log(config.include);
-   */
-  include: string[];
-  /**
-   * The files to exclude.
-   * @type {string[]}
-   * @public
-   * @memberof Config
-   * @example
-   * const config = new Config(workspace.getConfiguration());
-   * console.log(config.exclude);
-   */
-  exclude: string[];
-  /**
-   * Whether to show the path or not.
-   * @type {boolean}
-   * @public
-   * @memberof Config
-   * @example
-   * const config = new Config(workspace.getConfiguration());
-   * console.log(config.showPath);
-   */
-  showPath: boolean;
-  /**
-   * The OpenAI API key.
+   * The default language.
    * @type {string}
    * @public
    * @memberof Config
    * @example
    * const config = new Config(workspace.getConfiguration());
-   * console.log(config.openai.apiKey);
+   * console.log(config.defaultLanguage);
    */
-  openai: {
-    apiKey: string;
-    model: string;
-  };
+  defaultLanguage: string;
+
+  /**
+   * The extensions to include in the export.
+   * @type {string[]}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.includeExtensionOnExport);
+   */
+  includeExtensionOnExport: string[];
+
+  /**
+   * The file path patterns to ignore on export.
+   * @type {string[]}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.ignoreFilePathPatternOnExport);
+   */
+  ignoreFilePathPatternOnExport: string[];
+
+  /**
+   * The flag to exclude a semicolon at the end of a line.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.excludeSemiColonAtEndOfLine);
+   */
+  excludeSemiColonAtEndOfLine: boolean;
+
+  /**
+   * The flag to use single quotes.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.useSingleQuotes);
+   */
+  useSingleQuotes: boolean;
 
   // -----------------------------------------------------------------
   // Constructor
@@ -81,38 +98,18 @@ export class ExtensionConfig {
    * @memberof Config
    */
   constructor(readonly config: WorkspaceConfiguration) {
-    this.include = config.get<string[]>('files.include') ?? INCLUDE;
-    this.exclude = config.get<string[]>('files.exclude') ?? EXCLUDE;
-    this.showPath = config.get<boolean>('files.showPath') ?? SHOW_PATH;
-    this.openai = {
-      apiKey: config.get<string>('openai.apiKey') ?? '',
-      model: config.get<string>('openai.model') ?? '',
-    };
-  }
-
-  // -----------------------------------------------------------------
-  // Methods
-  // -----------------------------------------------------------------
-
-  // Public methods
-  /**
-   * The update method.
-   *
-   * @function update
-   * @param {WorkspaceConfiguration} config - The workspace configuration
-   * @public
-   * @memberof Config
-   * @example
-   * const config = new Config(workspace.getConfiguration());
-   * config.update(workspace.getConfiguration());
-   */
-  update(config: WorkspaceConfiguration): void {
-    this.include = config.get<string[]>('files.include') ?? INCLUDE;
-    this.exclude = config.get<string[]>('files.exclude') ?? EXCLUDE;
-    this.showPath = config.get<boolean>('files.showPath') ?? SHOW_PATH;
-    this.openai = {
-      apiKey: config.get<string>('openai.apiKey') ?? '',
-      model: config.get<string>('openai.model') ?? '',
-    };
+    this.defaultLanguage =
+      config.get<string>('language.defaultLanguage') ?? DEFAULT_LANGUAGE;
+    this.includeExtensionOnExport =
+      config.get<string[]>('files.includeExtensionOnExport') ??
+      INCLUDE_EXTENSIONS;
+    this.ignoreFilePathPatternOnExport =
+      config.get<string[]>('files.ignoreFilePathPatternOnExport') ??
+      EXCLUDE_PATTERNS;
+    this.excludeSemiColonAtEndOfLine =
+      config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
+      EXCLUDE_SEMICOLON;
+    this.useSingleQuotes =
+      config.get<boolean>('formatting.useSingleQuotes') ?? USE_SINGLE_QUOTES;
   }
 }

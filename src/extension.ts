@@ -38,9 +38,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Create a new ListFilesController
   const listFilesController = new ListFilesController(config);
 
-  const disposableGetFilesInFolder = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.getFilesInFolder`,
-    (args) => listFilesController.getFilesInFolder(args),
+  const disposableCreateBarrel = vscode.commands.registerCommand(
+    `${EXTENSION_ID}.createBarrel`,
+    (args) => listFilesController.createBarrel(args),
   );
 
   const disposableOpenFile = vscode.commands.registerCommand(
@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
     (uri) => listFilesController.openFile(uri),
   );
 
-  context.subscriptions.push(disposableGetFilesInFolder, disposableOpenFile);
+  context.subscriptions.push(disposableCreateBarrel, disposableOpenFile);
 
   // -----------------------------------------------------------------
   // Register ListFilesProvider and list commands

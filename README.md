@@ -7,15 +7,85 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/ManuelGil/vscode-auto-barrel?style=for-the-badge&logo=github)](https://github.com/ManuelGil/vscode-auto-barrel)
 [![GitHub license](https://img.shields.io/github/license/ManuelGil/vscode-auto-barrel?style=for-the-badge&logo=github)](https://github.com/ManuelGil/vscode-auto-barrel/blob/main/LICENSE)
 
+Auto Barrel is a Visual Studio Code extension that helps you to create and maintain barrel files in your project.
+
+A barrel file is a file that re-exports all the modules in a directory. This way, you can import the directory instead of the individual modules.
+
+For example, if you have the following directory structure:
+
+```
+src/
+  components/
+    Button/
+      index.ts
+      Button.tsx
+    Input/
+      index.ts
+      Input.tsx
+```
+
+You can create a barrel file in the `components` directory that re-exports the `Button` and `Input` modules:
+
+```typescript
+// src/components/index.ts
+export * from './Button';
+export * from './Input';
+```
+
+Then, you can import the `Button` and `Input` modules from the `components` directory:
+
+```typescript
+import { Button } from './components';
+import { Input } from './components';
+```
+
+Auto Barrel helps you to create and maintain these barrel files by automatically updating them when you add, remove, or rename modules in a directory.
+
+This extension is inspired by the [auto-barrel](https://github.com/testpossessed/auto-barrel).
+
 ## Table of Contents
 
 - [Auto Barrel](#auto-barrel)
   - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Project Settings](#project-settings)
   - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
   - [Changelog](#changelog)
   - [Authors](#authors)
   - [License](#license)
+
+## Requirements
+
+- VSCode 1.76.0 or later
+
+## Project Settings
+
+Configure your project by creating or updating a settings.json file at the project's root. If you already have a `.vscode/settings.json` file, skip the first two steps.
+
+1. Open the command palette in VSCode:
+
+   - `CTRL + SHIFT + P` (Windows)
+   - `CMD + SHIFT + P` (Mac OS)
+
+2. Type `Preferences: Open Workspace Settings (JSON)`.
+
+3. In the `.vscode/settings.json` file, copy and paste the following settings:
+
+    ```json
+    {
+      "autoBarrel.barrelFileName": "index.ts",
+      "autoBarrel.reExportStatement": "export * from",
+      "autoBarrel.exclude": [],
+      "autoBarrel.excludePatterns": [],
+      "autoBarrel.excludeFromAutoBarrel": [],
+      "autoBarrel.excludeFromAutoBarrelPatterns": []
+    }
+    ```
+
+4. **Restart VS Code**
+
+Your project is now set up to automatically format code upon saving.
 
 ## Contributing
 

@@ -49,38 +49,66 @@
 		"configuration": {
 			"title": "Auto Barrel",
 			"properties": {
-				"autoBarrel.files.include": {
-					"type": "array",
-					"default": [
-						"*/**/*.ts"
+				"autoBarrel.language.defaultLanguage": {
+					"type": "string",
+					"default": "typescript",
+					"enum": [
+						"TypeScript",
+						"JavaScript"
+					],
+					"enumDescriptions": [
+						"Create a TypeScript barrel",
+						"Create a JavaScript barrel"
 					],
 					"scope": "resource",
-					"description": "Glob patterns to include in the package. The default is ts."
+					"description": "Default language to use when creating the barrel file."
 				},
-				"autoBarrel.files.exclude": {
+				"autoBarrel.files.includeExtensionOnExport": {
+					"type": "array",
+					"default": [
+						"ts",
+						"tsx"
+					],
+					"scope": "resource",
+					"description": "Extensions to include on the export. This is used to filter the files to export."
+				},
+				"autoBarrel.files.ignoreFilePathPatternOnExport": {
 					"type": "array",
 					"default": [
 						"**/node_modules/**",
 						"**/dist/**",
 						"**/out/**",
 						"**/build/**",
-						"**/.*/**"
+						"**/coverage/**",
+						"**/.*/**",
+						"**/*.spec.*",
+						"**/*.test.*",
+						"**/*.e2e.*",
+						"**/*.d.ts",
+						"**/tsconfig.*",
+						"**/index.*"
 					],
 					"scope": "resource",
-					"description": "Glob patterns to exclude from the package. The default is node_modules, dist, out, build, and any hidden files."
+					"description": "Glob patterns to ignore on the export. This is used to filter the files to export."
 				},
-				"autoBarrel.files.showPath": {
+				"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
+					"type": "boolean",
+					"default": false,
+					"scope": "resource",
+					"description": "Exclude the semicolon at the end of the line."
+				},
+				"autoBarrel.formatting.useSingleQuotes": {
 					"type": "boolean",
 					"default": true,
 					"scope": "resource",
-					"description": "Show the path of the file in the name of the list of generated files"
+					"description": "Use single quotes instead of double quotes."
 				}
 			}
 		},
 		"commands": [
 			{
-				"command": "autoBarrel.getFilesInFolder",
-				"title": "Create Barrel File",
+				"command": "autoBarrel.createBarrel",
+				"title": "Create Barrel",
 				"category": "Auto Barrel"
 			},
 			{
@@ -97,7 +125,11 @@
 		],
 		"submenus": [
 			{
-				"id": "autoBarrel.explorer.submenu",
+				"id": "autoBarrel.folder.submenu",
+				"label": "Auto Barrel"
+			},
+			{
+				"id": "autoBarrel.file.submenu",
 				"label": "Auto Barrel"
 			}
 		],
@@ -111,14 +143,25 @@
 			],
 			"explorer/context": [
 				{
-					"submenu": "autoBarrel.explorer.submenu",
+					"submenu": "autoBarrel.folder.submenu",
+					"group": "2_workspace",
 					"when": "explorerViewletFocus && explorerResourceIsFolder && !explorerResourceIsRoot"
+				},
+				{
+					"submenu": "autoBarrel.file.submenu",
+					"group": "2_workspace",
+					"when": "explorerViewletFocus && !explorerResourceIsFolder && resourceFilename =~ /index.{ts,tsx,js,jsx}$/"
 				}
 			],
-			"autoBarrel.explorer.submenu": [
+			"autoBarrel.folder.submenu": [
 				{
-					"command": "autoBarrel.getFilesInFolder",
-					"alt": "Get Files in Folder",
+					"command": "autoBarrel.createBarrel",
+					"group": "vscode-auto-barrel@1"
+				}
+			],
+			"autoBarrel.file.submenu": [
+				{
+					"command": "autoBarrel.createBarrel",
 					"group": "vscode-auto-barrel@1"
 				}
 			]

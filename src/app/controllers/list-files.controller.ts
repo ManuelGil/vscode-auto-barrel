@@ -47,19 +47,19 @@ export class ListFilesController {
   // Public methods
 
   /**
-   * The getFilesInFolder method.
+   * The createBarrel method.
    *
-   * @function getFilesInFolder
+   * @function createBarrel
    * @param {Uri} [path] - The path to the folder
    * @public
    * @async
    * @memberof ListFilesController
    * @example
-   * controller.getFilesInFolder();
+   * controller.createBarrel();
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  async getFilesInFolder(path?: Uri): Promise<void> {
+  async createBarrel(path?: Uri): Promise<void> {
     // Get the relative path
     const folderPath: string = path
       ? await workspace.asRelativePath(path.path)
@@ -70,10 +70,12 @@ export class ListFilesController {
       return;
     }
 
+    const include = `${folderPath}/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
+
     // Get the files in the folder
     const files = await this.directoryMap({
-      extensions: [`${folderPath}/**/*.ts`],
-      ignore: this.config.exclude,
+      extensions: [include],
+      ignore: this.config.ignoreFilePathPatternOnExport,
       maxResults: 512,
     });
 
@@ -111,10 +113,12 @@ export class ListFilesController {
   async getFiles(
     maxResults: number = Number.MAX_SAFE_INTEGER,
   ): Promise<NodeModel[] | void> {
+    const include = `*/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
+
     // Get the files in the folder
     const files = await this.directoryMap({
-      extensions: this.config.include,
-      ignore: this.config.exclude,
+      extensions: [include],
+      ignore: this.config.ignoreFilePathPatternOnExport,
       maxResults,
     });
 

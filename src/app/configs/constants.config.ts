@@ -35,6 +35,18 @@ export const EXTENSION_NAME: string = 'vscode-auto-barrel';
 export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
 
 /**
+ * DEFAULT_LANGUAGE: The default language.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(DEFAULT_LANGUAGE);
+ *
+ * @returns {string} - The default language
+ */
+export const DEFAULT_LANGUAGE: string = 'typescript';
+
+/**
  * INCLUDE: The files to include.
  * @type {string[]}
  * @public
@@ -44,7 +56,7 @@ export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
  *
  * @returns {string[]} - The files to include
  */
-export const INCLUDE: string[] = ['*/**/*.ts'];
+export const INCLUDE_EXTENSIONS: string[] = ['*/**/*.ts'];
 
 /**
  * EXCLUDE: The files to exclude.
@@ -56,22 +68,41 @@ export const INCLUDE: string[] = ['*/**/*.ts'];
  *
  * @returns {string[]} - The files to exclude
  */
-export const EXCLUDE: string[] = [
+export const EXCLUDE_PATTERNS: string[] = [
   '**/node_modules/**',
   '**/dist/**',
   '**/out/**',
   '**/build/**',
+  '**/coverage/**',
   '**/.*/**',
+  '**/*.spec.*',
+  '**/*.test.*',
+  '**/*.e2e.*',
+  '**/*.d.ts',
+  '**/tsconfig.*',
+  '**/index.*',
 ];
 
 /**
- * SHOW_PATH: Whether to show the path or not.
+ * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
  * @type {boolean}
  * @public
  * @memberof Constants
  * @example
- * console.log(SHOW_PATH);
+ * console.log(EXCLUDE_SEMICOLON);
  *
- * @returns {boolean} - Whether to show the path or not
+ * @returns {boolean} - The flag to exclude a semicolon at the end of a line
  */
-export const SHOW_PATH: boolean = true;
+export const EXCLUDE_SEMICOLON: boolean = false;
+
+/**
+ * USE_SINGLE_QUOTES: The flag to use single quotes.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(USE_SINGLE_QUOTES);
+ *
+ * @returns {boolean} - The flag to use single quotes
+ */
+export const USE_SINGLE_QUOTES: boolean = false;
