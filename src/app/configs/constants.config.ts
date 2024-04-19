@@ -56,7 +56,7 @@ export const DEFAULT_LANGUAGE: string = 'typescript';
  *
  * @returns {string[]} - The files to include
  */
-export const INCLUDE_EXTENSIONS: string[] = ['*/**/*.ts'];
+export const INCLUDE_EXTENSIONS: string[] = ['ts', 'tsx', 'vue'];
 
 /**
  * EXCLUDE: The files to exclude.
@@ -82,6 +82,18 @@ export const EXCLUDE_PATTERNS: string[] = [
   '**/tsconfig.*',
   '**/index.*',
 ];
+
+/**
+ * KEEP_EXTENSION: The flag to keep the extension on export.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(KEEP_EXTENSION);
+ *
+ * @returns {boolean} - The flag to keep the extension on export
+ */
+export const KEEP_EXTENSION: boolean = false;
 
 /**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.

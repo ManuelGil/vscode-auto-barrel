@@ -4,8 +4,7 @@ import * as vscode from 'vscode';
 
 // Import the Configs, Controllers, and Providers
 import { EXTENSION_ID, ExtensionConfig } from './app/configs';
-import { ListFilesController } from './app/controllers';
-import { ListFilesProvider } from './app/providers';
+import { FilesController } from './app/controllers';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -32,66 +31,23 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // -----------------------------------------------------------------
-  // Register ListFilesController
+  // Register FilesController
   // -----------------------------------------------------------------
 
-  // Create a new ListFilesController
-  const listFilesController = new ListFilesController(config);
+  // Create a new FilesController
+  const filesController = new FilesController(config);
 
   const disposableCreateBarrel = vscode.commands.registerCommand(
     `${EXTENSION_ID}.createBarrel`,
-    (args) => listFilesController.createBarrel(args),
+    (args) => filesController.createBarrel(args),
   );
 
-  const disposableOpenFile = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.listFiles.openFile`,
-    (uri) => listFilesController.openFile(uri),
+  const disposableUpdateBarrel = vscode.commands.registerCommand(
+    `${EXTENSION_ID}.updateBarrel`,
+    (args) => filesController.updateBarrel(args),
   );
 
-  context.subscriptions.push(disposableCreateBarrel, disposableOpenFile);
-
-  // -----------------------------------------------------------------
-  // Register ListFilesProvider and list commands
-  // -----------------------------------------------------------------
-
-  // Create a new ListFilesProvider
-  const listFilesProvider = new ListFilesProvider(listFilesController);
-
-  // Register the list provider
-  const listFilesTreeView = vscode.window.createTreeView(
-    `${EXTENSION_ID}.listFilesView`,
-    {
-      treeDataProvider: listFilesProvider,
-      showCollapseAll: true,
-    },
-  );
-
-  const disposableRefreshList = vscode.commands.registerCommand(
-    `${EXTENSION_ID}.listFiles.refreshList`,
-    () => listFilesProvider.refresh(),
-  );
-
-  context.subscriptions.push(listFilesTreeView, disposableRefreshList);
-
-  // -----------------------------------------------------------------
-  // Register ListFilesProvider and ListMethodsProvider events
-  // -----------------------------------------------------------------
-
-  vscode.workspace.onDidChangeTextDocument(() => {
-    listFilesProvider.refresh();
-  });
-  vscode.workspace.onDidCreateFiles(() => {
-    listFilesProvider.refresh();
-  });
-  vscode.workspace.onDidDeleteFiles(() => {
-    listFilesProvider.refresh();
-  });
-  vscode.workspace.onDidRenameFiles(() => {
-    listFilesProvider.refresh();
-  });
-  vscode.workspace.onDidSaveTextDocument(() => {
-    listFilesProvider.refresh();
-  });
+  context.subscriptions.push(disposableCreateBarrel, disposableUpdateBarrel);
 }
 
 // this method is called when your extension is deactivated

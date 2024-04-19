@@ -74,12 +74,12 @@ Configure your project by creating or updating a settings.json file at the proje
 
     ```json
     {
-      "autoBarrel.barrelFileName": "index.ts",
-      "autoBarrel.reExportStatement": "export * from",
-      "autoBarrel.exclude": [],
-      "autoBarrel.excludePatterns": [],
-      "autoBarrel.excludeFromAutoBarrel": [],
-      "autoBarrel.excludeFromAutoBarrelPatterns": []
+      "autoBarrel.language.defaultLanguage": "typescript",
+      "autoBarrel.files.includeExtensionOnExport": ["ts", "tsx", "vue"],
+      "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
+      "autoBarrel.files.keepExtensionOnExport": false,
+      "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
+      "autoBarrel.formatting.useSingleQuotes": true,
     }
     ```
 

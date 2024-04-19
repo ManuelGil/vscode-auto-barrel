@@ -5,6 +5,7 @@ import {
   EXCLUDE_PATTERNS,
   EXCLUDE_SEMICOLON,
   INCLUDE_EXTENSIONS,
+  KEEP_EXTENSION,
   USE_SINGLE_QUOTES,
 } from './constants.config';
 
@@ -64,6 +65,17 @@ export class ExtensionConfig {
   ignoreFilePathPatternOnExport: string[];
 
   /**
+   * The flag to keep the extension on export.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.keepExtensionOnExport);
+   */
+  keepExtensionOnExport: boolean;
+
+  /**
    * The flag to exclude a semicolon at the end of a line.
    * @type {boolean}
    * @public
@@ -106,6 +118,8 @@ export class ExtensionConfig {
     this.ignoreFilePathPatternOnExport =
       config.get<string[]>('files.ignoreFilePathPatternOnExport') ??
       EXCLUDE_PATTERNS;
+    this.keepExtensionOnExport =
+      config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
     this.excludeSemiColonAtEndOfLine =
       config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
       EXCLUDE_SEMICOLON;

@@ -1,21 +1,11 @@
-import {
-  Position,
-  Range,
-  Selection,
-  TextEditorRevealType,
-  ThemeIcon,
-  Uri,
-  window,
-  workspace,
-} from 'vscode';
+import { Position, Range, Uri, WorkspaceEdit, window, workspace } from 'vscode';
 
 import { access, existsSync, mkdirSync, open, writeFile } from 'fs';
 import { dirname, join } from 'path';
 import { ExtensionConfig } from '../configs';
-import { NodeModel } from '../models';
 
 /**
- * The ListFilesController class.
+ * The FilesController class.
  *
  * @class
  * @classdesc The class that represents the list files controller.
@@ -23,20 +13,20 @@ import { NodeModel } from '../models';
  * @public
  * @property {ExtensionConfig} config - The configuration object
  * @example
- * const controller = new ListFilesController(config);
+ * const controller = new FilesController(config);
  */
-export class ListFilesController {
+export class FilesController {
   // -----------------------------------------------------------------
   // Constructor
   // -----------------------------------------------------------------
 
   /**
-   * Constructor for the ListFilesController class
+   * Constructor for the FilesController class
    *
    * @constructor
    * @param {ExtensionConfig} config - The configuration object
    * @public
-   * @memberof ListFilesController
+   * @memberof FilesController
    */
   constructor(readonly config: ExtensionConfig) {}
 
@@ -53,13 +43,13 @@ export class ListFilesController {
    * @param {Uri} [path] - The path to the folder
    * @public
    * @async
-   * @memberof ListFilesController
+   * @memberof FilesController
    * @example
    * controller.createBarrel();
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  async createBarrel(path?: Uri): Promise<void> {
+  public async createBarrel(path?: Uri): Promise<void> {
     // Get the relative path
     const folderPath: string = path
       ? await workspace.asRelativePath(path.path)
@@ -70,128 +60,113 @@ export class ListFilesController {
       return;
     }
 
+    const content = await this.getContent(folderPath);
+
+    const ext = this.config.defaultLanguage === 'typescript' ? 'ts' : 'js';
+    const filename = `index.${ext}`;
+
+    if (content) {
+      this.saveFile(folderPath, filename, content);
+    }
+  }
+
+  /**
+   * The updateBarrel method.
+   *
+   * @function updateBarrel
+   * @param {Uri} [file] - The path to the folder
+   * @public
+   * @async
+   * @memberof FilesController
+   * @example
+   * controller.updateBarrel();
+   *
+   * @returns {Promise<void>} - The promise with no return value
+   */
+  async updateBarrel(path?: Uri): Promise<void> {
+    const targetFile = path ? path.fsPath : '';
+
+    // Get the relative path
+    const folderPath: string = path
+      ? await workspace.asRelativePath(path.path)
+      : '';
+
+    // If the file is not valid, return
+    if (!folderPath) {
+      return;
+    }
+
+    const content = await this.getContent(
+      folderPath.replace(/\/index\.(ts|js)/, ''),
+    );
+
+    if (content) {
+      const document = await workspace.openTextDocument(targetFile);
+
+      const edit = new WorkspaceEdit();
+      const start = new Position(0, 0);
+      const end = new Position(document.lineCount, 0);
+      const range = new Range(start, end);
+
+      edit.replace(document.uri, range, content);
+      workspace.applyEdit(edit);
+
+      window.showInformationMessage('Successfully updated the file!');
+    }
+  }
+
+  // Private methods
+
+  /**
+   * The getContent method.
+   *
+   * @function getContent
+   * @param {string} folderPath - The folder path
+   * @private
+   * @async
+   * @memberof FilesController
+   * @example
+   * controller.getContent();
+   *
+   * @returns {Promise<string | undefined>} - The promise with the content
+   */
+  private async getContent(folderPath: string): Promise<string | undefined> {
     const include = `${folderPath}/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
 
     // Get the files in the folder
     const files = await this.directoryMap({
       extensions: [include],
       ignore: this.config.ignoreFilePathPatternOnExport,
-      maxResults: 512,
+      maxResults: Number.MAX_SAFE_INTEGER,
     });
 
-    // If files are found, save them to a file
-    if (files.length !== 0) {
-      let paths = [];
-
-      for (const file of files) {
-        const relativePath = await workspace.asRelativePath(file.path);
-        paths.push(relativePath.replace(folderPath, '').replace('.ts', ''));
-      }
-
-      // Write the content to a file
-      await this.saveFile(
-        folderPath,
-        'index.ts',
-        paths.map((path) => `export * from '.${path}';`).join('\n'),
-      );
-    }
-  }
-
-  /**
-   * The getFiles method.
-   *
-   * @function getFiles
-   * @param {number} maxResults - The maximum number of results
-   * @public
-   * @async
-   * @memberof ListFilesController
-   * @example
-   * controller.getFiles();
-   *
-   * @returns {Promise<NodeModel[] | void>} - The list of files
-   */
-  async getFiles(
-    maxResults: number = Number.MAX_SAFE_INTEGER,
-  ): Promise<NodeModel[] | void> {
-    const include = `*/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
-
-    // Get the files in the folder
-    const files = await this.directoryMap({
-      extensions: [include],
-      ignore: this.config.ignoreFilePathPatternOnExport,
-      maxResults,
-    });
-
-    if (files.length !== 0) {
-      let nodes: NodeModel[] = [];
-
-      for (const file of files) {
-        const document = await workspace.openTextDocument(file);
-
-        nodes.push(
-          new NodeModel(
-            document.fileName.replace(/\\/g, '/').split('/').pop() || '',
-            new ThemeIcon('file'),
-            undefined,
-            document.uri,
-            'file',
-          ),
-        );
-      }
-
-      return nodes;
+    if (files.length === 0) {
+      window.showErrorMessage('No files found in the folder!');
+      return;
     }
 
-    return;
-  }
+    const paths = [];
 
-  /**
-   * The openFile method.
-   *
-   * @function openFile
-   * @param {NodeModel} uri - The file URI
-   * @public
-   * @memberof ListFilesController
-   * @example
-   * controller.openFile('file:///path/to/file');
-   *
-   * @returns {Promise<void>} - The promise
-   */
-  openFile(uri: NodeModel) {
-    if (uri.resourceUri) {
-      workspace.openTextDocument(uri.resourceUri).then((filename) => {
-        window.showTextDocument(filename);
-      });
+    for (const file of files) {
+      const relativePath = await workspace.asRelativePath(file.path);
+      paths.push(relativePath.replace(folderPath, ''));
     }
+
+    const quote = this.config.useSingleQuotes ? "'" : '"';
+    const semi = this.config.excludeSemiColonAtEndOfLine;
+    const keepExtension = this.config.keepExtensionOnExport;
+
+    return paths
+      .map((path) => {
+        if (!keepExtension) {
+          path = path.replace(/\.[^/.]+$/, '');
+        }
+
+        return `export * from ${quote}.${path}${quote}${semi ? ';' : ''}\n`;
+      })
+      .join('');
   }
 
-  /**
-   * The gotoLine method.
-   *
-   * @function gotoLine
-   * @param {string} uri - The file URI
-   * @param {number} line - The line number
-   * @public
-   * @memberof ListFilesController
-   * @example
-   * controller.gotoLine('file:///path/to/file', 1);
-   *
-   * @returns {void} - The promise
-   */
-  gotoLine(uri: string, line: number) {
-    workspace.openTextDocument(uri).then((document) => {
-      window.showTextDocument(document).then((editor) => {
-        const pos = new Position(line, 0);
-        editor.revealRange(
-          new Range(pos, pos),
-          TextEditorRevealType.InCenterIfOutsideViewport,
-        );
-        editor.selection = new Selection(pos, pos);
-      });
-    });
-  }
-
-  // Private methods
   /**
    * The directoryMap method.
    *
@@ -202,7 +177,7 @@ export class ListFilesController {
    * @param {number} [options.maxResults] - The maximum number of results
    * @private
    * @async
-   * @memberof ListFilesController
+   * @memberof FilesController
    * @example
    * controller.directoryMap();
    *
@@ -217,7 +192,7 @@ export class ListFilesController {
     let exclude = '';
 
     if (options && options.extensions && options.extensions.length) {
-      include = `{${options.extensions.join(',')}}`;
+      include = `${options.extensions.join(',')}`;
     }
 
     if (options && options.ignore && options.ignore.length) {
@@ -236,7 +211,7 @@ export class ListFilesController {
    * @param {string} data - The data
    * @private
    * @async
-   * @memberof ListFilesController
+   * @memberof FilesController
    * @example
    * controller.saveFile('path', 'filename', 'data');
    *

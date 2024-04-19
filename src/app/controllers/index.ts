@@ -1,1 +1,1 @@
-export * from './list-files.controller';
+export * from './files.controller';

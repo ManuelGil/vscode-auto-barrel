@@ -3,13 +3,7 @@
 	"displayName": "Auto Barrel",
 	"description": "🛢️ Automatically generate index files for your project.",
 	"version": "1.0.0",
-	"preview": true,
 	"icon": "icon.png",
-	"galleryBanner": {
-		"color": "#eff1f3",
-		"theme": "dark"
-	},
-	"pricing": "Free",
 	"license": "MIT",
 	"publisher": "imgildev",
 	"author": "ManuelGil",
@@ -17,23 +11,20 @@
 		"url": "https://github.com/sponsors/ManuelGil"
 	},
 	"engines": {
-		"vscode": "^1.87.0"
+		"vscode": "^1.76.0"
 	},
 	"categories": [
 		"Other"
 	],
 	"keywords": [
-		"boilerplate",
-		"extension",
-		"kit",
-		"plugin",
-		"project",
-		"starter-kit",
-		"starter",
-		"template",
+		"auto",
+		"auto-barrel",
+		"barrel",
+		"export",
+		"index",
 		"typescript",
-		"vscode",
-		"vsxpert"
+		"javascript",
+		"vscode"
 	],
 	"homepage": "https://github.com/ManuelGil/vscode-auto-barrel",
 	"repository": {
@@ -43,7 +34,10 @@
 	"bugs": {
 		"url": "https://github.com/ManuelGil/vscode-auto-barrel/issues"
 	},
-	"activationEvents": [],
+	"activationEvents": [
+		"onLanguage:typescript",
+		"onLanguage:javascript"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
@@ -67,7 +61,8 @@
 					"type": "array",
 					"default": [
 						"ts",
-						"tsx"
+						"tsx",
+						"vue"
 					],
 					"scope": "resource",
 					"description": "Extensions to include on the export. This is used to filter the files to export."
@@ -91,6 +86,12 @@
 					"scope": "resource",
 					"description": "Glob patterns to ignore on the export. This is used to filter the files to export."
 				},
+				"autoBarrel.files.keepExtensionOnExport": {
+					"type": "boolean",
+					"default": false,
+					"scope": "resource",
+					"description": "Keep the file extension on the export."
+				},
 				"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 					"type": "boolean",
 					"default": false,
@@ -112,14 +113,8 @@
 				"category": "Auto Barrel"
 			},
 			{
-				"command": "autoBarrel.listFiles.refreshList",
-				"title": "Refresh List",
-				"category": "Auto Barrel",
-				"icon": "$(refresh)"
-			},
-			{
-				"command": "autoBarrel.listFiles.openFile",
-				"title": "Open File",
+				"command": "autoBarrel.updateBarrel",
+				"title": "Update Barrel",
 				"category": "Auto Barrel"
 			}
 		],
@@ -134,13 +129,6 @@
 			}
 		],
 		"menus": {
-			"view/title": [
-				{
-					"command": "autoBarrel.listFiles.refreshList",
-					"when": "view == autoBarrel.listFilesView",
-					"group": "navigation"
-				}
-			],
 			"explorer/context": [
 				{
 					"submenu": "autoBarrel.folder.submenu",
@@ -150,7 +138,7 @@
 				{
 					"submenu": "autoBarrel.file.submenu",
 					"group": "2_workspace",
-					"when": "explorerViewletFocus && !explorerResourceIsFolder && resourceFilename =~ /index.{ts,tsx,js,jsx}$/"
+					"when": "explorerViewletFocus && !explorerResourceIsFolder && resourceFilename =~ /index.(ts|js)$/"
 				}
 			],
 			"autoBarrel.folder.submenu": [
@@ -161,23 +149,8 @@
 			],
 			"autoBarrel.file.submenu": [
 				{
-					"command": "autoBarrel.createBarrel",
+					"command": "autoBarrel.updateBarrel",
 					"group": "vscode-auto-barrel@1"
-				}
-			]
-		},
-		"viewsWelcome": [
-			{
-				"view": "autoBarrel.listFilesView",
-				"contents": "To effectively capture files, ensure you include the file type within the workspace settings.\n[Open Workspace Setting](command:workbench.action.openWorkspaceSettingsFile)\nTo learn more about how to use the Starter Kit [read our docs](https://github.com/ManuelGil/vscode-auto-barrel)."
-			}
-		],
-		"views": {
-			"explorer": [
-				{
-					"id": "autoBarrel.listFilesView",
-					"name": "List of Files",
-					"visibility": "collapsed"
 				}
 			]
 		},
@@ -201,20 +174,20 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^19.2.1",
-		"@commitlint/config-conventional": "^19.1.0",
+		"@commitlint/cli": "^19.2.2",
+		"@commitlint/config-conventional": "^19.2.2",
 		"@compodoc/compodoc": "^1.1.23",
 		"@types/glob": "^8.1.0",
 		"@types/minimatch": "3.0.5",
 		"@types/mocha": "^10.0.6",
-		"@types/node": "^20.12.5",
+		"@types/node": "^20.12.7",
 		"@types/vscode": "^1.88.0",
 		"@typescript-eslint/eslint-plugin": "6.21.0",
 		"@typescript-eslint/parser": "6.21.0",
 		"eslint": "8.57.0",
 		"eslint-config-standard-with-typescript": "^43.0.1",
 		"eslint-plugin-import": "^2.29.1",
-		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-n": "^17.2.1",
 		"eslint-plugin-promise": "^6.1.1",
 		"glob": "^10.3.12",
 		"husky": "^9.0.11",
@@ -222,7 +195,7 @@
 		"mocha": "^10.4.0",
 		"prettier": "3.2.5",
 		"rimraf": "^5.0.5",
-		"typescript": "^5.4.4",
+		"typescript": "^5.4.5",
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
