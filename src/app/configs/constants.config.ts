@@ -117,4 +117,4 @@ export const EXCLUDE_SEMICOLON: boolean = false;
  *
  * @returns {boolean} - The flag to use single quotes
  */
-export const USE_SINGLE_QUOTES: boolean = false;
+export const USE_SINGLE_QUOTES: boolean = true;

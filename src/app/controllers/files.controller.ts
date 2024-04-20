@@ -162,7 +162,7 @@ export class FilesController {
           path = path.replace(/\.[^/.]+$/, '');
         }
 
-        return `export * from ${quote}.${path}${quote}${semi ? ';' : ''}\n`;
+        return `export * from ${quote}.${path}${quote}${semi ? '' : ';'}\n`;
       })
       .join('');
   }
