@@ -1,4 +1,12 @@
-import { Position, Range, Uri, WorkspaceEdit, window, workspace } from 'vscode';
+import {
+  Position,
+  Range,
+  Uri,
+  WorkspaceEdit,
+  commands,
+  window,
+  workspace,
+} from 'vscode';
 
 import { access, existsSync, mkdirSync, open, writeFile } from 'fs';
 import { dirname, join } from 'path';
@@ -109,7 +117,11 @@ export class FilesController {
       const range = new Range(start, end);
 
       edit.replace(document.uri, range, content);
-      workspace.applyEdit(edit);
+
+      await workspace.applyEdit(edit);
+
+      await commands.executeCommand('workbench.action.files.saveAll');
+      await window.showTextDocument(document);
 
       window.showInformationMessage('Successfully updated the file!');
     }
@@ -199,7 +211,9 @@ export class FilesController {
       exclude = `{${options.ignore.join(',')}}`;
     }
 
-    return workspace.findFiles(include, exclude, options?.maxResults);
+    return (
+      await workspace.findFiles(include, exclude, options?.maxResults)
+    ).sort((a, b) => a.fsPath.localeCompare(b.fsPath));
   }
 
   /**
@@ -251,8 +265,9 @@ export class FilesController {
 
             const openPath = Uri.file(file);
 
-            workspace.openTextDocument(openPath).then((filename) => {
-              window.showTextDocument(filename);
+            workspace.openTextDocument(openPath).then(async (filename) => {
+              await commands.executeCommand('workbench.action.files.saveAll');
+              await window.showTextDocument(filename);
             });
           });
         });

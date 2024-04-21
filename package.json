@@ -3,6 +3,7 @@
 	"displayName": "Auto Barrel",
 	"description": "🛢️ Automatically generate index files for your project.",
 	"version": "1.0.0",
+	"preview": true,
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",

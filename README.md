@@ -13,7 +13,7 @@ A barrel file is a file that re-exports all the modules in a directory. This way
 
 For example, if you have the following directory structure:
 
-```
+```md
 src/
   components/
     Button/
@@ -40,6 +40,8 @@ import { Input } from './components';
 ```
 
 Auto Barrel helps you to create and maintain these barrel files by automatically updating them when you add, remove, or rename modules in a directory.
+
+![demo](https://raw.githubusercontent.com/ManuelGil/vscode-auto-barrel/main/docs/images/demo.gif)
 
 This extension is inspired by the [auto-barrel](https://github.com/testpossessed/auto-barrel).
 
@@ -139,4 +141,4 @@ See also the list of [contributors](https://github.com/ManuelGil/vscode-auto-bar
 
 ## License
 
-This extension is licensed under the MIT License. see the [MIT License](https://opensource.org/licenses/MIT) for details.
+This extension is licensed under the MIT License. See the [MIT License](https://opensource.org/licenses/MIT) for details.
