@@ -9,6 +9,8 @@
 
 Auto Barrel is a Visual Studio Code extension that helps you to create and maintain barrel files in your project.
 
+![demo](https://raw.githubusercontent.com/ManuelGil/vscode-auto-barrel/main/docs/images/demo.gif)
+
 A barrel file is a file that re-exports all the modules in a directory. This way, you can import the directory instead of the individual modules.
 
 For example, if you have the following directory structure:
@@ -41,9 +43,7 @@ import { Input } from './components';
 
 Auto Barrel helps you to create and maintain these barrel files by automatically updating them when you add, remove, or rename modules in a directory.
 
-![demo](https://raw.githubusercontent.com/ManuelGil/vscode-auto-barrel/main/docs/images/demo.gif)
-
-This extension is inspired by the [auto-barrel](https://github.com/testpossessed/auto-barrel).
+This extension is inspired by the [auto-barrel](https://github.com/testpossessed/auto-barrel) extension by [Mike Hanson](https://github.com/testpossessed).
 
 ## Table of Contents
 
@@ -52,6 +52,7 @@ This extension is inspired by the [auto-barrel](https://github.com/testpossessed
   - [Requirements](#requirements)
   - [Features](#features)
   - [Project Settings](#project-settings)
+  - [Settings Options](#settings-options)
   - [Follow Me](#follow-me)
   - [VSXpert Template](#vsxpert-template)
   - [Other Extensions](#other-extensions)
@@ -93,12 +94,43 @@ Configure your project by creating or updating a settings.json file at the proje
       "autoBarrel.files.keepExtensionOnExport": false,
       "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
       "autoBarrel.formatting.useSingleQuotes": true,
+      "autoBarrel.formatting.endOfLine": "lf",
     }
     ```
 
 4. **Restart VS Code**
 
 Your project is now set up to automatically format code upon saving.
+
+## Settings Options
+
+Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor the behavior of the barrel file generation process according to your project's needs.
+
+- `autoBarrel.language.defaultLanguage`: The default language for the barrel file. Supported languages are `typescript` and `javascript`. Default is `typescript`.
+- `autoBarrel.files.includeExtensionOnExport`: An array of file extensions to include when exporting modules. Default is `["ts", "tsx", "vue"]`.
+- `autoBarrel.files.ignoreFilePathPatternOnExport`: An array of file path patterns to ignore when exporting modules. Default is `["**/*.spec.*", "**/*.test.*"]`.
+- `autoBarrel.files.keepExtensionOnExport`: Whether to keep the file extension when exporting modules. Default is `false`.
+- `autoBarrel.formatting.excludeSemiColonAtEndOfLine`: Whether to exclude a semicolon at the end of each line in the barrel file. Default is `false`.
+- `autoBarrel.formatting.useSingleQuotes`: Whether to use single quotes for string literals in the barrel file. Default is `true`.
+- `autoBarrel.formatting.endOfLine`: The end-of-line character to use in the barrel file. Supported values are `lf` (line feed) and `crlf` (carriage return line feed). Default is `lf`.
+
+These settings are customizable to match your project's specific requirements. For instance, you can adjust the default language to `javascript` or expand the list of file extensions to include when exporting modules, for example: `["js", "jsx", "ts", "tsx", "vue", "astro"]`.
+
+JavaScript example settings:
+
+```json
+{
+  "autoBarrel.language.defaultLanguage": "javascript",
+  "autoBarrel.files.includeExtensionOnExport": ["js", "jsx"],
+  "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
+  "autoBarrel.files.keepExtensionOnExport": false,
+  "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
+  "autoBarrel.formatting.useSingleQuotes": true,
+  "autoBarrel.formatting.endOfLine": "crlf",
+}
+```
+
+For more information on configuring Auto Barrel settings, refer to the [Project Settings](#project-settings) section.
 
 ## Follow Me
 

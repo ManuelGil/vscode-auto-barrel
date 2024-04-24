@@ -118,3 +118,15 @@ export const EXCLUDE_SEMICOLON: boolean = false;
  * @returns {boolean} - The flag to use single quotes
  */
 export const USE_SINGLE_QUOTES: boolean = true;
+
+/**
+ * END_OF_LINE: The end of line character.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(END_OF_LINE);
+ *
+ * @returns {string} - The end of line character
+ */
+export const END_OF_LINE: string = 'lf';

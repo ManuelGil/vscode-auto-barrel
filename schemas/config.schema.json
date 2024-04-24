@@ -55,6 +55,14 @@
 			"default": true,
 			"scope": "resource",
 			"description": "Use single quotes instead of double quotes."
+		},
+		"autoBarrel.formatting.endOfLine": {
+			"type": "string",
+			"default": "lf",
+			"enum": ["crlf", "lf"],
+			"enumDescriptions": ["CRLF", "LF"],
+			"scope": "resource",
+			"description": "End of line character to use."
 		}
 	}
 }

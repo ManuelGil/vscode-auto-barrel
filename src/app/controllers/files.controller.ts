@@ -79,6 +79,40 @@ export class FilesController {
   }
 
   /**
+   * The updateBarrelInFolder method.
+   *
+   * @function updateBarrelInFolder
+   * @param {Uri} [path] - The path to the folder
+   * @public
+   * @async
+   * @memberof FilesController
+   * @example
+   * controller.updateBarrelInFolder();
+   *
+   * @returns {Promise<void>} - The promise with no return value
+   */
+  async updateBarrelInFolder(path?: Uri): Promise<void> {
+    const targetFile = path ? path.fsPath : '';
+
+    // If the folder is not valid, return
+    if (!targetFile) {
+      return;
+    }
+
+    const ext = this.config.defaultLanguage === 'typescript' ? 'ts' : 'js';
+    const filename = join(targetFile, `index.${ext}`);
+
+    if (!existsSync(filename)) {
+      window.showErrorMessage('The file does not exist!');
+      return;
+    }
+
+    const openPath = Uri.file(filename);
+
+    this.updateBarrel(openPath);
+  }
+
+  /**
    * The updateBarrel method.
    *
    * @function updateBarrel
@@ -167,6 +201,7 @@ export class FilesController {
     const quote = this.config.useSingleQuotes ? "'" : '"';
     const semi = this.config.excludeSemiColonAtEndOfLine;
     const keepExtension = this.config.keepExtensionOnExport;
+    const endOfLine = this.config.endOfLine;
 
     return paths
       .map((path) => {
@@ -174,7 +209,7 @@ export class FilesController {
           path = path.replace(/\.[^/.]+$/, '');
         }
 
-        return `export * from ${quote}.${path}${quote}${semi ? '' : ';'}\n`;
+        return `export * from ${quote}.${path}${quote}${semi ? '' : ';'}${endOfLine === 'crlf' ? '\r\n' : '\n'}`;
       })
       .join('');
   }

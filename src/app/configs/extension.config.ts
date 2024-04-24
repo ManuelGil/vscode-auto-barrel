@@ -2,6 +2,7 @@ import { WorkspaceConfiguration } from 'vscode';
 
 import {
   DEFAULT_LANGUAGE,
+  END_OF_LINE,
   EXCLUDE_PATTERNS,
   EXCLUDE_SEMICOLON,
   INCLUDE_EXTENSIONS,
@@ -97,6 +98,17 @@ export class ExtensionConfig {
    */
   useSingleQuotes: boolean;
 
+  /**
+   * The end of line character.
+   * @type {string}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.endOfLine);
+   */
+  endOfLine: string;
+
   // -----------------------------------------------------------------
   // Constructor
   // -----------------------------------------------------------------
@@ -125,5 +137,6 @@ export class ExtensionConfig {
       EXCLUDE_SEMICOLON;
     this.useSingleQuotes =
       config.get<boolean>('formatting.useSingleQuotes') ?? USE_SINGLE_QUOTES;
+    this.endOfLine = config.get<string>('formatting.endOfLine') ?? END_OF_LINE;
   }
 }

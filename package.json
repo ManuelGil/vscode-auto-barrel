@@ -1,9 +1,8 @@
 {
 	"name": "vscode-auto-barrel",
-	"displayName": "Auto Barrel",
+	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.0.0",
-	"preview": true,
+	"version": "1.1.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -104,6 +103,20 @@
 					"default": true,
 					"scope": "resource",
 					"description": "Use single quotes instead of double quotes."
+				},
+				"autoBarrel.formatting.endOfLine": {
+					"type": "string",
+					"default": "lf",
+					"enum": [
+						"crlf",
+						"lf"
+					],
+					"enumDescriptions": [
+						"CRLF",
+						"LF"
+					],
+					"scope": "resource",
+					"description": "End of line character to use."
 				}
 			}
 		},
@@ -111,6 +124,11 @@
 			{
 				"command": "autoBarrel.createBarrel",
 				"title": "Create Barrel",
+				"category": "Auto Barrel"
+			},
+			{
+				"command": "autoBarrel.updateBarrelInFolder",
+				"title": "Update Barrel",
 				"category": "Auto Barrel"
 			},
 			{
@@ -145,6 +163,10 @@
 			"autoBarrel.folder.submenu": [
 				{
 					"command": "autoBarrel.createBarrel",
+					"group": "vscode-auto-barrel@1"
+				},
+				{
+					"command": "autoBarrel.updateBarrelInFolder",
 					"group": "vscode-auto-barrel@1"
 				}
 			],
@@ -182,7 +204,7 @@
 		"@types/minimatch": "3.0.5",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^20.12.7",
-		"@types/vscode": "^1.88.0",
+		"@types/vscode": "^1.76.0",
 		"@typescript-eslint/eslint-plugin": "6.21.0",
 		"@typescript-eslint/parser": "6.21.0",
 		"eslint": "8.57.0",

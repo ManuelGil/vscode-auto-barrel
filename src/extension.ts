@@ -42,12 +42,29 @@ export function activate(context: vscode.ExtensionContext) {
     (args) => filesController.createBarrel(args),
   );
 
+  const disposableUpdateBarrelInFolder = vscode.commands.registerCommand(
+    `${EXTENSION_ID}.updateBarrelInFolder`,
+    (args) => filesController.updateBarrelInFolder(args),
+  );
+
   const disposableUpdateBarrel = vscode.commands.registerCommand(
     `${EXTENSION_ID}.updateBarrel`,
     (args) => filesController.updateBarrel(args),
   );
 
-  context.subscriptions.push(disposableCreateBarrel, disposableUpdateBarrel);
+  context.subscriptions.push(
+    disposableCreateBarrel,
+    disposableUpdateBarrelInFolder,
+    disposableUpdateBarrel,
+  );
+
+  // -----------------------------------------------------------------
+  // Register On Did Delete Files event listener
+  // -----------------------------------------------------------------
+
+  vscode.workspace.onDidDeleteFiles(() => {
+    vscode.window.showInformationMessage('Remember to update the barrel file');
+  });
 }
 
 // this method is called when your extension is deactivated

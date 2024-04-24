@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-04-21
+
+### Added
+
+- Add `updateBarrelInFolder` command to update the barrel file manually.
+- Add `endOfLine` setting to control the line endings in the generated barrel file.
+
 ## [1.0.0] - 2024-04-20
 
 ### Added
@@ -15,5 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ManuelGil/vscode-nextjs-generator/releases/tag/v1.0.0
