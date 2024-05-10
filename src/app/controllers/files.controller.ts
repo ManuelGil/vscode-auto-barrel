@@ -177,7 +177,14 @@ export class FilesController {
    * @returns {Promise<string | undefined>} - The promise with the content
    */
   private async getContent(folderPath: string): Promise<string | undefined> {
-    const include = `${folderPath}/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
+    let include = '';
+
+    // Get the include extension
+    if (this.config.disableRecursiveBarrelling) {
+      include = `${folderPath}/*.{${this.config.includeExtensionOnExport.join(',')}}`;
+    } else {
+      include = `${folderPath}/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
+    }
 
     // Get the files in the folder
     const files = await this.directoryMap({

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2024-05-09
+
+### Added
+
+- Add `disableRecursiveBarrelling` setting to disable the recursive generation of barrel files.
+
 ## [1.1.0] - 2024-04-21
 
 ### Added
@@ -22,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ManuelGil/vscode-nextjs-generator/releases/tag/v1.0.0

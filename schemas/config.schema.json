@@ -13,6 +13,12 @@
 			"scope": "resource",
 			"description": "Default language to use when creating the barrel file."
 		},
+		"autoBarrel.files.disableRecursiveBarrelling": {
+			"type": "boolean",
+			"default": false,
+			"scope": "resource",
+			"description": "Disable the recurtion for subdirectories when creating the barrel file."
+		},
 		"autoBarrel.files.includeExtensionOnExport": {
 			"type": "array",
 			"default": ["ts", "tsx", "vue"],

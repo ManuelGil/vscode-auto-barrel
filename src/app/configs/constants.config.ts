@@ -47,6 +47,18 @@ export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
 export const DEFAULT_LANGUAGE: string = 'typescript';
 
 /**
+ * RECURSIVE_BARRELLING: The flag to recursively barrel.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(RECURSIVE_BARRELLING);
+ *
+ * @returns {boolean} - The flag to recursively barrel
+ */
+export const DISABLE_RECURSIVE: boolean = false;
+
+/**
  * INCLUDE: The files to include.
  * @type {string[]}
  * @public
