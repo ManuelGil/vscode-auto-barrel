@@ -50,6 +50,12 @@
 			"scope": "resource",
 			"description": "Keep the file extension on the export."
 		},
+		"autoBarrel.files.detectExportsInFiles": {
+			"type": "boolean",
+			"default": false,
+			"scope": "resource",
+			"description": "Detect the exports in the files to export."
+		},
 		"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 			"type": "boolean",
 			"default": false,
@@ -69,6 +75,12 @@
 			"enumDescriptions": ["CRLF", "LF"],
 			"scope": "resource",
 			"description": "End of line character to use."
+		},
+		"autoBarrel.formatting.insertFinalNewline": {
+			"type": "boolean",
+			"default": true,
+			"scope": "resource",
+			"description": "Insert a final newline at the end of the file."
 		}
 	}
 }

@@ -93,9 +93,11 @@ Configure your project by creating or updating a settings.json file at the proje
       "autoBarrel.files.includeExtensionOnExport": ["ts", "tsx", "vue"],
       "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
       "autoBarrel.files.keepExtensionOnExport": false,
+      "autoBarrel.files.detectExportsInFiles": false,
       "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
       "autoBarrel.formatting.useSingleQuotes": true,
       "autoBarrel.formatting.endOfLine": "lf",
+      "autoBarrel.formatting.insertFinalNewline": true,
     }
     ```
 
@@ -112,9 +114,11 @@ Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor th
 - `autoBarrel.files.includeExtensionOnExport`: An array of file extensions to include when exporting modules. Default is `["ts", "tsx", "vue"]`.
 - `autoBarrel.files.ignoreFilePathPatternOnExport`: An array of file path patterns to ignore when exporting modules. Default is `["**/*.spec.*", "**/*.test.*"]`.
 - `autoBarrel.files.keepExtensionOnExport`: Whether to keep the file extension when exporting modules. Default is `false`.
+- `autoBarrel.files.detectExportsInFiles`: Whether to detect exports in files when exporting modules. Default is `false`.
 - `autoBarrel.formatting.excludeSemiColonAtEndOfLine`: Whether to exclude a semicolon at the end of each line in the barrel file. Default is `false`.
 - `autoBarrel.formatting.useSingleQuotes`: Whether to use single quotes for string literals in the barrel file. Default is `true`.
 - `autoBarrel.formatting.endOfLine`: The end-of-line character to use in the barrel file. Supported values are `lf` (line feed) and `crlf` (carriage return line feed). Default is `lf`.
+- `autoBarrel.formatting.insertFinalNewline`: Whether to insert a final newline at the end of the barrel file. Default is `true`.
 
 These settings are customizable to match your project's specific requirements. For instance, you can adjust the default language to `javascript` or expand the list of file extensions to include when exporting modules, for example: `["js", "jsx", "ts", "tsx", "vue", "astro"]`.
 
@@ -127,9 +131,11 @@ JavaScript example settings:
   "autoBarrel.files.includeExtensionOnExport": ["js", "jsx"],
   "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
   "autoBarrel.files.keepExtensionOnExport": false,
+  "autoBarrel.files.detectExportsInFiles": false,
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
   "autoBarrel.formatting.useSingleQuotes": true,
   "autoBarrel.formatting.endOfLine": "crlf",
+  "autoBarrel.formatting.insertFinalNewline": false,
 }
 ```
 

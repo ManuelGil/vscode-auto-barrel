@@ -177,48 +177,88 @@ export class FilesController {
    * @returns {Promise<string | undefined>} - The promise with the content
    */
   private async getContent(folderPath: string): Promise<string | undefined> {
-    let include = '';
+    // Get the configuration values
+    const disableRecursiveBarrelling = this.config.disableRecursiveBarrelling;
+    const includeExtensionOnExport = this.config.includeExtensionOnExport;
+    const ignoreFilePathPatternOnExport =
+      this.config.ignoreFilePathPatternOnExport;
 
-    // Get the include extension
-    if (this.config.disableRecursiveBarrelling) {
-      include = `${folderPath}/*.{${this.config.includeExtensionOnExport.join(',')}}`;
-    } else {
-      include = `${folderPath}/**/*.{${this.config.includeExtensionOnExport.join(',')}}`;
-    }
+    const include = `${folderPath}/${disableRecursiveBarrelling ? '*' : '**/*'}.{${includeExtensionOnExport.join(',')}}`;
 
-    // Get the files in the folder
+    // Get the files
     const files = await this.directoryMap({
       extensions: [include],
-      ignore: this.config.ignoreFilePathPatternOnExport,
+      ignore: ignoreFilePathPatternOnExport,
       maxResults: Number.MAX_SAFE_INTEGER,
     });
 
+    // If no files are found, return
     if (files.length === 0) {
       window.showErrorMessage('No files found in the folder!');
       return;
     }
 
-    const paths = [];
-
-    for (const file of files) {
-      const relativePath = await workspace.asRelativePath(file.path);
-      paths.push(relativePath.replace(folderPath, ''));
-    }
-
+    // Get the configuration values
     const quote = this.config.useSingleQuotes ? "'" : '"';
     const semi = this.config.excludeSemiColonAtEndOfLine;
     const keepExtension = this.config.keepExtensionOnExport;
     const endOfLine = this.config.endOfLine;
+    const detectExportsInFiles = this.config.detectExportsInFiles;
 
-    return paths
-      .map((path) => {
-        if (!keepExtension) {
-          path = path.replace(/\.[^/.]+$/, '');
+    const exports = [];
+
+    for (const file of files) {
+      let path = await workspace.asRelativePath(file.path);
+      path = path.replace(folderPath, '');
+
+      if (!keepExtension) {
+        path = path.replace(/\.[^/.]+$/, '');
+      }
+
+      if (detectExportsInFiles) {
+        let fileName = file.path.split('/').pop();
+
+        if (!fileName) {
+          continue;
         }
 
-        return `export * from ${quote}.${path}${quote}${semi ? '' : ';'}${endOfLine === 'crlf' ? '\r\n' : '\n'}`;
-      })
-      .join('');
+        fileName = fileName.replace(/\.[^/.]+$/, '');
+
+        const document = await workspace.openTextDocument(file.path);
+        const text = document.getText();
+
+        // Check if the file has a default export
+        const defaultExportRegex = /export\s*default\s*/;
+        // Check if the file has a named export
+        const namedExportRegex = /export\s*(\w+)\s*|\s*export\s*\{\s*/;
+
+        if (text.match(defaultExportRegex)) {
+          exports.push(
+            `export { default as ${fileName} } from ${quote}.${path}${quote}${semi ? '' : ';'}`,
+          );
+        } else if (text.match(namedExportRegex)) {
+          exports.push(
+            `export * from ${quote}.${path}${quote}${semi ? '' : ';'}`,
+          );
+        }
+      } else {
+        exports.push(
+          `export * from ${quote}.${path}${quote}${semi ? '' : ';'}`,
+        );
+      }
+    }
+
+    // Get the configuration values
+    const insertFinalNewline = this.config.insertFinalNewline;
+
+    let content = exports.join(endOfLine === 'crlf' ? '\r\n' : '\n');
+
+    // Add a final newline
+    if (insertFinalNewline) {
+      content += endOfLine === 'crlf' ? '\r\n' : '\n';
+    }
+
+    return content;
   }
 
   /**

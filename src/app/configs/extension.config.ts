@@ -2,12 +2,14 @@ import { WorkspaceConfiguration } from 'vscode';
 
 import {
   DEFAULT_LANGUAGE,
+  DETECT_EXPORTS,
+  DISABLE_RECURSIVE,
   END_OF_LINE,
   EXCLUDE_PATTERNS,
   EXCLUDE_SEMICOLON,
   INCLUDE_EXTENSIONS,
+  INSERT_FINAL_NEWLINE,
   KEEP_EXTENSION,
-  DISABLE_RECURSIVE,
   USE_SINGLE_QUOTES,
 } from './constants.config';
 
@@ -24,9 +26,11 @@ import {
  * @property {string[]} includeExtensionOnExport - The extensions to include in the export
  * @property {string[]} ignoreFilePathPatternOnExport - The file path patterns to ignore on export
  * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
+ * @property {boolean} detectExportsInFiles - The flag to detect exports in files
  * @property {boolean} excludeSemiColonAtEndOfLine - The flag to exclude a semicolon at the end of a line
  * @property {boolean} useSingleQuotes - The flag to use single quotes
  * @property {string} endOfLine - The end of line character
+ * @property {boolean} insertFinalNewline - The flag to insert a final newline
  * @example
  * const config = new Config(workspace.getConfiguration());
  * console.log(config.includeExtensionOnExport);
@@ -94,6 +98,17 @@ export class ExtensionConfig {
   keepExtensionOnExport: boolean;
 
   /**
+   * The flag to detect exports in files.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.detectExportsInFiles);
+   */
+  detectExportsInFiles: boolean;
+
+  /**
    * The flag to exclude a semicolon at the end of a line.
    * @type {boolean}
    * @public
@@ -126,6 +141,17 @@ export class ExtensionConfig {
    */
   endOfLine: string;
 
+  /**
+   * The flag to insert a final newline.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.insertFinalNewline);
+   */
+  insertFinalNewline: boolean;
+
   // -----------------------------------------------------------------
   // Constructor
   // -----------------------------------------------------------------
@@ -152,11 +178,16 @@ export class ExtensionConfig {
       EXCLUDE_PATTERNS;
     this.keepExtensionOnExport =
       config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
+    this.detectExportsInFiles =
+      config.get<boolean>('files.detectExportsInFiles') ?? DETECT_EXPORTS;
     this.excludeSemiColonAtEndOfLine =
       config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
       EXCLUDE_SEMICOLON;
     this.useSingleQuotes =
       config.get<boolean>('formatting.useSingleQuotes') ?? USE_SINGLE_QUOTES;
     this.endOfLine = config.get<string>('formatting.endOfLine') ?? END_OF_LINE;
+    this.insertFinalNewline =
+      config.get<boolean>('formatting.insertFinalNewline') ??
+      INSERT_FINAL_NEWLINE;
   }
 }

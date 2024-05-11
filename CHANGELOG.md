@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-05-10
+
+### Added
+
+- Add `detectExportsInFiles` setting to control the detection of exports in files.
+- Add `insertFinalNewline` setting to control the insertion of a final newline in the generated barrel file.
+
+### Changed
+
+- Update the `FileController` to use the `detectExportsInFiles` setting to detect exports in files.
+
 ## [1.2.0] - 2024-05-09
 
 ### Added

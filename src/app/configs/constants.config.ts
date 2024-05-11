@@ -108,6 +108,18 @@ export const EXCLUDE_PATTERNS: string[] = [
 export const KEEP_EXTENSION: boolean = false;
 
 /**
+ * DETECT_EXPORTS: The flag to detect exports.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(DETECT_EXPORTS);
+ *
+ * @returns {boolean} - The flag to detect exports
+ */
+export const DETECT_EXPORTS: boolean = false;
+
+/**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
  * @type {boolean}
  * @public
@@ -142,3 +154,15 @@ export const USE_SINGLE_QUOTES: boolean = true;
  * @returns {string} - The end of line character
  */
 export const END_OF_LINE: string = 'lf';
+
+/**
+ * INSERT_FINAL_NEWLINE: The flag to insert a final newline.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(INSERT_FINAL_NEWLINE);
+ *
+ * @returns {boolean} - The flag to insert a final newline
+ */
+export const INSERT_FINAL_NEWLINE: boolean = true;
