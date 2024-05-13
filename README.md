@@ -94,6 +94,7 @@ Configure your project by creating or updating a settings.json file at the proje
       "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
       "autoBarrel.files.keepExtensionOnExport": false,
       "autoBarrel.files.detectExportsInFiles": false,
+      "autoBarrel.files.exportDefaultFilename": "filename",
       "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
       "autoBarrel.formatting.useSingleQuotes": true,
       "autoBarrel.formatting.endOfLine": "lf",
@@ -115,6 +116,7 @@ Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor th
 - `autoBarrel.files.ignoreFilePathPatternOnExport`: An array of file path patterns to ignore when exporting modules. Default is `["**/*.spec.*", "**/*.test.*"]`.
 - `autoBarrel.files.keepExtensionOnExport`: Whether to keep the file extension when exporting modules. Default is `false`.
 - `autoBarrel.files.detectExportsInFiles`: Whether to detect exports in files when exporting modules. Default is `false`.
+- `autoBarrel.files.exportDefaultFilename`: The filename to use when exporting a default module. Default is `filename`.
 - `autoBarrel.formatting.excludeSemiColonAtEndOfLine`: Whether to exclude a semicolon at the end of each line in the barrel file. Default is `false`.
 - `autoBarrel.formatting.useSingleQuotes`: Whether to use single quotes for string literals in the barrel file. Default is `true`.
 - `autoBarrel.formatting.endOfLine`: The end-of-line character to use in the barrel file. Supported values are `lf` (line feed) and `crlf` (carriage return line feed). Default is `lf`.
@@ -132,6 +134,7 @@ JavaScript example settings:
   "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
   "autoBarrel.files.keepExtensionOnExport": false,
   "autoBarrel.files.detectExportsInFiles": false,
+  "autoBarrel.files.exportDefaultFilename": "filename",
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
   "autoBarrel.formatting.useSingleQuotes": true,
   "autoBarrel.formatting.endOfLine": "crlf",

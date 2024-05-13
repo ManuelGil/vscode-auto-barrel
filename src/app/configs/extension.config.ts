@@ -7,6 +7,7 @@ import {
   END_OF_LINE,
   EXCLUDE_PATTERNS,
   EXCLUDE_SEMICOLON,
+  EXPORT_FILENAME,
   INCLUDE_EXTENSIONS,
   INSERT_FINAL_NEWLINE,
   KEEP_EXTENSION,
@@ -27,6 +28,7 @@ import {
  * @property {string[]} ignoreFilePathPatternOnExport - The file path patterns to ignore on export
  * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
  * @property {boolean} detectExportsInFiles - The flag to detect exports in files
+ * @property {boolean} exportDefaultFilename - The filename to export the default export
  * @property {boolean} excludeSemiColonAtEndOfLine - The flag to exclude a semicolon at the end of a line
  * @property {boolean} useSingleQuotes - The flag to use single quotes
  * @property {string} endOfLine - The end of line character
@@ -109,6 +111,17 @@ export class ExtensionConfig {
   detectExportsInFiles: boolean;
 
   /**
+   * The filename to export the default export.
+   * @type {string}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.exportDefaultFilename);
+   */
+  exportDefaultFilename: string;
+
+  /**
    * The flag to exclude a semicolon at the end of a line.
    * @type {boolean}
    * @public
@@ -180,6 +193,8 @@ export class ExtensionConfig {
       config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
     this.detectExportsInFiles =
       config.get<boolean>('files.detectExportsInFiles') ?? DETECT_EXPORTS;
+    this.exportDefaultFilename =
+      config.get<string>('files.exportDefaultFilename') ?? EXPORT_FILENAME;
     this.excludeSemiColonAtEndOfLine =
       config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
       EXCLUDE_SEMICOLON;

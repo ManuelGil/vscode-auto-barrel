@@ -120,6 +120,18 @@ export const KEEP_EXTENSION: boolean = false;
 export const DETECT_EXPORTS: boolean = false;
 
 /**
+ * EXPORT_FILENAME: The filename to export the default export.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(EXPORT_FILENAME);
+ *
+ * @returns {string} - The filename to export the default export
+ */
+export const EXPORT_FILENAME: string = 'index';
+
+/**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
  * @type {boolean}
  * @public

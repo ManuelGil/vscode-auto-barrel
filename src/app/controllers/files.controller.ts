@@ -204,6 +204,7 @@ export class FilesController {
     const keepExtension = this.config.keepExtensionOnExport;
     const endOfLine = this.config.endOfLine;
     const detectExportsInFiles = this.config.detectExportsInFiles;
+    const exportDefaultFilename = this.config.exportDefaultFilename;
 
     const exports = [];
 
@@ -223,6 +224,29 @@ export class FilesController {
         }
 
         fileName = fileName.replace(/\.[^/.]+$/, '');
+
+        switch (exportDefaultFilename) {
+          case 'camelCase':
+            fileName = fileName.replace(/[-.](.)/g, (_, c) => c.toUpperCase());
+            break;
+
+          case 'pascalCase':
+            fileName = fileName
+              .replace(/[-.]\w/g, (match) => match.charAt(1).toUpperCase())
+              .replace(/^./, (match) => match.toUpperCase());
+            break;
+
+          case 'kebabCase':
+            fileName = fileName.replace(/[-.](.)/g, (_, c) => `-${c}`);
+            break;
+
+          case 'snakeCase':
+            fileName = fileName.replace(/[-.](.)/g, (_, c) => `_${c}`);
+            break;
+
+          default:
+            break;
+        }
 
         const document = await workspace.openTextDocument(file.path);
         const text = document.getText();

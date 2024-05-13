@@ -56,6 +56,26 @@
 			"scope": "resource",
 			"description": "Detect the exports in the files to export."
 		},
+		"autoBarrel.files.exportDefaultFilename": {
+			"type": "string",
+			"default": "filename",
+			"enum": [
+				"filename",
+				"camelCase",
+				"pascalCase",
+				"kebabCase",
+				"snakeCase"
+			],
+			"enumDescriptions": [
+				"Use the filename as the default export.",
+				"Use camelCase as the default export.",
+				"Use PascalCase as the default export.",
+				"Use kebab-case as the default export.",
+				"Use snake_case as the default export."
+			],
+			"scope": "resource",
+			"description": "Filename to use when exporting the default export."
+		},
 		"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 			"type": "boolean",
 			"default": false,
