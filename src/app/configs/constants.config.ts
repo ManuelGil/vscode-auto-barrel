@@ -81,18 +81,11 @@ export const INCLUDE_EXTENSIONS: string[] = ['ts', 'tsx', 'vue'];
  * @returns {string[]} - The files to exclude
  */
 export const EXCLUDE_PATTERNS: string[] = [
-  '**/node_modules/**',
-  '**/dist/**',
-  '**/out/**',
-  '**/build/**',
-  '**/coverage/**',
-  '**/.*/**',
   '**/*.spec.*',
   '**/*.test.*',
   '**/*.e2e.*',
-  '**/*.d.ts',
-  '**/tsconfig.*',
-  '**/index.*',
+  '**/index.ts',
+  '**/index.js',
 ];
 
 /**

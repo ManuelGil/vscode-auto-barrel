@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -76,18 +76,11 @@
 				"autoBarrel.files.ignoreFilePathPatternOnExport": {
 					"type": "array",
 					"default": [
-						"**/node_modules/**",
-						"**/dist/**",
-						"**/out/**",
-						"**/build/**",
-						"**/coverage/**",
-						"**/.*/**",
 						"**/*.spec.*",
 						"**/*.test.*",
 						"**/*.e2e.*",
-						"**/*.d.ts",
-						"**/tsconfig.*",
-						"**/index.*"
+						"**/index.ts",
+						"**/index.js"
 					],
 					"scope": "resource",
 					"description": "Glob patterns to ignore on the export. This is used to filter the files to export."

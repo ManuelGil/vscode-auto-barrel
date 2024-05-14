@@ -28,18 +28,11 @@
 		"autoBarrel.files.ignoreFilePathPatternOnExport": {
 			"type": "array",
 			"default": [
-				"**/node_modules/**",
-				"**/dist/**",
-				"**/out/**",
-				"**/build/**",
-				"**/coverage/**",
-				"**/.*/**",
 				"**/*.spec.*",
 				"**/*.test.*",
 				"**/*.e2e.*",
-				"**/*.d.ts",
-				"**/tsconfig.*",
-				"**/index.*"
+				"**/index.ts",
+				"**/index.js"
 			],
 			"scope": "resource",
 			"description": "Glob patterns to ignore on the export. This is used to filter the files to export."
