@@ -86,13 +86,11 @@ export const EXCLUDE_PATTERNS: string[] = [
   '**/out/**',
   '**/build/**',
   '**/coverage/**',
-  '**/.*/**',
   '**/*.spec.*',
   '**/*.test.*',
   '**/*.e2e.*',
   '**/*.d.ts',
   '**/tsconfig.*',
-  '**/index.*',
 ];
 
 /**
