@@ -4,7 +4,7 @@
 	"properties": {
 		"autoBarrel.language.defaultLanguage": {
 			"type": "string",
-			"default": "typescript",
+			"default": "TypeScript",
 			"enum": ["TypeScript", "JavaScript"],
 			"enumDescriptions": [
 				"Create a TypeScript barrel",

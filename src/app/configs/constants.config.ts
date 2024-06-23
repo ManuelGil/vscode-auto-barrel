@@ -44,7 +44,7 @@ export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
  *
  * @returns {string} - The default language
  */
-export const DEFAULT_LANGUAGE: string = 'typescript';
+export const DEFAULT_LANGUAGE: string = 'TypeScript';
 
 /**
  * RECURSIVE_BARRELLING: The flag to recursively barrel.

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix the `defaultLanguage` setting, so it is now applied properly.
+
 ## [1.4.1] - 2024-05-14
 
 ### Fixed
@@ -51,9 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.4.0...HEAD
-[1.4.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.3.0...v1.4.0
-[1.3.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/ManuelGil/vscode-nextjs-generator/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/ManuelGil/vscode-nextjs-generator/releases/tag/v1.0.0
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.0...v1.4.1
+[1.4.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/ManuelGil/vscode-auto-barrel/releases/tag/v1.0.0
