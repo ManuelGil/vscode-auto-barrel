@@ -70,7 +70,9 @@ export class FilesController {
 
     const content = await this.getContent(folderPath);
 
-    const ext = this.config.defaultLanguage === 'typescript' ? 'ts' : 'js';
+    const ext =
+      this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
+
     const filename = `index.${ext}`;
 
     if (content) {
@@ -99,7 +101,9 @@ export class FilesController {
       return;
     }
 
-    const ext = this.config.defaultLanguage === 'typescript' ? 'ts' : 'js';
+    const ext =
+      this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
+
     const filename = join(targetFile, `index.${ext}`);
 
     if (!existsSync(filename)) {
