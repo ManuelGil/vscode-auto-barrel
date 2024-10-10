@@ -322,7 +322,11 @@ export class FilesController {
     }
 
     return (
-      await workspace.findFiles(include, exclude, options?.maxResults)
+      await workspace.findFiles(
+        include,
+        exclude,
+        options?.maxResults ?? Number.MAX_SAFE_INTEGER,
+      )
     ).sort((a, b) => a.fsPath.localeCompare(b.fsPath));
   }
 

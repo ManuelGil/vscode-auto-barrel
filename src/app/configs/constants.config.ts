@@ -122,7 +122,7 @@ export const DETECT_EXPORTS: boolean = false;
  *
  * @returns {string} - The filename to export the default export
  */
-export const EXPORT_FILENAME: string = 'index';
+export const EXPORT_FILENAME: string = 'filename';
 
 /**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
