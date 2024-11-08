@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2024-11-08
+
+### Fixed
+
+- Fix the dependencies in the `package.json` file.
+
 ## [1.6.0] - 2024-11-08
 
 ### Added
@@ -85,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for TypeScript and JavaScript projects.
 
 [Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.2...HEAD
+[1.6.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.3...v1.5.0
 [1.4.3]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.2...v1.4.3
