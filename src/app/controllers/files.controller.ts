@@ -1,4 +1,14 @@
 import {
+  access,
+  existsSync,
+  mkdirSync,
+  open,
+  readdirSync,
+  writeFile,
+} from 'fs';
+import { minimatch } from 'minimatch';
+import { dirname, join } from 'path';
+import {
   Position,
   Range,
   Uri,
@@ -9,8 +19,6 @@ import {
   workspace,
 } from 'vscode';
 
-import { access, existsSync, mkdirSync, open, writeFile } from 'fs';
-import { dirname, join } from 'path';
 import { ExtensionConfig } from '../configs';
 
 /**
@@ -58,11 +66,9 @@ export class FilesController {
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  public async createBarrel(path?: Uri): Promise<void> {
+  async createBarrel(path?: Uri): Promise<void> {
     // Get the relative path
-    const folderPath: string = path
-      ? await workspace.asRelativePath(path.path)
-      : '';
+    const folderPath: string = path ? path.fsPath : '';
 
     // If the folder is not valid, return
     if (!folderPath) {
@@ -95,17 +101,18 @@ export class FilesController {
    * @returns {Promise<void>} - The promise with no return value
    */
   async updateBarrelInFolder(path?: Uri): Promise<void> {
-    const targetFile = path ? path.fsPath : '';
+    // Get the relative path
+    const folderPath: string = path ? path.fsPath : '';
 
-    // If the folder is not valid, return
-    if (!targetFile) {
+    // If the file is not valid, return
+    if (!folderPath) {
       return;
     }
 
     const ext =
       this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
 
-    const filename = join(targetFile, `index.${ext}`);
+    const filename = join(folderPath, `index.${ext}`);
 
     if (!existsSync(filename)) {
       const message = l10n.t('The file does not exist!');
@@ -132,24 +139,20 @@ export class FilesController {
    * @returns {Promise<void>} - The promise with no return value
    */
   async updateBarrel(path?: Uri): Promise<void> {
-    const targetFile = path ? path.fsPath : '';
-
     // Get the relative path
-    const folderPath: string = path
-      ? await workspace.asRelativePath(path.path)
-      : '';
+    const folderPath: string = path ? path.fsPath : '';
 
     // If the file is not valid, return
     if (!folderPath) {
       return;
     }
 
-    const content = await this.getContent(
-      folderPath.replace(/\/index\.(ts|js)/, ''),
-    );
+    const baseDir = dirname(folderPath);
+
+    const content = await this.getContent(baseDir);
 
     if (content) {
-      const document = await workspace.openTextDocument(targetFile);
+      const document = await workspace.openTextDocument(folderPath);
 
       const edit = new WorkspaceEdit();
       const start = new Position(0, 0);
@@ -190,14 +193,15 @@ export class FilesController {
     const ignoreFilePathPatternOnExport =
       this.config.ignoreFilePathPatternOnExport;
 
-    const include = `${folderPath}/${disableRecursiveBarrelling ? '*' : '**/*'}.{${includeExtensionOnExport.join(',')}}`;
+    const include = `**/*.{${includeExtensionOnExport.join(',')}}`;
 
     // Get the files
-    const files = await this.directoryMap({
-      extensions: [include],
-      ignore: ignoreFilePathPatternOnExport,
-      maxResults: Number.MAX_SAFE_INTEGER,
-    });
+    const files = await this.findFiles(
+      folderPath,
+      [include],
+      ignoreFilePathPatternOnExport,
+      !disableRecursiveBarrelling,
+    );
 
     // If no files are found, return
     if (files.length === 0) {
@@ -217,8 +221,7 @@ export class FilesController {
     const exports = [];
 
     for (const file of files) {
-      let path = await workspace.asRelativePath(file.path);
-      path = path.replace(folderPath, '');
+      let path = file.fsPath.replace(folderPath, '').replace(/\\/g, '/');
 
       if (!keepExtension) {
         path = path.replace(/\.[^/.]+$/, '');
@@ -294,47 +297,6 @@ export class FilesController {
   }
 
   /**
-   * The directoryMap method.
-   *
-   * @function directoryMap
-   * @param {Object} [options] - The options object
-   * @param {string[]} [options.extensions] - The extensions
-   * @param {string[]} [options.ignore] - The ignore
-   * @param {number} [options.maxResults] - The maximum number of results
-   * @private
-   * @async
-   * @memberof FilesController
-   * @example
-   * controller.directoryMap();
-   *
-   * @returns {Promise<Uri[]>} - The promise with the list of URIs
-   */
-  private async directoryMap(options?: {
-    extensions?: string[];
-    ignore?: string[];
-    maxResults?: number;
-  }): Promise<Uri[]> {
-    let include = '';
-    let exclude = '';
-
-    if (options && options.extensions && options.extensions.length) {
-      include = `${options.extensions.join(',')}`;
-    }
-
-    if (options && options.ignore && options.ignore.length) {
-      exclude = `{${options.ignore.join(',')}}`;
-    }
-
-    return (
-      await workspace.findFiles(
-        include,
-        exclude,
-        options?.maxResults ?? Number.MAX_SAFE_INTEGER,
-      )
-    ).sort((a, b) => a.fsPath.localeCompare(b.fsPath));
-  }
-
-  /**
    * The saveFile method.
    *
    * @function saveFile
@@ -354,17 +316,7 @@ export class FilesController {
     filename: string,
     data: string,
   ): Promise<void> {
-    let folder: string = '';
-
-    if (workspace.workspaceFolders) {
-      folder = workspace.workspaceFolders[0].uri.fsPath;
-    } else {
-      const message = l10n.t('The file has not been created!');
-      window.showErrorMessage(message);
-      return;
-    }
-
-    const file = join(folder, path, filename);
+    const file = join(path, filename);
 
     if (!existsSync(dirname(file))) {
       mkdirSync(dirname(file), { recursive: true });
@@ -374,12 +326,16 @@ export class FilesController {
       if (err) {
         open(file, 'w+', (err: any, fd: any) => {
           if (err) {
-            throw err;
+            const message = l10n.t('The file has not been created!');
+            window.showErrorMessage(message);
+            return;
           }
 
           writeFile(fd, data, 'utf8', (err: any) => {
             if (err) {
-              throw err;
+              const message = l10n.t('The file has not been created!');
+              window.showErrorMessage(message);
+              return;
             }
 
             const openPath = Uri.file(file);
@@ -398,5 +354,64 @@ export class FilesController {
         window.showWarningMessage(message);
       }
     });
+  }
+
+  /**
+   * The findFiles method.
+   *
+   * @function findFiles
+   * @param {string} baseDir - The base directory
+   * @param {string[]} include - The include pattern
+   * @param {string[]} exclude - The exclude pattern
+   * @private
+   * @async
+   * @memberof FilesController
+   * @example
+   * controller.findFiles('baseDir', ['include'], ['exclude']);
+   *
+   * @returns {Promise<Uri[]>} - The promise with the files
+   */
+  private async findFiles(
+    baseDir: string, // Base directory to start searching from
+    include: string[], // Include pattern(s) as a single string or an array
+    exclude: string[],
+    allowRecursion: boolean = true, // Exclude pattern(s) as a single string or an array
+  ): Promise<Uri[]> {
+    const includePatterns = Array.isArray(include) ? include : [include];
+    const excludePatterns = Array.isArray(exclude) ? exclude : [exclude];
+
+    const result: Uri[] = [];
+    const stack: string[] = [baseDir]; // Stack for directories to explore
+
+    while (stack.length > 0) {
+      const currentDir = stack.pop(); // Get the next directory from the stack
+
+      if (currentDir) {
+        const entries = readdirSync(currentDir, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const fullPath = join(currentDir, entry.name);
+
+          if (entry.isDirectory() && allowRecursion) {
+            // Push the directory onto the stack to explore it later
+            stack.push(fullPath);
+          } else if (entry.isFile()) {
+            // Check if the file matches include and exclude patterns
+            const isIncluded = includePatterns.some((pattern) =>
+              minimatch(fullPath, pattern),
+            );
+            const isExcluded = excludePatterns.some((pattern) =>
+              minimatch(fullPath, pattern),
+            );
+
+            if (isIncluded && !isExcluded) {
+              result.push(Uri.file(fullPath));
+            }
+          }
+        }
+      }
+    }
+
+    return result;
   }
 }
