@@ -63,7 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
   // -----------------------------------------------------------------
 
   vscode.workspace.onDidDeleteFiles(() => {
-    vscode.window.showInformationMessage('Remember to update the barrel file');
+    const message = vscode.l10n.t('Remember to update the barrel file');
+    vscode.window.showInformationMessage(message);
   });
 }
 

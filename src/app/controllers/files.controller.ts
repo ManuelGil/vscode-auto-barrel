@@ -4,6 +4,7 @@ import {
   Uri,
   WorkspaceEdit,
   commands,
+  l10n,
   window,
   workspace,
 } from 'vscode';
@@ -107,7 +108,8 @@ export class FilesController {
     const filename = join(targetFile, `index.${ext}`);
 
     if (!existsSync(filename)) {
-      window.showErrorMessage('The file does not exist!');
+      const message = l10n.t('The file does not exist!');
+      window.showErrorMessage(message);
       return;
     }
 
@@ -161,7 +163,8 @@ export class FilesController {
       await commands.executeCommand('workbench.action.files.saveAll');
       await window.showTextDocument(document);
 
-      window.showInformationMessage('Successfully updated the file!');
+      const message = l10n.t('Successfully updated the file!');
+      window.showInformationMessage(message);
     }
   }
 
@@ -198,7 +201,8 @@ export class FilesController {
 
     // If no files are found, return
     if (files.length === 0) {
-      window.showErrorMessage('No files found in the folder!');
+      const message = l10n.t('No files found in the folder!');
+      window.showErrorMessage(message);
       return;
     }
 
@@ -355,7 +359,8 @@ export class FilesController {
     if (workspace.workspaceFolders) {
       folder = workspace.workspaceFolders[0].uri.fsPath;
     } else {
-      window.showErrorMessage('The file has not been created!');
+      const message = l10n.t('The file has not been created!');
+      window.showErrorMessage(message);
       return;
     }
 
@@ -386,9 +391,11 @@ export class FilesController {
           });
         });
 
-        window.showInformationMessage('Successfully created the file!');
+        const message = l10n.t('Successfully created the file!');
+        window.showInformationMessage(message);
       } else {
-        window.showWarningMessage('Name already exist!');
+        const message = l10n.t('Name already exist!');
+        window.showWarningMessage(message);
       }
     });
   }

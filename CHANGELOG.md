@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2024-11-08
+
+### Added
+
+- Add Spanish language support to the extension.
+
+## [1.4.3] - 2024-10-09
+
+### Fixed
+
+- Fix the `exportDefaultFilename` setting to remove the unused generic patterns from the default value.
+
 ## [1.4.2] - 2024-06-23
 
 ### Fixed
@@ -58,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for TypeScript and JavaScript projects.
 
 [Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.2...HEAD
+[1.5.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.3...v1.5.0
+[1.4.3]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.3.0...v1.4.0
