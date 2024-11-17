@@ -1,9 +1,12 @@
 {
+	"The folder is not valid!": "¡La carpeta no es válida!",
+	"The folder is not in the workspace!": "¡La carpeta no está en el espacio de trabajo!",
 	"Remember to update the barrel file": "Recuerda actualizar el archivo barrel",
 	"The file does not exist!": "¡El archivo no existe!",
-	"Successfully updated the file!": "¡Archivo actualizado con éxito!",
 	"No files found in the folder!": "¡No se encontraron archivos en la carpeta!",
 	"The file has not been created!": "¡El archivo no ha sido creado!",
-	"Successfully created the file!": "¡Archivo creado con éxito!",
-	"Name already exist!": "¡El nombre ya existe!"
+	"File created successfully!": "¡Archivo creado con éxito!",
+	"File successfully updated!": "¡Archivo actualizado con éxito!",
+	"The file name already exists!": "¡El nombre del archivo ya existe!",
+	"Error while finding files: {0}": "Error al encontrar archivos: {0}"
 }

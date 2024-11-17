@@ -43,7 +43,7 @@ import { Input } from './components';
 
 Auto Barrel helps you to create and maintain these barrel files by automatically updating them when you add, remove, or rename modules in a directory.
 
-This extension is inspired by the [auto-barrel](https://github.com/testpossessed/auto-barrel) extension by [Mike Hanson](https://github.com/testpossessed).
+This extension is inspired by the [auto-barrel](https://github.com/mike-hanson/auto-barrel) extension by [Mike Hanson](https://github.com/mike-hanson).
 
 ## Table of Contents
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2024-11-17
+
+### Added
+
+- Add the `findFiles` method to the `FileController` to find files using the `fast-glob` library.
+
 ## [1.6.1] - 2024-11-08
 
 ### Fixed

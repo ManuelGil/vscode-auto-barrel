@@ -1,12 +1,5 @@
-import {
-  access,
-  existsSync,
-  mkdirSync,
-  open,
-  readdirSync,
-  writeFile,
-} from 'fs';
-import { minimatch } from 'minimatch';
+import * as fg from 'fast-glob';
+import { access, existsSync, mkdirSync, open, writeFile } from 'fs';
 import { dirname, join } from 'path';
 import {
   Position,
@@ -57,7 +50,7 @@ export class FilesController {
    * The createBarrel method.
    *
    * @function createBarrel
-   * @param {Uri} [path] - The path to the folder
+   * @param {Uri} [folderPath] - The path to the folder
    * @public
    * @async
    * @memberof FilesController
@@ -66,16 +59,24 @@ export class FilesController {
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  async createBarrel(path?: Uri): Promise<void> {
-    // Get the relative path
-    const folderPath: string = path ? path.fsPath : '';
-
+  async createBarrel(folderPath?: Uri): Promise<void> {
     // If the folder is not valid, return
     if (!folderPath) {
+      const message = l10n.t('The folder is not valid!');
+      window.showErrorMessage(message);
       return;
     }
 
-    const content = await this.getContent(folderPath);
+    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
+
+    // If the folder is not in the workspace, return
+    if (!workspaceFolder) {
+      const message = l10n.t('The folder is not in the workspace!');
+      window.showErrorMessage(message);
+      return;
+    }
+
+    const content = await this.getContent(folderPath.fsPath);
 
     const ext =
       this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
@@ -83,7 +84,7 @@ export class FilesController {
     const filename = `index.${ext}`;
 
     if (content) {
-      this.saveFile(folderPath, filename, content);
+      this.saveFile(folderPath.fsPath, filename, content);
     }
   }
 
@@ -91,7 +92,7 @@ export class FilesController {
    * The updateBarrelInFolder method.
    *
    * @function updateBarrelInFolder
-   * @param {Uri} [path] - The path to the folder
+   * @param {Uri} [folderPath] - The path to the folder
    * @public
    * @async
    * @memberof FilesController
@@ -100,19 +101,27 @@ export class FilesController {
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  async updateBarrelInFolder(path?: Uri): Promise<void> {
-    // Get the relative path
-    const folderPath: string = path ? path.fsPath : '';
-
-    // If the file is not valid, return
+  async updateBarrelInFolder(folderPath?: Uri): Promise<void> {
+    // If the folder is not valid, return
     if (!folderPath) {
+      const message = l10n.t('The folder is not valid!');
+      window.showErrorMessage(message);
+      return;
+    }
+
+    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
+
+    // If the folder is not in the workspace, return
+    if (!workspaceFolder) {
+      const message = l10n.t('The folder is not in the workspace!');
+      window.showErrorMessage(message);
       return;
     }
 
     const ext =
       this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
 
-    const filename = join(folderPath, `index.${ext}`);
+    const filename = join(folderPath.fsPath, `index.${ext}`);
 
     if (!existsSync(filename)) {
       const message = l10n.t('The file does not exist!');
@@ -129,7 +138,7 @@ export class FilesController {
    * The updateBarrel method.
    *
    * @function updateBarrel
-   * @param {Uri} [file] - The path to the folder
+   * @param {Uri} [folderPath] - The path to the folder
    * @public
    * @async
    * @memberof FilesController
@@ -138,16 +147,24 @@ export class FilesController {
    *
    * @returns {Promise<void>} - The promise with no return value
    */
-  async updateBarrel(path?: Uri): Promise<void> {
-    // Get the relative path
-    const folderPath: string = path ? path.fsPath : '';
-
-    // If the file is not valid, return
+  async updateBarrel(folderPath?: Uri): Promise<void> {
+    // If the folder is not valid, return
     if (!folderPath) {
+      const message = l10n.t('The folder is not valid!');
+      window.showErrorMessage(message);
       return;
     }
 
-    const baseDir = dirname(folderPath);
+    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
+
+    // If the folder is not in the workspace, return
+    if (!workspaceFolder) {
+      const message = l10n.t('The folder is not in the workspace!');
+      window.showErrorMessage(message);
+      return;
+    }
+
+    const baseDir = dirname(folderPath.fsPath);
 
     const content = await this.getContent(baseDir);
 
@@ -166,7 +183,7 @@ export class FilesController {
       await commands.executeCommand('workbench.action.files.saveAll');
       await window.showTextDocument(document);
 
-      const message = l10n.t('Successfully updated the file!');
+      const message = l10n.t('File successfully updated!');
       window.showInformationMessage(message);
     }
   }
@@ -347,10 +364,10 @@ export class FilesController {
           });
         });
 
-        const message = l10n.t('Successfully created the file!');
+        const message = l10n.t('File created successfully!');
         window.showInformationMessage(message);
       } else {
-        const message = l10n.t('Name already exist!');
+        const message = l10n.t('The file name already exists!');
         window.showWarningMessage(message);
       }
     });
@@ -372,46 +389,30 @@ export class FilesController {
    * @returns {Promise<Uri[]>} - The promise with the files
    */
   private async findFiles(
-    baseDir: string, // Base directory to start searching from
-    include: string[], // Include pattern(s) as a single string or an array
-    exclude: string[],
-    allowRecursion: boolean = true, // Exclude pattern(s) as a single string or an array
+    baseDir: string,
+    include: string[], // Include patterns
+    exclude: string[], // Exclude patterns
+    allowRecursion: boolean = true, // Toggle recursive search
   ): Promise<Uri[]> {
-    const includePatterns = Array.isArray(include) ? include : [include];
-    const excludePatterns = Array.isArray(exclude) ? exclude : [exclude];
+    // Configure fast-glob options
+    const options = {
+      cwd: baseDir, // Set base directory for searching
+      absolute: true, // Ensure paths are absolute
+      onlyFiles: true, // Match only files, not directories
+      deep: allowRecursion ? undefined : 1, // Toggle recursion
+      ignore: exclude, // Exclude patterns
+    };
 
-    const result: Uri[] = [];
-    const stack: string[] = [baseDir]; // Stack for directories to explore
+    try {
+      // Use fast-glob to find matching files
+      const filePaths = await fg(include, options);
 
-    while (stack.length > 0) {
-      const currentDir = stack.pop(); // Get the next directory from the stack
-
-      if (currentDir) {
-        const entries = readdirSync(currentDir, { withFileTypes: true });
-
-        for (const entry of entries) {
-          const fullPath = join(currentDir, entry.name);
-
-          if (entry.isDirectory() && allowRecursion) {
-            // Push the directory onto the stack to explore it later
-            stack.push(fullPath);
-          } else if (entry.isFile()) {
-            // Check if the file matches include and exclude patterns
-            const isIncluded = includePatterns.some((pattern) =>
-              minimatch(fullPath, pattern),
-            );
-            const isExcluded = excludePatterns.some((pattern) =>
-              minimatch(fullPath, pattern),
-            );
-
-            if (isIncluded && !isExcluded) {
-              result.push(Uri.file(fullPath));
-            }
-          }
-        }
-      }
+      // Convert file paths to VS Code Uri objects
+      return filePaths.sort().map((filePath) => Uri.file(filePath));
+    } catch (error) {
+      const message = l10n.t('Error while finding files: {0}', [error]);
+      window.showErrorMessage(message);
+      return [];
     }
-
-    return result;
   }
 }
