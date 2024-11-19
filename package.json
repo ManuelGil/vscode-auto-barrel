@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",

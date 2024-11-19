@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2024-11-19
+
+### Changed
+
+- Enhance workspace folder handling to support multiple workspace folders.
+
 ## [1.7.0] - 2024-11-17
 
 ### Added
@@ -96,7 +102,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.7.0...v1.8.0
+[1.7.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.4.3...v1.5.0

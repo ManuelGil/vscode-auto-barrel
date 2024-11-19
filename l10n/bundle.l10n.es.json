@@ -1,4 +1,8 @@
 {
+	"No workspace folders are open. Please open a workspace folder to use this extension": "No hay carpetas de espacio de trabajo abiertas. Abra una carpeta de espacio de trabajo para usar esta extensión",
+	"Select a workspace folder to use. This folder will be used to load workspace-specific configuration for the extension": "Selecciona una carpeta de espacio de trabajo para usar. Esta carpeta se utilizará para cargar la configuración específica del espacio de trabajo para la extensión",
+	"Welcome to {0}!": "¡Bienvenido a {0}!",
+	"Looks like {0} has been updated to version {1}!": "¡Parece que {0} se ha actualizado a la versión {1}!",
 	"The folder is not valid!": "¡La carpeta no es válida!",
 	"The folder is not in the workspace!": "¡La carpeta no está en el espacio de trabajo!",
 	"Remember to update the barrel file": "Recuerda actualizar el archivo barrel",
