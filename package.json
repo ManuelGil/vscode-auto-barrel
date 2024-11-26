@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.8.0",
+	"version": "1.9.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -85,6 +85,18 @@
 					],
 					"scope": "resource",
 					"description": "%autoBarrel.files.ignoreFilePathPatternOnExport%"
+				},
+				"autoBarrel.files.supportsHiddenFiles": {
+					"type": "boolean",
+					"default": true,
+					"scope": "resource",
+					"description": "%autoBarrel.files.supportsHiddenFiles%"
+				},
+				"autoBarrel.files.preserveGitignoreSettings": {
+					"type": "boolean",
+					"default": false,
+					"scope": "resource",
+					"description": "%autoBarrel.files.preserveGitignoreSettings%"
 				},
 				"autoBarrel.files.keepExtensionOnExport": {
 					"type": "boolean",
@@ -221,35 +233,32 @@
 		"compile": "rimraf out && tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
-		"format": "prettier --write 'src/**/*.ts'",
-		"lint": "eslint \"src\"",
-		"lint:fix": "eslint \"src\" --fix",
+		"format": "biome format --write",
+		"lint": "biome lint --write",
+		"lint:check": "biome check --write",
 		"test": "node ./out/test/runTest.js",
 		"compodoc": "npx compodoc -p tsconfig.doc.json -d compodoc --theme readthedocs -s",
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^19.5.0",
-		"@commitlint/config-conventional": "^19.5.0",
+		"@biomejs/biome": "1.9.4",
+		"@commitlint/cli": "^19.6.0",
+		"@commitlint/config-conventional": "^19.6.0",
 		"@compodoc/compodoc": "^1.1.26",
-		"@eslint/js": "^9.14.0",
-		"@types/mocha": "^10.0.9",
-		"@types/node": "^22.9.0",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^22.10.0",
 		"@types/vscode": "^1.76.0",
 		"@vscode/l10n-dev": "^0.0.35",
-		"eslint": "^9.14.0",
-		"glob": "^11.0.0",
 		"globals": "^15.12.0",
-		"husky": "^9.1.6",
+		"husky": "^9.1.7",
 		"lint-staged": "^15.2.10",
 		"mocha": "^10.8.2",
-		"prettier": "3.3.3",
 		"rimraf": "^6.0.1",
-		"typescript": "^5.4.5",
-		"typescript-eslint": "^8.13.0",
+		"typescript": "^5.7.2",
 		"vscode-test": "^1.6.1"
 	},
 	"dependencies": {
-		"fast-glob": "^3.3.2"
+		"fast-glob": "^3.3.2",
+		"ignore": "^6.0.2"
 	}
 }

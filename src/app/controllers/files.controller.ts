@@ -1,6 +1,14 @@
 import * as fg from 'fast-glob';
-import { access, existsSync, mkdirSync, open, writeFile } from 'fs';
-import { dirname, join } from 'path';
+import {
+  access,
+  existsSync,
+  mkdirSync,
+  open,
+  readFileSync,
+  writeFile,
+} from 'fs';
+import ignore from 'ignore';
+import { dirname, join, relative } from 'path';
 import {
   Position,
   Range,
@@ -209,6 +217,8 @@ export class FilesController {
     const includeExtensionOnExport = this.config.includeExtensionOnExport;
     const ignoreFilePathPatternOnExport =
       this.config.ignoreFilePathPatternOnExport;
+    const supportsHiddenFiles = this.config.supportsHiddenFiles;
+    const preserveGitignoreSettings = this.config.preserveGitignoreSettings;
 
     const include = `**/*.{${includeExtensionOnExport.join(',')}}`;
 
@@ -218,6 +228,8 @@ export class FilesController {
       [include],
       ignoreFilePathPatternOnExport,
       !disableRecursiveBarrelling,
+      supportsHiddenFiles,
+      preserveGitignoreSettings,
     );
 
     // If no files are found, return
@@ -393,19 +405,40 @@ export class FilesController {
     include: string[], // Include patterns
     exclude: string[], // Exclude patterns
     allowRecursion: boolean = true, // Toggle recursive search
+    allowHidden: boolean = true, // Toggle hidden files
+    respectGitignore: boolean = false, // Toggle .gitignore respect
   ): Promise<Uri[]> {
+    // If we need to respect .gitignore, we need to load it
+    let gitignore;
+    if (respectGitignore) {
+      const gitignorePath = join(baseDir, '.gitignore');
+      // Load .gitignore if it exists
+      if (existsSync(gitignorePath)) {
+        gitignore = ignore().add(readFileSync(gitignorePath, 'utf8'));
+      }
+    }
+
     // Configure fast-glob options
     const options = {
       cwd: baseDir, // Set base directory for searching
       absolute: true, // Ensure paths are absolute
       onlyFiles: true, // Match only files, not directories
+      dot: allowHidden, // Include files and directories starting with a dot
       deep: allowRecursion ? undefined : 1, // Toggle recursion
       ignore: exclude, // Exclude patterns
     };
 
     try {
       // Use fast-glob to find matching files
-      const filePaths = await fg(include, options);
+      let filePaths = await fg(include, options);
+
+      if (gitignore) {
+        // Filter out files that are ignored by .gitignore
+        filePaths = filePaths.filter((filePath) => {
+          const relativePath = relative(baseDir, filePath); // Convert to relative paths
+          return !gitignore.ignores(relativePath);
+        });
+      }
 
       // Convert file paths to VS Code Uri objects
       return filePaths.sort().map((filePath) => Uri.file(filePath));

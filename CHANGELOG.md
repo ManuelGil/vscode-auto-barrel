@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2024-11-25
+
+### Added
+
+- Add the `supportsHiddenFiles` setting to support hidden files in the workspace.
+- Add the `preserveGitignoreSettings` setting to preserve the `.gitignore` settings in the generated barrel file.
+
 ## [1.8.0] - 2024-11-19
 
 ### Changed
@@ -102,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.6.0...v1.6.1

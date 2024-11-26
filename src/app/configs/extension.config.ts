@@ -11,6 +11,8 @@ import {
   INCLUDE_EXTENSIONS,
   INSERT_FINAL_NEWLINE,
   KEEP_EXTENSION,
+  PRESERVE_GITIGNORE,
+  SUPPORTS_HIDDEN,
   USE_SINGLE_QUOTES,
 } from './constants.config';
 
@@ -26,6 +28,8 @@ import {
  * @property {boolean} disableRecursiveBarrelling - The flag to disable recursive barrelling
  * @property {string[]} includeExtensionOnExport - The extensions to include in the export
  * @property {string[]} ignoreFilePathPatternOnExport - The file path patterns to ignore on export
+ * @property {boolean} supportsHiddenFiles - The flag to allow hidden files
+ * @property {boolean} preserveGitignoreSettings - The flag to respect the .gitignore file
  * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
  * @property {boolean} detectExportsInFiles - The flag to detect exports in files
  * @property {boolean} exportDefaultFilename - The filename to export the default export
@@ -87,6 +91,28 @@ export class ExtensionConfig {
    * console.log(config.ignoreFilePathPatternOnExport);
    */
   ignoreFilePathPatternOnExport: string[];
+
+  /**
+   * The flag to allow hidden files.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.supportsHiddenFiles);
+   */
+  supportsHiddenFiles: boolean;
+
+  /**
+   * The flag to respect the .gitignore file.
+   * @type {boolean}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.preserveGitignoreSettings);
+   */
+  preserveGitignoreSettings: boolean;
 
   /**
    * The flag to keep the extension on export.
@@ -189,6 +215,11 @@ export class ExtensionConfig {
     this.ignoreFilePathPatternOnExport =
       config.get<string[]>('files.ignoreFilePathPatternOnExport') ??
       EXCLUDE_PATTERNS;
+    this.supportsHiddenFiles =
+      config.get<boolean>('files.supportsHiddenFiles') ?? SUPPORTS_HIDDEN;
+    this.preserveGitignoreSettings =
+      config.get<boolean>('files.preserveGitignoreSettings') ??
+      PRESERVE_GITIGNORE;
     this.keepExtensionOnExport =
       config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
     this.detectExportsInFiles =

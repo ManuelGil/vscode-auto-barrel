@@ -3,6 +3,8 @@
 	"autoBarrel.files.disableRecursiveBarrelling": "Disable the recurtion for subdirectories when creating the barrel file.",
 	"autoBarrel.files.includeExtensionOnExport": "Extensions to include on the export. This is used to filter the files to export.",
 	"autoBarrel.files.ignoreFilePathPatternOnExport": "Glob patterns to ignore on the export. This is used to filter the files to export.",
+	"autoBarrel.files.supportsHiddenFiles": "Support hidden files and directories when exporting (files starting with a dot).",
+	"autoBarrel.files.preserveGitignoreSettings": "Preserve the settings from the .gitignore file when exporting.",
 	"autoBarrel.files.keepExtensionOnExport": "Keep the file extension on the export.",
 	"autoBarrel.files.detectExportsInFiles": "Detect the exports in the files to export.",
 	"autoBarrel.files.exportDefaultFilename": "Default filename to use when exporting the files.",

@@ -89,6 +89,30 @@ export const EXCLUDE_PATTERNS: string[] = [
 ];
 
 /**
+ * SUPPORTS_HIDDEN: The flag to support hidden files and directories (files that start with a dot).
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(SUPPORTS_HIDDEN);
+ *
+ * @returns {boolean} - The flag to support hidden files and directories
+ */
+export const SUPPORTS_HIDDEN: boolean = true;
+
+/**
+ * PRESERVE_GITIGNORE: The flag to preserve the .gitignore file.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(PRESERVE_GITIGNORE);
+ *
+ * @returns {boolean} - The flag to preserve the .gitignore file
+ */
+export const PRESERVE_GITIGNORE: boolean = false;
+
+/**
  * KEEP_EXTENSION: The flag to keep the extension on export.
  * @type {boolean}
  * @public
