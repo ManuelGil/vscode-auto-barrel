@@ -81,6 +81,12 @@
 			"scope": "resource",
 			"description": "Filename to use when exporting the default export."
 		},
+		"autoBarrel.files.configuredDefaultFilename": {
+			"type": "string",
+			"default": "index",
+			"scope": "resource",
+			"description": "Filename to use when exporting the default export."
+		},
 		"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 			"type": "boolean",
 			"default": false,

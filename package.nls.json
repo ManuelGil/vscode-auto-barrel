@@ -8,6 +8,7 @@
 	"autoBarrel.files.keepExtensionOnExport": "Keep the file extension on the export.",
 	"autoBarrel.files.detectExportsInFiles": "Detect the exports in the files to export.",
 	"autoBarrel.files.exportDefaultFilename": "Default filename to use when exporting the files.",
+	"autoBarrel.files.configuredDefaultFilename": "Configured filename to use when exporting the files.",
 	"autoBarrel.formatting.excludeSemiColonAtEndOfLine": "Exclude the semicolon at the end of the line.",
 	"autoBarrel.formatting.useSingleQuotes": "Use single quotes instead of double quotes.",
 	"autoBarrel.formatting.endOfLine": "End of line character to use.",

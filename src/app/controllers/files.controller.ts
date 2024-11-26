@@ -89,7 +89,9 @@ export class FilesController {
     const ext =
       this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
 
-    const filename = `index.${ext}`;
+    const configuredDefaultFilename = this.config.configuredDefaultFilename;
+
+    const filename = `${configuredDefaultFilename}.${ext}`;
 
     if (content) {
       this.saveFile(folderPath.fsPath, filename, content);
@@ -129,7 +131,12 @@ export class FilesController {
     const ext =
       this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
 
-    const filename = join(folderPath.fsPath, `index.${ext}`);
+    const configuredDefaultFilename = this.config.configuredDefaultFilename;
+
+    const filename = join(
+      folderPath.fsPath,
+      `${configuredDefaultFilename}.${ext}`,
+    );
 
     if (!existsSync(filename)) {
       const message = l10n.t('The file does not exist!');
@@ -298,7 +305,9 @@ export class FilesController {
 
         if (text.match(defaultExportRegex)) {
           exports.push(
-            `export { default as ${fileName} } from ${quote}.${path}${quote}${semi ? '' : ';'}`,
+            `export { default as ${fileName} } from ${quote}.${path}${quote}${
+              semi ? '' : ';'
+            }`,
           );
         } else if (text.match(namedExportRegex)) {
           exports.push(

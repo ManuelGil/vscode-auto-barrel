@@ -149,6 +149,18 @@ export const DETECT_EXPORTS: boolean = false;
 export const EXPORT_FILENAME: string = 'filename';
 
 /**
+ * DEFAULT_FILENAME: The default filename.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(DEFAULT_FILENAME);
+ *
+ * @returns {string} - The default filename
+ */
+export const DEFAULT_FILENAME: string = 'index';
+
+/**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
  * @type {boolean}
  * @public

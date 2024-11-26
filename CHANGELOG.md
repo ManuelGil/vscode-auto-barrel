@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2024-11-26
+
+### Added
+
+- Add the `configuredDefaultFilename` setting to configure the default filename for the generated barrel file.
+
 ## [1.9.0] - 2024-11-25
 
 ### Added
