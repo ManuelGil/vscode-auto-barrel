@@ -96,6 +96,7 @@ Configure your project by creating or updating a settings.json file at the proje
       "autoBarrel.files.preserveGitignoreSettings": false,
       "autoBarrel.files.keepExtensionOnExport": false,
       "autoBarrel.files.detectExportsInFiles": false,
+      "autoBarrel.files.useNamedExports": false,
       "autoBarrel.files.exportDefaultFilename": "filename",
       "autoBarrel.files.configuredDefaultFilename": "index",
       "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
@@ -122,6 +123,7 @@ Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor th
 - `autoBarrel.files.keepExtensionOnExport`: Whether to keep the file extension when exporting modules. Default is `false`.
 - `autoBarrel.files.detectExportsInFiles`: Whether to detect exports in files when exporting modules. Default is `false`.
 - `autoBarrel.files.exportDefaultFilename`: The filename to use when exporting a default module. Default is `filename`.
+- `autoBarrel.files.useNamedExports`: Whether to use named exports when exporting modules. Default is `false`.
 - `autoBarrel.files.configuredDefaultFilename`: The filename to use when exporting a default module. Default is `index`.
 - `autoBarrel.formatting.excludeSemiColonAtEndOfLine`: Whether to exclude a semicolon at the end of each line in the barrel file. Default is `false`.
 - `autoBarrel.formatting.useSingleQuotes`: Whether to use single quotes for string literals in the barrel file. Default is `true`.
@@ -142,6 +144,7 @@ JavaScript example settings:
   "autoBarrel.files.preserveGitignoreSettings": false,
   "autoBarrel.files.keepExtensionOnExport": false,
   "autoBarrel.files.detectExportsInFiles": false,
+  "autoBarrel.files.useNamedExports": false,
   "autoBarrel.files.exportDefaultFilename": "filename",
   "autoBarrel.files.configuredDefaultFilename": "index",
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,

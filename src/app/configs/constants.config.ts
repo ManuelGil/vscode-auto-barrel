@@ -137,6 +137,18 @@ export const KEEP_EXTENSION: boolean = false;
 export const DETECT_EXPORTS: boolean = false;
 
 /**
+ * USE_NAMED_EXPORTS: The flag to use named exports.
+ * @type {boolean}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(USE_NAMED_EXPORTS);
+ *
+ * @returns {boolean} - The flag to use named exports
+ */
+export const USE_NAMED_EXPORTS: boolean = false;
+
+/**
  * EXPORT_FILENAME: The filename to export the default export.
  * @type {string}
  * @public

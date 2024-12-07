@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.10.0",
+	"version": "1.11.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -109,6 +109,12 @@
 					"default": false,
 					"scope": "resource",
 					"description": "%autoBarrel.files.detectExportsInFiles%"
+				},
+				"autoBarrel.files.useNamedExports": {
+					"type": "boolean",
+					"default": false,
+					"scope": "resource",
+					"description": "%autoBarrel.files.useNamedExports%"
 				},
 				"autoBarrel.files.exportDefaultFilename": {
 					"type": "string",

@@ -8,7 +8,7 @@ import {
   writeFile,
 } from 'fs';
 import ignore from 'ignore';
-import { dirname, join, relative } from 'path';
+import { basename, dirname, join, relative } from 'path';
 import {
   Position,
   Range,
@@ -220,16 +220,32 @@ export class FilesController {
    */
   private async getContent(folderPath: string): Promise<string | undefined> {
     // Get the configuration values
-    const disableRecursiveBarrelling = this.config.disableRecursiveBarrelling;
-    const includeExtensionOnExport = this.config.includeExtensionOnExport;
-    const ignoreFilePathPatternOnExport =
-      this.config.ignoreFilePathPatternOnExport;
-    const supportsHiddenFiles = this.config.supportsHiddenFiles;
-    const preserveGitignoreSettings = this.config.preserveGitignoreSettings;
+    const {
+      disableRecursiveBarrelling,
+      includeExtensionOnExport,
+      ignoreFilePathPatternOnExport,
+      supportsHiddenFiles,
+      preserveGitignoreSettings,
+      useSingleQuotes,
+      excludeSemiColonAtEndOfLine,
+      keepExtensionOnExport,
+      endOfLine,
+      detectExportsInFiles,
+      useNamedExports,
+      exportDefaultFilename,
+      insertFinalNewline,
+    } = this.config;
 
-    const include = `**/*.{${includeExtensionOnExport.join(',')}}`;
+    const quote = useSingleQuotes ? "'" : '"';
+    const semi = excludeSemiColonAtEndOfLine ? '' : ';';
+    const newline = endOfLine === 'crlf' ? '\r\n' : '\n';
 
-    // Get the files
+    const include =
+      includeExtensionOnExport.length === 1
+        ? `**/*.${includeExtensionOnExport[0]}`
+        : `**/*.{${includeExtensionOnExport.join(',')}}`;
+
+    // Retrieve matching files
     const files = await this.findFiles(
       folderPath,
       [include],
@@ -246,55 +262,23 @@ export class FilesController {
       return;
     }
 
-    // Get the configuration values
-    const quote = this.config.useSingleQuotes ? "'" : '"';
-    const semi = this.config.excludeSemiColonAtEndOfLine;
-    const keepExtension = this.config.keepExtensionOnExport;
-    const endOfLine = this.config.endOfLine;
-    const detectExportsInFiles = this.config.detectExportsInFiles;
-    const exportDefaultFilename = this.config.exportDefaultFilename;
-
-    const exports = [];
+    const exports: string[] = [];
 
     for (const file of files) {
-      let path = file.fsPath.replace(folderPath, '').replace(/\\/g, '/');
+      let relativePath = relative(folderPath, file.fsPath).replace(/\\/g, '/');
 
-      if (!keepExtension) {
-        path = path.replace(/\.[^/.]+$/, '');
+      if (!keepExtensionOnExport) {
+        relativePath = relativePath.replace(/\.[^/.]+$/, '');
       }
 
+      // Get formatted filename
+      const baseName = basename(file.path).replace(/\.[^/.]+$/, '');
+      const formattedFileName = this.formatFileName(
+        baseName,
+        exportDefaultFilename,
+      );
+
       if (detectExportsInFiles) {
-        let fileName = file.path.split('/').pop();
-
-        if (!fileName) {
-          continue;
-        }
-
-        fileName = fileName.replace(/\.[^/.]+$/, '');
-
-        switch (exportDefaultFilename) {
-          case 'camelCase':
-            fileName = fileName.replace(/[-.](.)/g, (_, c) => c.toUpperCase());
-            break;
-
-          case 'pascalCase':
-            fileName = fileName
-              .replace(/[-.]\w/g, (match) => match.charAt(1).toUpperCase())
-              .replace(/^./, (match) => match.toUpperCase());
-            break;
-
-          case 'kebabCase':
-            fileName = fileName.replace(/[-.](.)/g, (_, c) => `-${c}`);
-            break;
-
-          case 'snakeCase':
-            fileName = fileName.replace(/[-.](.)/g, (_, c) => `_${c}`);
-            break;
-
-          default:
-            break;
-        }
-
         const document = await workspace.openTextDocument(file.path);
         const text = document.getText();
 
@@ -305,33 +289,73 @@ export class FilesController {
 
         if (text.match(defaultExportRegex)) {
           exports.push(
-            `export { default as ${fileName} } from ${quote}.${path}${quote}${
-              semi ? '' : ';'
-            }`,
+            `export { default as ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
           );
-        } else if (text.match(namedExportRegex)) {
-          exports.push(
-            `export * from ${quote}.${path}${quote}${semi ? '' : ';'}`,
-          );
+          continue;
         }
-      } else {
+
+        if (text.match(namedExportRegex)) {
+          exports.push(
+            `export * from ${quote}./${relativePath}${quote}${semi}`,
+          );
+          continue;
+        }
+      }
+
+      if (useNamedExports) {
         exports.push(
-          `export * from ${quote}.${path}${quote}${semi ? '' : ';'}`,
+          `export { ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
         );
+      } else {
+        exports.push(`export * from ${quote}./${relativePath}${quote}${semi}`);
       }
     }
 
-    // Get the configuration values
-    const insertFinalNewline = this.config.insertFinalNewline;
-
-    let content = exports.join(endOfLine === 'crlf' ? '\r\n' : '\n');
+    let content = exports.join(newline);
 
     // Add a final newline
     if (insertFinalNewline) {
-      content += endOfLine === 'crlf' ? '\r\n' : '\n';
+      content += newline;
     }
 
     return content;
+  }
+
+  /**
+   * The formatFileName method.
+   *
+   * @function formatFileName
+   * @param {string} fileName - The file name
+   * @param {string} style - The style
+   * @private
+   * @memberof FilesController
+   * @example
+   * controller.formatFileName('fileName', 'style');
+   *
+   * @returns {string} - The formatted file name
+   */
+  private formatFileName(fileName: string, style: string): string {
+    switch (style) {
+      case 'camelCase':
+        fileName = fileName.replace(/[-.](.)/g, (_, c) => c.toUpperCase());
+        break;
+
+      case 'pascalCase':
+        fileName = fileName
+          .replace(/[-.]\w/g, (match) => match.charAt(1).toUpperCase())
+          .replace(/^./, (match) => match.toUpperCase());
+        break;
+
+      case 'kebabCase':
+        fileName = fileName.replace(/[-.](.)/g, (_, c) => `-${c}`);
+        break;
+
+      case 'snakeCase':
+        fileName = fileName.replace(/[-.](.)/g, (_, c) => `_${c}`);
+        break;
+    }
+
+    return fileName;
   }
 
   /**

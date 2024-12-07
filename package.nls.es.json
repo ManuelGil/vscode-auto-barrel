@@ -7,6 +7,7 @@
 	"autoBarrel.files.preserveGitignoreSettings": "Preservar la configuración del archivo .gitignore al exportar.",
 	"autoBarrel.files.keepExtensionOnExport": "Mantener la extensión del archivo en la exportación.",
 	"autoBarrel.files.detectExportsInFiles": "Detectar las exportaciones en los archivos a exportar.",
+	"autoBarrel.files.useNamedExports": "Utilizar exportaciones con nombre en lugar de exportaciones por defecto.",
 	"autoBarrel.files.exportDefaultFilename": "Nombre de archivo predeterminado a utilizar al exportar los archivos.",
 	"autoBarrel.files.configuredDefaultFilename": "Nombre de archivo configurado a utilizar al exportar los archivos.",
 	"autoBarrel.formatting.excludeSemiColonAtEndOfLine": "Excluir el punto y coma al final de la línea.",

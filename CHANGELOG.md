@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.0] - 2024-12-07
+
+### Added
+
+- Add the `useNamedExports` setting to control the use of named exports in the generated barrel file.
+
 ## [1.10.0] - 2024-11-26
 
 ### Added
@@ -115,7 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.7.0...v1.8.0

@@ -14,6 +14,7 @@ import {
   KEEP_EXTENSION,
   PRESERVE_GITIGNORE,
   SUPPORTS_HIDDEN,
+  USE_NAMED_EXPORTS,
   USE_SINGLE_QUOTES,
 } from './constants.config';
 
@@ -33,6 +34,7 @@ import {
  * @property {boolean} preserveGitignoreSettings - The flag to respect the .gitignore file
  * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
  * @property {boolean} detectExportsInFiles - The flag to detect exports in files
+ * @property {string} useNamedExports - The filename to export the default export
  * @property {boolean} exportDefaultFilename - The filename to export the default export
  * @property {string} configuredDefaultFilename - The configured default filename
  * @property {boolean} excludeSemiColonAtEndOfLine - The flag to exclude a semicolon at the end of a line
@@ -139,6 +141,17 @@ export class ExtensionConfig {
   detectExportsInFiles: boolean;
 
   /**
+   * The flag to use named exports.
+   * @type {string}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.useNamedExports);
+   */
+  useNamedExports: boolean;
+
+  /**
    * The filename to export the default export.
    * @type {string}
    * @public
@@ -237,6 +250,8 @@ export class ExtensionConfig {
       config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
     this.detectExportsInFiles =
       config.get<boolean>('files.detectExportsInFiles') ?? DETECT_EXPORTS;
+    this.useNamedExports =
+      config.get<boolean>('files.useNamedExports') ?? USE_NAMED_EXPORTS;
     this.exportDefaultFilename =
       config.get<string>('files.exportDefaultFilename') ?? EXPORT_FILENAME;
     this.configuredDefaultFilename =
