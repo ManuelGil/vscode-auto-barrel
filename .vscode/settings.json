@@ -19,8 +19,5 @@
 	},
 	"[css]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[json]": {
-		"editor.defaultFormatter": "biomejs.biome"
 	}
 }

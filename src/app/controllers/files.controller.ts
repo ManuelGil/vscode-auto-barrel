@@ -1,4 +1,3 @@
-import * as fg from 'fast-glob';
 import {
   access,
   existsSync,
@@ -7,8 +6,9 @@ import {
   readFileSync,
   writeFile,
 } from 'fs';
-import ignore from 'ignore';
 import { basename, dirname, join, relative } from 'path';
+import * as fg from 'fast-glob';
+import ignore from 'ignore';
 import {
   Position,
   Range,
@@ -271,41 +271,83 @@ export class FilesController {
         relativePath = relativePath.replace(/\.[^/.]+$/, '');
       }
 
-      // Get formatted filename
-      const baseName = basename(file.path).replace(/\.[^/.]+$/, '');
-      const formattedFileName = this.formatFileName(
-        baseName,
-        exportDefaultFilename,
-      );
-
       if (detectExportsInFiles) {
+        // Get formatted filename
+        const baseName = basename(file.path).replace(/\.[^/.]+$/, '');
+        const formattedFileName = this.formatFileName(
+          baseName,
+          exportDefaultFilename,
+        );
+
         const document = await workspace.openTextDocument(file.path);
         const text = document.getText();
 
         // Check if the file has a default export
-        const defaultExportRegex = /export\s*default\s*/;
+        const defaultExportRegex = /export\s*default\s+/;
+        const isDefaultExportMatch = text.match(defaultExportRegex);
+        // Check if the file has exported members
+        const exportedMembersRegex = /export\s*{[^}]*}/g;
+        const matchedExportedMembers = text.match(exportedMembersRegex);
         // Check if the file has a named export
-        const namedExportRegex = /export\s*(\w+)\s*|\s*export\s*\{\s*/;
+        const namedExportRegex =
+          /export\s*(async\s+)?(enum|const|let|var|function|class|interface|type)\s+(\w+)/g;
+        const matchedNamedExports = text.match(namedExportRegex);
 
-        if (text.match(defaultExportRegex)) {
+        if (isDefaultExportMatch) {
           exports.push(
             `export { default as ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
           );
           continue;
         }
 
-        if (text.match(namedExportRegex)) {
-          exports.push(
-            `export * from ${quote}./${relativePath}${quote}${semi}`,
-          );
+        if (matchedExportedMembers) {
+          if (useNamedExports) {
+            const fileMembers: string[] = [];
+
+            for (const [, members] of text.matchAll(exportedMembersRegex)) {
+              for (const member of members.split(',')) {
+                const name = member.trim();
+                fileMembers.push(name);
+              }
+            }
+
+            if (fileMembers.length > 0) {
+              const exportName = fileMembers.join(', ');
+              exports.push(
+                `export { ${exportName} } from ${quote}./${relativePath}${quote}${semi}`,
+              );
+            }
+          } else {
+            exports.push(
+              `export * as ${formattedFileName} from ${quote}./${relativePath}${quote}${semi}`,
+            );
+          }
+
           continue;
         }
-      }
 
-      if (useNamedExports) {
-        exports.push(
-          `export { ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
-        );
+        if (matchedNamedExports) {
+          if (useNamedExports) {
+            const fileExports: string[] = [];
+
+            for (const [, , , name] of text.matchAll(namedExportRegex)) {
+              fileExports.push(name);
+            }
+
+            if (fileExports.length > 0) {
+              const exportName = fileExports.join(', ');
+              exports.push(
+                `export { ${exportName} } from ${quote}./${relativePath}${quote}${semi}`,
+              );
+            }
+          } else {
+            exports.push(
+              `export * as ${formattedFileName} from ${quote}./${relativePath}${quote}${semi}`,
+            );
+          }
+
+          continue;
+        }
       } else {
         exports.push(`export * from ${quote}./${relativePath}${quote}${semi}`);
       }
