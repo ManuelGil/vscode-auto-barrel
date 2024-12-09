@@ -1,3 +1,4 @@
+import * as fg from 'fast-glob';
 import {
   access,
   existsSync,
@@ -6,9 +7,8 @@ import {
   readFileSync,
   writeFile,
 } from 'fs';
-import { basename, dirname, join, relative } from 'path';
-import * as fg from 'fast-glob';
 import ignore from 'ignore';
+import { basename, dirname, join, relative } from 'path';
 import {
   Position,
   Range,
@@ -283,24 +283,23 @@ export class FilesController {
         const text = document.getText();
 
         // Check if the file has a default export
-        const defaultExportRegex = /export\s*default\s+/;
-        const isDefaultExportMatch = text.match(defaultExportRegex);
+        const defaultExportRegex =
+          /\bexport\s*(?:async|function|const|let|var)?\s*default\s+/g;
         // Check if the file has exported members
-        const exportedMembersRegex = /export\s*{[^}]*}/g;
-        const matchedExportedMembers = text.match(exportedMembersRegex);
+        const exportedMembersRegex = /\bexport\s*\{\s*[^}]*\s*\}/g;
         // Check if the file has a named export
         const namedExportRegex =
-          /export\s*(async\s+)?(enum|const|let|var|function|class|interface|type)\s+(\w+)/g;
-        const matchedNamedExports = text.match(namedExportRegex);
+          /\bexport\s+(?:(async|abstract|declare|const|let|var)\s*)?(enum|function|class|type|interface|const|let|var)\s+(\w+)\b/g;
 
-        if (isDefaultExportMatch) {
+        if (text.match(defaultExportRegex)) {
           exports.push(
             `export { default as ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
           );
+
           continue;
         }
 
-        if (matchedExportedMembers) {
+        if (text.match(exportedMembersRegex)) {
           if (useNamedExports) {
             const fileMembers: string[] = [];
 
@@ -326,12 +325,16 @@ export class FilesController {
           continue;
         }
 
-        if (matchedNamedExports) {
+        if (text.match(namedExportRegex)) {
           if (useNamedExports) {
             const fileExports: string[] = [];
 
-            for (const [, , , name] of text.matchAll(namedExportRegex)) {
-              fileExports.push(name);
+            for (const [, , type, name] of text.matchAll(namedExportRegex)) {
+              if (type === 'interface' || type === 'type') {
+                fileExports.push(`type ${name}`);
+              } else {
+                fileExports.push(name);
+              }
             }
 
             if (fileExports.length > 0) {

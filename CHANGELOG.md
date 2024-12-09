@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.1] - 2024-12-09
+
+### Fixed
+
+- Fix the regular expression to detect the default export in the `FileController` class.
+- Fix the regular expression to detect the named export in the `FileController` class.
+
 ## [1.12.0] - 2024-12-08
 
 ### Changed
@@ -127,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.12.1...HEAD
+[1.12.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.9.0...v1.10.0
