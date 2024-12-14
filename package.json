@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.12.1",
+	"version": "1.13.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -141,6 +141,12 @@
 					"default": "index",
 					"scope": "resource",
 					"description": "%autoBarrel.files.configuredDefaultFilename%"
+				},
+				"autoBarrel.formatting.headerCommentTemplate": {
+					"type": "array",
+					"default": [],
+					"scope": "resource",
+					"description": "%autoBarrel.formatting.headerCommentTemplate%"
 				},
 				"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 					"type": "boolean",

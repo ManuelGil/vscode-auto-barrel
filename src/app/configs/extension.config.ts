@@ -9,6 +9,7 @@ import {
   EXCLUDE_PATTERNS,
   EXCLUDE_SEMICOLON,
   EXPORT_FILENAME,
+  HEADER_COMMENT_TEMPLATE,
   INCLUDE_EXTENSIONS,
   INSERT_FINAL_NEWLINE,
   KEEP_EXTENSION,
@@ -37,6 +38,7 @@ import {
  * @property {string} useNamedExports - The filename to export the default export
  * @property {boolean} exportDefaultFilename - The filename to export the default export
  * @property {string} configuredDefaultFilename - The configured default filename
+ * @property {string[]} headerCommentTemplate - The header comment template
  * @property {boolean} excludeSemiColonAtEndOfLine - The flag to exclude a semicolon at the end of a line
  * @property {boolean} useSingleQuotes - The flag to use single quotes
  * @property {string} endOfLine - The end of line character
@@ -174,6 +176,17 @@ export class ExtensionConfig {
   configuredDefaultFilename: string;
 
   /**
+   * The header comment template.
+   * @type {string}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.headerCommentTemplate);
+   */
+  headerCommentTemplate: string[];
+
+  /**
    * The flag to exclude a semicolon at the end of a line.
    * @type {boolean}
    * @public
@@ -256,6 +269,9 @@ export class ExtensionConfig {
       config.get<string>('files.exportDefaultFilename') ?? EXPORT_FILENAME;
     this.configuredDefaultFilename =
       config.get<string>('files.configuredDefaultFilename') ?? DEFAULT_FILENAME;
+    this.headerCommentTemplate =
+      config.get<string[]>('formatting.headerCommentTemplate') ??
+      HEADER_COMMENT_TEMPLATE;
     this.excludeSemiColonAtEndOfLine =
       config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
       EXCLUDE_SEMICOLON;

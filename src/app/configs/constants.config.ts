@@ -173,6 +173,18 @@ export const EXPORT_FILENAME: string = 'filename';
 export const DEFAULT_FILENAME: string = 'index';
 
 /**
+ * HEADER_COMMENT_TEMPLATE: The default header comment template.
+ * @type {string[]}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(HEADER_COMMENT_TEMPLATE);
+ *
+ * @returns {string[]} - The default header comment template
+ */
+export const HEADER_COMMENT_TEMPLATE = [];
+
+/**
  * EXCLUDE_SEMICOLON: The flag to exclude a semicolon at the end of a line.
  * @type {boolean}
  * @public

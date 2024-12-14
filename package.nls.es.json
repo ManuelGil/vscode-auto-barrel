@@ -10,6 +10,7 @@
 	"autoBarrel.files.useNamedExports": "Utilizar exportaciones con nombre en lugar de exportaciones por defecto.",
 	"autoBarrel.files.exportDefaultFilename": "Nombre de archivo predeterminado a utilizar al exportar los archivos.",
 	"autoBarrel.files.configuredDefaultFilename": "Nombre de archivo configurado a utilizar al exportar los archivos.",
+	"autoBarrel.formatting.headerCommentTemplate": "Plantilla de comentario de cabecera a utilizar en el archivo de barril.",
 	"autoBarrel.formatting.excludeSemiColonAtEndOfLine": "Excluir el punto y coma al final de la línea.",
 	"autoBarrel.formatting.useSingleQuotes": "Utilizar comillas simples en lugar de comillas dobles.",
 	"autoBarrel.formatting.endOfLine": "Carácter de fin de línea a utilizar.",

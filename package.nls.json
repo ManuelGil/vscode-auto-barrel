@@ -10,6 +10,7 @@
 	"autoBarrel.files.useNamedExports": "Use named exports instead of default exports.",
 	"autoBarrel.files.exportDefaultFilename": "Default filename to use when exporting the files.",
 	"autoBarrel.files.configuredDefaultFilename": "Configured filename to use when exporting the files.",
+	"autoBarrel.formatting.headerCommentTemplate": "Header comment template to use in the barrel file.",
 	"autoBarrel.formatting.excludeSemiColonAtEndOfLine": "Exclude the semicolon at the end of the line.",
 	"autoBarrel.formatting.useSingleQuotes": "Use single quotes instead of double quotes.",
 	"autoBarrel.formatting.endOfLine": "End of line character to use.",

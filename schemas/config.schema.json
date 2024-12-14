@@ -93,6 +93,12 @@
 			"scope": "resource",
 			"description": "Filename to use when exporting the default export."
 		},
+		"autoBarrel.formatting.headerCommentTemplate": {
+			"type": "array",
+			"default": [],
+			"scope": "resource",
+			"description": "Header comment template to use in the barrel file."
+		},
 		"autoBarrel.formatting.excludeSemiColonAtEndOfLine": {
 			"type": "boolean",
 			"default": false,

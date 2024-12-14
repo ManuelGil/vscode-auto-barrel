@@ -233,6 +233,7 @@ export class FilesController {
       detectExportsInFiles,
       useNamedExports,
       exportDefaultFilename,
+      headerCommentTemplate,
       insertFinalNewline,
     } = this.config;
 
@@ -260,6 +261,14 @@ export class FilesController {
       const message = l10n.t('No files found in the folder!');
       window.showErrorMessage(message);
       return;
+    }
+
+    let content: string = '';
+
+    console.log(headerCommentTemplate);
+
+    if (headerCommentTemplate.length > 0) {
+      content += headerCommentTemplate.join(newline) + newline + newline;
     }
 
     const exports: string[] = [];
@@ -356,7 +365,7 @@ export class FilesController {
       }
     }
 
-    let content = exports.join(newline);
+    content += exports.join(newline);
 
     // Add a final newline
     if (insertFinalNewline) {
