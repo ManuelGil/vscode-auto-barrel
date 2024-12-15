@@ -51,6 +51,18 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.getConfiguration(EXTENSION_ID, resource?.uri),
   );
 
+  // Watch for changes in the configuration
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    if (event.affectsConfiguration(EXTENSION_ID, resource?.uri)) {
+      config.update(
+        vscode.workspace.getConfiguration(EXTENSION_ID, resource?.uri),
+      );
+      vscode.window.showInformationMessage(
+        vscode.l10n.t('Configuration has been updated'),
+      );
+    }
+  });
+
   // -----------------------------------------------------------------
   // Get version of the extension
   // -----------------------------------------------------------------
