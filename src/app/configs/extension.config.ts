@@ -27,6 +27,7 @@ import {
  * @export
  * @public
  * @property {WorkspaceConfiguration} config - The workspace configuration
+ * @property {boolean} enable - The flag to enable the extension
  * @property {string} defaultLanguage - The default language
  * @property {boolean} disableRecursiveBarrelling - The flag to disable recursive barrelling
  * @property {string[]} includeExtensionOnExport - The extensions to include in the export
@@ -54,6 +55,17 @@ export class ExtensionConfig {
   // -----------------------------------------------------------------
 
   // Public properties
+  /**
+   * The flag to enable the extension.
+   * @type {boolean}
+   * @public
+   * @memberof ExtensionConfig
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * console.log(config.enable);
+   */
+  enable: boolean;
+
   /**
    * The default language.
    * @type {string}
@@ -243,6 +255,7 @@ export class ExtensionConfig {
    * @memberof Config
    */
   constructor(readonly config: WorkspaceConfiguration) {
+    this.enable = config.get<boolean>('enable', true);
     this.defaultLanguage =
       config.get<string>('language.defaultLanguage') ?? DEFAULT_LANGUAGE;
     this.disableRecursiveBarrelling =
@@ -300,6 +313,7 @@ export class ExtensionConfig {
    * config.update(workspace.getConfiguration());
    */
   update(config: WorkspaceConfiguration): void {
+    this.enable = config.get<boolean>('enable', this.enable);
     this.defaultLanguage =
       config.get<string>('language.defaultLanguage') ?? DEFAULT_LANGUAGE;
     this.disableRecursiveBarrelling =

@@ -1,4 +1,5 @@
 {
+	"autoBarrel.enable": "Enable or disable the Auto Barrel extension",
 	"autoBarrel.language.defaultLanguage": "Default language to use when creating the barrel file.",
 	"autoBarrel.files.disableRecursiveBarrelling": "Disable the recurtion for subdirectories when creating the barrel file.",
 	"autoBarrel.files.includeExtensionOnExport": "Extensions to include on the export. This is used to filter the files to export.",

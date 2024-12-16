@@ -2,6 +2,12 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"type": "object",
 	"properties": {
+		"autoBarrel.enable": {
+			"type": "boolean",
+			"default": true,
+			"scope": "resource",
+			"description": "Enable or disable the Auto Barrel extension."
+		},
 		"autoBarrel.language.defaultLanguage": {
 			"type": "string",
 			"default": "TypeScript",

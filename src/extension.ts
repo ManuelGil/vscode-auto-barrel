@@ -53,13 +53,31 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Watch for changes in the configuration
   vscode.workspace.onDidChangeConfiguration((event) => {
+    const workspaceConfig = vscode.workspace.getConfiguration(
+      EXTENSION_ID,
+      resource?.uri,
+    );
+
+    if (event.affectsConfiguration(`${EXTENSION_ID}.enable`, resource?.uri)) {
+      const isEnabled = workspaceConfig.get<boolean>('enable');
+
+      config.update(workspaceConfig);
+
+      if (isEnabled) {
+        const message = vscode.l10n.t('{0} is now enabled and ready to use', [
+          EXTENSION_DISPLAY_NAME,
+        ]);
+        vscode.window.showInformationMessage(message);
+      } else {
+        const message = vscode.l10n.t('{0} is now disabled', [
+          EXTENSION_DISPLAY_NAME,
+        ]);
+        vscode.window.showInformationMessage(message);
+      }
+    }
+
     if (event.affectsConfiguration(EXTENSION_ID, resource?.uri)) {
-      config.update(
-        vscode.workspace.getConfiguration(EXTENSION_ID, resource?.uri),
-      );
-      vscode.window.showInformationMessage(
-        vscode.l10n.t('Configuration has been updated'),
-      );
+      config.update(workspaceConfig);
     }
   });
 
@@ -102,17 +120,53 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const disposableCreateBarrel = vscode.commands.registerCommand(
     `${EXTENSION_ID}.createBarrel`,
-    (args) => filesController.createBarrel(args),
+    (args) => {
+      // Check if the extension is enabled
+      if (!config.enable) {
+        const message = vscode.l10n.t(
+          '{0} is disabled in settings. Enable it to use its features',
+          [EXTENSION_DISPLAY_NAME],
+        );
+        vscode.window.showErrorMessage(message);
+        return;
+      }
+
+      filesController.createBarrel(args);
+    },
   );
 
   const disposableUpdateBarrelInFolder = vscode.commands.registerCommand(
     `${EXTENSION_ID}.updateBarrelInFolder`,
-    (args) => filesController.updateBarrelInFolder(args),
+    (args) => {
+      // Check if the extension is enabled
+      if (!config.enable) {
+        const message = vscode.l10n.t(
+          '{0} is disabled in settings. Enable it to use its features',
+          [EXTENSION_DISPLAY_NAME],
+        );
+        vscode.window.showErrorMessage(message);
+        return;
+      }
+
+      filesController.updateBarrelInFolder(args);
+    },
   );
 
   const disposableUpdateBarrel = vscode.commands.registerCommand(
     `${EXTENSION_ID}.updateBarrel`,
-    (args) => filesController.updateBarrel(args),
+    (args) => {
+      // Check if the extension is enabled
+      if (!config.enable) {
+        const message = vscode.l10n.t(
+          '{0} is disabled in settings. Enable it to use its features',
+          [EXTENSION_DISPLAY_NAME],
+        );
+        vscode.window.showErrorMessage(message);
+        return;
+      }
+
+      filesController.updateBarrel(args);
+    },
   );
 
   context.subscriptions.push(

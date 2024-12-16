@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.0] - 2024-12-16
+
+### Added
+
+- Add the `enable` setting to enable or disable the extension.
+
 ## [1.14.0] - 2024-12-15
 
 ### Added
@@ -146,7 +152,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.14.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.12.0...v1.12.1

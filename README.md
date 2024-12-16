@@ -88,6 +88,7 @@ Configure your project by creating or updating a settings.json file at the proje
 
     ```json
     {
+      "autoBarrel.enable": true,
       "autoBarrel.language.defaultLanguage": "TypeScript",
       "autoBarrel.files.disableRecursiveBarrelling": false,
       "autoBarrel.files.includeExtensionOnExport": ["ts", "tsx", "vue"],
@@ -115,6 +116,7 @@ Your project is now set up to automatically format code upon saving.
 
 Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor the behavior of the barrel file generation process according to your project's needs.
 
+- `autoBarrel.enable`: Whether to enable Auto Barrel. Default is `true`.
 - `autoBarrel.language.defaultLanguage`: The default language for the barrel file. Supported languages are `TypeScript` and `JavaScript`. Default is `TypeScript`.
 - `autoBarrel.files.disableRecursiveBarrelling`: Whether to disable recursive barrelling for subdirectories. Default is `false`.
 - `autoBarrel.files.includeExtensionOnExport`: An array of file extensions to include when exporting modules. Default is `["ts", "tsx", "vue"]`.
@@ -138,6 +140,7 @@ JavaScript example settings:
 
 ```json
 {
+  "autoBarrel.enable": true,
   "autoBarrel.language.defaultLanguage": "JavaScript",
   "autoBarrel.files.disableRecursiveBarrelling": false,
   "autoBarrel.files.includeExtensionOnExport": ["js", "jsx"],

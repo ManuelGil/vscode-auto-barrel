@@ -1,6 +1,9 @@
 {
 	"No workspace folders are open. Please open a workspace folder to use this extension": "No hay carpetas de espacio de trabajo abiertas. Abra una carpeta de espacio de trabajo para usar esta extensión",
 	"Select a workspace folder to use. This folder will be used to load workspace-specific configuration for the extension": "Selecciona una carpeta de espacio de trabajo para usar. Esta carpeta se utilizará para cargar la configuración específica del espacio de trabajo para la extensión",
+	"{0} is now enabled and ready to use": "{0} ahora está habilitado y listo para usar",
+	"{0} is now disabled": "{0} ahora está deshabilitado",
+	"{0} is disabled in settings. Enable it to use its features": "{0} está deshabilitado en la configuración. Habilítelo para usar sus funciones",
 	"Welcome to {0}!": "¡Bienvenido a {0}!",
 	"Looks like {0} has been updated to version {1}!": "¡Parece que {0} se ha actualizado a la versión {1}!",
 	"The folder is not valid!": "¡La carpeta no es válida!",
