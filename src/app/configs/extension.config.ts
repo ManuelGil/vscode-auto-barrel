@@ -256,44 +256,67 @@ export class ExtensionConfig {
    */
   constructor(readonly config: WorkspaceConfiguration) {
     this.enable = config.get<boolean>('enable', true);
-    this.defaultLanguage =
-      config.get<string>('language.defaultLanguage') ?? DEFAULT_LANGUAGE;
-    this.disableRecursiveBarrelling =
-      config.get<boolean>('files.disableRecursiveBarrelling') ??
-      DISABLE_RECURSIVE;
-    this.includeExtensionOnExport =
-      config.get<string[]>('files.includeExtensionOnExport') ??
-      INCLUDE_EXTENSIONS;
-    this.ignoreFilePathPatternOnExport =
-      config.get<string[]>('files.ignoreFilePathPatternOnExport') ??
-      EXCLUDE_PATTERNS;
-    this.supportsHiddenFiles =
-      config.get<boolean>('files.supportsHiddenFiles') ?? SUPPORTS_HIDDEN;
-    this.preserveGitignoreSettings =
-      config.get<boolean>('files.preserveGitignoreSettings') ??
-      PRESERVE_GITIGNORE;
-    this.keepExtensionOnExport =
-      config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
-    this.detectExportsInFiles =
-      config.get<boolean>('files.detectExportsInFiles') ?? DETECT_EXPORTS;
-    this.useNamedExports =
-      config.get<boolean>('files.useNamedExports') ?? USE_NAMED_EXPORTS;
-    this.exportDefaultFilename =
-      config.get<string>('files.exportDefaultFilename') ?? EXPORT_FILENAME;
-    this.configuredDefaultFilename =
-      config.get<string>('files.configuredDefaultFilename') ?? DEFAULT_FILENAME;
-    this.headerCommentTemplate =
-      config.get<string[]>('formatting.headerCommentTemplate') ??
-      HEADER_COMMENT_TEMPLATE;
-    this.excludeSemiColonAtEndOfLine =
-      config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
-      EXCLUDE_SEMICOLON;
-    this.useSingleQuotes =
-      config.get<boolean>('formatting.useSingleQuotes') ?? USE_SINGLE_QUOTES;
-    this.endOfLine = config.get<string>('formatting.endOfLine') ?? END_OF_LINE;
-    this.insertFinalNewline =
-      config.get<boolean>('formatting.insertFinalNewline') ??
-      INSERT_FINAL_NEWLINE;
+    this.defaultLanguage = config.get<string>(
+      'language.defaultLanguage',
+      DEFAULT_LANGUAGE,
+    );
+    this.disableRecursiveBarrelling = config.get<boolean>(
+      'files.disableRecursiveBarrelling',
+      DISABLE_RECURSIVE,
+    );
+    this.includeExtensionOnExport = config.get<string[]>(
+      'files.includeExtensionOnExport',
+      INCLUDE_EXTENSIONS,
+    );
+    this.ignoreFilePathPatternOnExport = config.get<string[]>(
+      'files.ignoreFilePathPatternOnExport',
+      EXCLUDE_PATTERNS,
+    );
+    this.supportsHiddenFiles = config.get<boolean>(
+      'files.supportsHiddenFiles',
+      SUPPORTS_HIDDEN,
+    );
+    this.preserveGitignoreSettings = config.get<boolean>(
+      'files.preserveGitignoreSettings',
+      PRESERVE_GITIGNORE,
+    );
+    this.keepExtensionOnExport = config.get<boolean>(
+      'files.keepExtensionOnExport',
+      KEEP_EXTENSION,
+    );
+    this.detectExportsInFiles = config.get<boolean>(
+      'files.detectExportsInFiles',
+      DETECT_EXPORTS,
+    );
+    this.useNamedExports = config.get<boolean>(
+      'files.useNamedExports',
+      USE_NAMED_EXPORTS,
+    );
+    this.exportDefaultFilename = config.get<string>(
+      'files.exportDefaultFilename',
+      EXPORT_FILENAME,
+    );
+    this.configuredDefaultFilename = config.get<string>(
+      'files.configuredDefaultFilename',
+      DEFAULT_FILENAME,
+    );
+    this.headerCommentTemplate = config.get<string[]>(
+      'formatting.headerCommentTemplate',
+      HEADER_COMMENT_TEMPLATE,
+    );
+    this.excludeSemiColonAtEndOfLine = config.get<boolean>(
+      'formatting.excludeSemiColonAtEndOfLine',
+      EXCLUDE_SEMICOLON,
+    );
+    this.useSingleQuotes = config.get<boolean>(
+      'formatting.useSingleQuotes',
+      USE_SINGLE_QUOTES,
+    );
+    this.endOfLine = config.get<string>('formatting.endOfLine', END_OF_LINE);
+    this.insertFinalNewline = config.get<boolean>(
+      'formatting.insertFinalNewline',
+      INSERT_FINAL_NEWLINE,
+    );
   }
 
   // -----------------------------------------------------------------
@@ -314,43 +337,66 @@ export class ExtensionConfig {
    */
   update(config: WorkspaceConfiguration): void {
     this.enable = config.get<boolean>('enable', this.enable);
-    this.defaultLanguage =
-      config.get<string>('language.defaultLanguage') ?? DEFAULT_LANGUAGE;
-    this.disableRecursiveBarrelling =
-      config.get<boolean>('files.disableRecursiveBarrelling') ??
-      DISABLE_RECURSIVE;
-    this.includeExtensionOnExport =
-      config.get<string[]>('files.includeExtensionOnExport') ??
-      INCLUDE_EXTENSIONS;
-    this.ignoreFilePathPatternOnExport =
-      config.get<string[]>('files.ignoreFilePathPatternOnExport') ??
-      EXCLUDE_PATTERNS;
-    this.supportsHiddenFiles =
-      config.get<boolean>('files.supportsHiddenFiles') ?? SUPPORTS_HIDDEN;
-    this.preserveGitignoreSettings =
-      config.get<boolean>('files.preserveGitignoreSettings') ??
-      PRESERVE_GITIGNORE;
-    this.keepExtensionOnExport =
-      config.get<boolean>('files.keepExtensionOnExport') ?? KEEP_EXTENSION;
-    this.detectExportsInFiles =
-      config.get<boolean>('files.detectExportsInFiles') ?? DETECT_EXPORTS;
-    this.useNamedExports =
-      config.get<boolean>('files.useNamedExports') ?? USE_NAMED_EXPORTS;
-    this.exportDefaultFilename =
-      config.get<string>('files.exportDefaultFilename') ?? EXPORT_FILENAME;
-    this.configuredDefaultFilename =
-      config.get<string>('files.configuredDefaultFilename') ?? DEFAULT_FILENAME;
-    this.headerCommentTemplate =
-      config.get<string[]>('formatting.headerCommentTemplate') ??
-      HEADER_COMMENT_TEMPLATE;
-    this.excludeSemiColonAtEndOfLine =
-      config.get<boolean>('formatting.excludeSemiColonAtEndOfLine') ??
-      EXCLUDE_SEMICOLON;
-    this.useSingleQuotes =
-      config.get<boolean>('formatting.useSingleQuotes') ?? USE_SINGLE_QUOTES;
-    this.endOfLine = config.get<string>('formatting.endOfLine') ?? END_OF_LINE;
-    this.insertFinalNewline =
-      config.get<boolean>('formatting.insertFinalNewline') ??
-      INSERT_FINAL_NEWLINE;
+    this.defaultLanguage = config.get<string>(
+      'language.defaultLanguage',
+      this.defaultLanguage,
+    );
+    this.disableRecursiveBarrelling = config.get<boolean>(
+      'files.disableRecursiveBarrelling',
+      this.disableRecursiveBarrelling,
+    );
+    this.includeExtensionOnExport = config.get<string[]>(
+      'files.includeExtensionOnExport',
+      this.includeExtensionOnExport,
+    );
+    this.ignoreFilePathPatternOnExport = config.get<string[]>(
+      'files.ignoreFilePathPatternOnExport',
+      this.ignoreFilePathPatternOnExport,
+    );
+    this.supportsHiddenFiles = config.get<boolean>(
+      'files.supportsHiddenFiles',
+      this.supportsHiddenFiles,
+    );
+    this.preserveGitignoreSettings = config.get<boolean>(
+      'files.preserveGitignoreSettings',
+      this.preserveGitignoreSettings,
+    );
+    this.keepExtensionOnExport = config.get<boolean>(
+      'files.keepExtensionOnExport',
+      this.keepExtensionOnExport,
+    );
+    this.detectExportsInFiles = config.get<boolean>(
+      'files.detectExportsInFiles',
+      this.detectExportsInFiles,
+    );
+    this.useNamedExports = config.get<boolean>(
+      'files.useNamedExports',
+      this.useNamedExports,
+    );
+    this.exportDefaultFilename = config.get<string>(
+      'files.exportDefaultFilename',
+      this.exportDefaultFilename,
+    );
+    this.configuredDefaultFilename = config.get<string>(
+      'files.configuredDefaultFilename',
+      this.configuredDefaultFilename,
+    );
+    this.headerCommentTemplate = config.get<string[]>(
+      'formatting.headerCommentTemplate',
+      this.headerCommentTemplate,
+    );
+    this.excludeSemiColonAtEndOfLine = config.get<boolean>(
+      'formatting.excludeSemiColonAtEndOfLine',
+      this.excludeSemiColonAtEndOfLine,
+    );
+    this.useSingleQuotes = config.get<boolean>(
+      'formatting.useSingleQuotes',
+      this.useSingleQuotes,
+    );
+    this.endOfLine = config.get<string>('formatting.endOfLine', this.endOfLine);
+    this.insertFinalNewline = config.get<boolean>(
+      'formatting.insertFinalNewline',
+      this.insertFinalNewline,
+    );
   }
 }

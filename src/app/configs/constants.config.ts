@@ -35,6 +35,30 @@ export const EXTENSION_NAME: string = 'vscode-auto-barrel';
 export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
 
 /**
+ * USER_NAME: The ManuelGil of the extension.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(USER_NAME);
+ *
+ * @returns {string} - The ManuelGil of the extension
+ */
+export const USER_NAME: string = 'ManuelGil';
+
+/**
+ * REPOSITORY_URL: The documentation URL of the extension.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(REPOSITORY_URL);
+ *
+ * @returns {string} - The documentation URL of the extension
+ */
+export const REPOSITORY_URL: string = `https://github.com/${USER_NAME}/${EXTENSION_NAME}`;
+
+/**
  * DEFAULT_LANGUAGE: The default language.
  * @type {string}
  * @public
@@ -44,7 +68,7 @@ export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
  *
  * @returns {string} - The default language
  */
-export const DEFAULT_LANGUAGE: string = 'TypeScript';
+export const DEFAULT_LANGUAGE: 'TypeScript' | 'JavaScript' = 'TypeScript';
 
 /**
  * RECURSIVE_BARRELLING: The flag to recursively barrel.

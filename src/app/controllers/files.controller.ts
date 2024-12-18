@@ -265,8 +265,6 @@ export class FilesController {
 
     let content: string = '';
 
-    console.log(headerCommentTemplate);
-
     if (headerCommentTemplate.length > 0) {
       content += headerCommentTemplate.join(newline) + newline + newline;
     }
@@ -336,21 +334,42 @@ export class FilesController {
 
         if (text.match(namedExportRegex)) {
           if (useNamedExports) {
+            const fileTypeExports: string[] = [];
             const fileExports: string[] = [];
 
             for (const [, , type, name] of text.matchAll(namedExportRegex)) {
-              if (type === 'interface' || type === 'type') {
-                fileExports.push(`type ${name}`);
-              } else {
-                fileExports.push(name);
-              }
+              (type === 'interface' || type === 'type'
+                ? fileTypeExports
+                : fileExports
+              ).push(name);
             }
 
-            if (fileExports.length > 0) {
-              const exportName = fileExports.join(', ');
-              exports.push(
-                `export { ${exportName} } from ${quote}./${relativePath}${quote}${semi}`,
-              );
+            if (fileTypeExports.length > 0 || fileExports.length > 0) {
+              if (!fileExports.length) {
+                // Only type exports exist
+                const typeExports = fileTypeExports.join(', ');
+
+                exports.push(
+                  `export type { ${typeExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                );
+              } else if (!fileTypeExports.length) {
+                // Only value exports exist
+                const valueExports = fileExports.join(', ');
+
+                exports.push(
+                  `export { ${valueExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                );
+              } else {
+                // Both type and value exports exist
+                const combinedExports = [
+                  ...fileTypeExports.map((name) => `type ${name}`),
+                  ...fileExports,
+                ].join(', ');
+
+                exports.push(
+                  `export { ${combinedExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                );
+              }
             }
           } else {
             exports.push(

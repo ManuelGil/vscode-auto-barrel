@@ -7,6 +7,7 @@ import {
   EXTENSION_DISPLAY_NAME,
   EXTENSION_ID,
   ExtensionConfig,
+  REPOSITORY_URL,
 } from './app/configs';
 import { FilesController } from './app/controllers';
 
@@ -92,20 +93,41 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Check if the extension is running for the first time
   if (!previousVersion) {
-    const message = vscode.l10n.t('Welcome to {0}!', [EXTENSION_DISPLAY_NAME]);
+    const message = vscode.l10n.t(
+      'Welcome to {0} version {1}! The extension is now active',
+      [EXTENSION_DISPLAY_NAME, currentVersion],
+    );
     vscode.window.showInformationMessage(message);
 
     // Update the version in the global state
     context.globalState.update('version', currentVersion);
   }
 
-  // Check if the extension has been updated
   if (previousVersion && previousVersion !== currentVersion) {
+    // Check if the extension has been updated
+    const actions: vscode.MessageItem[] = [
+      {
+        title: vscode.l10n.t('Release Notes'),
+      },
+    ];
+
     const message = vscode.l10n.t(
-      'Looks like {0} has been updated to version {1}!',
+      'New version of {0} is available. Check out the release notes for version {1}',
       [EXTENSION_DISPLAY_NAME, currentVersion],
     );
-    vscode.window.showInformationMessage(message);
+    const option = await vscode.window.showInformationMessage(
+      message,
+      ...actions,
+    );
+
+    // Handle the actions
+    switch (option?.title) {
+      case actions[0].title:
+        vscode.env.openExternal(
+          vscode.Uri.parse(`${REPOSITORY_URL}/blob/main/CHANGELOG.md`),
+        );
+        break;
+    }
 
     // Update the version in the global state
     context.globalState.update('version', currentVersion);
