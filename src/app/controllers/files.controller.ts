@@ -258,8 +258,21 @@ export class FilesController {
 
     // If no files are found, return
     if (files.length === 0) {
-      const message = l10n.t('No files found in the folder!');
-      window.showErrorMessage(message);
+      const relativePath = workspace.asRelativePath(folderPath);
+      const allFilesInFolder = await workspace.findFiles(
+        `${relativePath}/**/*`,
+      );
+
+      if (allFilesInFolder.length === 0) {
+        const message = l10n.t('The {0} folder is empty!', [folderPath]);
+        window.showWarningMessage(message);
+      } else {
+        const message = l10n.t(
+          'No files found matching the specified patterns!',
+        );
+        window.showWarningMessage(message);
+      }
+
       return;
     }
 
