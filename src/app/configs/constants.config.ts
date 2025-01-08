@@ -47,6 +47,18 @@ export const EXTENSION_DISPLAY_NAME: string = 'Auto Barrel';
 export const USER_NAME: string = 'ManuelGil';
 
 /**
+ * USER_PUBLISHER: The publisher of the extension.
+ * @type {string}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(USER_PUBLISHER);
+ *
+ * @returns {string} - The publisher of the extension
+ */
+export const USER_PUBLISHER: string = 'imgildev';
+
+/**
  * REPOSITORY_URL: The documentation URL of the extension.
  * @type {string}
  * @public

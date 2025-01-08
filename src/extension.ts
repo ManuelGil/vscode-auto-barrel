@@ -6,8 +6,9 @@ import * as vscode from 'vscode';
 import {
   EXTENSION_DISPLAY_NAME,
   EXTENSION_ID,
+  EXTENSION_NAME,
   ExtensionConfig,
-  REPOSITORY_URL,
+  USER_PUBLISHER,
 } from './app/configs';
 import { FilesController } from './app/controllers';
 
@@ -109,6 +110,9 @@ export async function activate(context: vscode.ExtensionContext) {
       {
         title: vscode.l10n.t('Release Notes'),
       },
+      {
+        title: vscode.l10n.t('Close'),
+      },
     ];
 
     const message = vscode.l10n.t(
@@ -116,12 +120,21 @@ export async function activate(context: vscode.ExtensionContext) {
       [EXTENSION_DISPLAY_NAME, currentVersion],
     );
     vscode.window.showInformationMessage(message, ...actions).then((option) => {
+      if (!option) {
+        return;
+      }
+
       // Handle the actions
       switch (option?.title) {
         case actions[0].title:
           vscode.env.openExternal(
-            vscode.Uri.parse(`${REPOSITORY_URL}/blob/main/CHANGELOG.md`),
+            vscode.Uri.parse(
+              `https://marketplace.visualstudio.com/items/${USER_PUBLISHER}.${EXTENSION_NAME}/changelog`,
+            ),
           );
+          break;
+
+        default:
           break;
       }
     });

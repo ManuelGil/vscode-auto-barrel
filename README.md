@@ -64,7 +64,7 @@ This extension is inspired by the [auto-barrel](https://github.com/mike-hanson/a
 
 ## Requirements
 
-- VSCode 1.76.0 or later
+- VSCode 1.90.0 or later
 
 ## Features
 

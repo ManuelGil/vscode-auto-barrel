@@ -1,4 +1,4 @@
-import * as fg from 'fast-glob';
+import * as fastGlob from 'fast-glob';
 import {
   access,
   existsSync,
@@ -264,11 +264,12 @@ export class FilesController {
       );
 
       if (allFilesInFolder.length === 0) {
-        const message = l10n.t('The {0} folder is empty!', [folderPath]);
+        const message = l10n.t('The {0} folder is empty!', [relativePath]);
         window.showWarningMessage(message);
       } else {
         const message = l10n.t(
-          'No files found matching the specified patterns!',
+          'No files found matching the specified patterns in the {0} folder! Please check the include and exclude files in the settings',
+          [relativePath],
         );
         window.showWarningMessage(message);
       }
@@ -549,18 +550,18 @@ export class FilesController {
 
     try {
       // Use fast-glob to find matching files
-      let filePaths = await fg(include, options);
+      let foundFilePaths = await fastGlob(include, options);
 
       if (gitignore) {
         // Filter out files that are ignored by .gitignore
-        filePaths = filePaths.filter((filePath) => {
+        foundFilePaths = foundFilePaths.filter((filePath) => {
           const relativePath = relative(baseDir, filePath); // Convert to relative paths
           return !gitignore.ignores(relativePath);
         });
       }
 
       // Convert file paths to VS Code Uri objects
-      return filePaths.sort().map((filePath) => Uri.file(filePath));
+      return foundFilePaths.sort().map((filePath) => Uri.file(filePath));
     } catch (error) {
       const message = l10n.t('Error while finding files: {0}', [error]);
       window.showErrorMessage(message);
