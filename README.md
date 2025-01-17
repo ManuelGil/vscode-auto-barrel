@@ -93,6 +93,7 @@ Configure your project by creating or updating a settings.json file at the proje
       "autoBarrel.files.disableRecursiveBarrelling": false,
       "autoBarrel.files.includeExtensionOnExport": ["ts", "tsx", "vue"],
       "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
+      "autoBarrel.files.maxSearchRecursionDepth": 10,
       "autoBarrel.files.supportsHiddenFiles": true,
       "autoBarrel.files.preserveGitignoreSettings": false,
       "autoBarrel.files.keepExtensionOnExport": false,
@@ -121,6 +122,7 @@ Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor th
 - `autoBarrel.files.disableRecursiveBarrelling`: Whether to disable recursive barrelling for subdirectories. Default is `false`.
 - `autoBarrel.files.includeExtensionOnExport`: An array of file extensions to include when exporting modules. Default is `["ts", "tsx", "vue"]`.
 - `autoBarrel.files.ignoreFilePathPatternOnExport`: An array of file path patterns to ignore when exporting modules. Default is `["**/*.spec.*", "**/*.test.*"]`.
+- `autoBarrel.files.maxSearchRecursionDepth`: The maximum recursion depth when searching for files to export. Use `0` for infinite recursion.
 - `autoBarrel.files.supportsHiddenFiles`: Whether to include hidden files and directories when exporting modules. Default is `true`.
 - `autoBarrel.files.preserveGitignoreSettings`: Whether to preserve the `.gitignore` settings when exporting modules. Default is `false`.
 - `autoBarrel.files.keepExtensionOnExport`: Whether to keep the file extension when exporting modules. Default is `false`.
@@ -145,6 +147,7 @@ JavaScript example settings:
   "autoBarrel.files.disableRecursiveBarrelling": false,
   "autoBarrel.files.includeExtensionOnExport": ["js", "jsx"],
   "autoBarrel.files.ignoreFilePathPatternOnExport": ["**/*.spec.*", "**/*.test.*"],
+  "autoBarrel.files.maxSearchRecursionDepth": 10,
   "autoBarrel.files.supportsHiddenFiles": true,
   "autoBarrel.files.preserveGitignoreSettings": false,
   "autoBarrel.files.keepExtensionOnExport": false,

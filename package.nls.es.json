@@ -4,6 +4,7 @@
 	"autoBarrel.files.disableRecursiveBarrelling": "Deshabilitar la recursión para subdirectorios al crear el archivo de barril.",
 	"autoBarrel.files.includeExtensionOnExport": "Extensiones a incluir en la exportación. Esto se utiliza para filtrar los archivos a exportar.",
 	"autoBarrel.files.ignoreFilePathPatternOnExport": "Patrones globales a ignorar en la exportación. Esto se utiliza para filtrar los archivos a exportar.",
+	"autoBarrel.files.maxSearchRecursionDepth": "Profundidad máxima de recursión al buscar archivos a exportar. 0 significa sin límite.",
 	"autoBarrel.files.supportsHiddenFiles": "Soportar archivos y directorios ocultos al exportar (archivos que comienzan con un punto).",
 	"autoBarrel.files.preserveGitignoreSettings": "Preservar la configuración del archivo .gitignore al exportar.",
 	"autoBarrel.files.keepExtensionOnExport": "Mantener la extensión del archivo en la exportación.",

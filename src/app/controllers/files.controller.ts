@@ -224,6 +224,7 @@ export class FilesController {
       disableRecursiveBarrelling,
       includeExtensionOnExport,
       ignoreFilePathPatternOnExport,
+      maxSearchRecursionDepth,
       supportsHiddenFiles,
       preserveGitignoreSettings,
       useSingleQuotes,
@@ -251,7 +252,8 @@ export class FilesController {
       folderPath,
       [include],
       ignoreFilePathPatternOnExport,
-      !disableRecursiveBarrelling,
+      disableRecursiveBarrelling,
+      maxSearchRecursionDepth,
       supportsHiddenFiles,
       preserveGitignoreSettings,
     );
@@ -510,8 +512,13 @@ export class FilesController {
    *
    * @function findFiles
    * @param {string} baseDir - The base directory
-   * @param {string[]} include - The include pattern
-   * @param {string[]} exclude - The exclude pattern
+   * @param {string[]} includeFilePatterns - The include pattern
+   * @param {string[]} excludedPatterns - The exclude pattern
+   * @param {boolean} includeOnlyFiles - The flag to include only files
+   * @param {boolean} disableRecursive - The flag to disable recursive searching
+   * @param {number} deep - The recursion depth
+   * @param {boolean} includeDotfiles - The flag to include dotfiles
+   * @param {boolean} enableGitignoreDetection - The flag to enable .gitignore detection
    * @private
    * @async
    * @memberof FilesController
@@ -522,15 +529,16 @@ export class FilesController {
    */
   private async findFiles(
     baseDir: string,
-    include: string[], // Include patterns
-    exclude: string[], // Exclude patterns
-    allowRecursion: boolean = true, // Toggle recursive search
-    allowHidden: boolean = true, // Toggle hidden files
-    respectGitignore: boolean = false, // Toggle .gitignore respect
+    includeFilePatterns: string[],
+    excludedPatterns: string[],
+    disableRecursive: boolean = false,
+    deep: number = 0,
+    includeDotfiles: boolean = false,
+    enableGitignoreDetection: boolean = false,
   ): Promise<Uri[]> {
     // If we need to respect .gitignore, we need to load it
     let gitignore;
-    if (respectGitignore) {
+    if (enableGitignoreDetection) {
       const gitignorePath = join(baseDir, '.gitignore');
       // Load .gitignore if it exists
       if (existsSync(gitignorePath)) {
@@ -540,17 +548,17 @@ export class FilesController {
 
     // Configure fast-glob options
     const options = {
-      cwd: baseDir, // Set base directory for searching
-      absolute: true, // Ensure paths are absolute
+      cwd: baseDir, // Set the base directory for searching
+      absolute: true, // Return absolute paths for files found
       onlyFiles: true, // Match only files, not directories
-      dot: allowHidden, // Include files and directories starting with a dot
-      deep: allowRecursion ? undefined : 1, // Toggle recursion
-      ignore: exclude, // Exclude patterns
+      dot: includeDotfiles, // Include the files and directories starting with a dot
+      deep: disableRecursive ? 1 : deep === 0 ? undefined : deep, // Set the recursion depth
+      ignore: excludedPatterns, // Set the patterns to ignore files and directories
     };
 
     try {
       // Use fast-glob to find matching files
-      let foundFilePaths = await fastGlob(include, options);
+      let foundFilePaths = await fastGlob(includeFilePatterns, options);
 
       if (gitignore) {
         // Filter out files that are ignored by .gitignore

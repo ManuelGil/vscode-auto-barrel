@@ -125,6 +125,18 @@ export const EXCLUDE_PATTERNS: string[] = [
 ];
 
 /**
+ * RECURSION_DEPTH: The recursion depth.
+ * @type {number}
+ * @public
+ * @memberof Constants
+ * @example
+ * console.log(RECURSION_DEPTH);
+ *
+ * @returns {number} - The recursion depth
+ */
+export const RECURSION_DEPTH: number = 0;
+
+/**
  * SUPPORTS_HIDDEN: The flag to support hidden files and directories (files that start with a dot).
  * @type {boolean}
  * @public

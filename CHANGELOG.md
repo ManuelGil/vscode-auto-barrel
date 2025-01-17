@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2025-01-17
+
+### Added
+
+- Add `maxSearchRecursionDepth` setting to control file search depth.
+
 ## [1.17.0] - 2025-01-08
 
 ### Added
@@ -177,7 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.17.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...HEAD
+[1.18.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.16.1...v1.17.0
 [1.16.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.15.0...v1.16.0

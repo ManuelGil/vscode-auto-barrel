@@ -43,6 +43,12 @@
 			"scope": "resource",
 			"description": "Glob patterns to ignore on the export. This is used to filter the files to export."
 		},
+		"autoBarrel.files.maxSearchRecursionDepth": {
+			"type": "number",
+			"default": 0,
+			"scope": "resource",
+			"description": "Maximum recursion depth when searching for files to export. 0 means no limit."
+		},
 		"autoBarrel.files.supportsHiddenFiles": {
 			"type": "boolean",
 			"default": true,

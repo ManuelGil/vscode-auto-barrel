@@ -14,6 +14,7 @@ import {
   INSERT_FINAL_NEWLINE,
   KEEP_EXTENSION,
   PRESERVE_GITIGNORE,
+  RECURSION_DEPTH,
   SUPPORTS_HIDDEN,
   USE_NAMED_EXPORTS,
   USE_SINGLE_QUOTES,
@@ -32,6 +33,7 @@ import {
  * @property {boolean} disableRecursiveBarrelling - The flag to disable recursive barrelling
  * @property {string[]} includeExtensionOnExport - The extensions to include in the export
  * @property {string[]} ignoreFilePathPatternOnExport - The file path patterns to ignore on export
+ * @property {number} maxSearchRecursionDepth - The maximum search recursion depth
  * @property {boolean} supportsHiddenFiles - The flag to allow hidden files
  * @property {boolean} preserveGitignoreSettings - The flag to respect the .gitignore file
  * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
@@ -109,6 +111,17 @@ export class ExtensionConfig {
    * console.log(config.ignoreFilePathPatternOnExport);
    */
   ignoreFilePathPatternOnExport: string[];
+
+  /**
+   * The maximum search recursion depth.
+   * @type {number}
+   * @public
+   * @memberof Config
+   * @example
+   * const config = new Config(workspace.getConfiguration());
+   * console.log(config.maxSearchRecursionDepth);
+   */
+  maxSearchRecursionDepth: number;
 
   /**
    * The flag to allow hidden files.
@@ -272,6 +285,10 @@ export class ExtensionConfig {
       'files.ignoreFilePathPatternOnExport',
       EXCLUDE_PATTERNS,
     );
+    this.maxSearchRecursionDepth = config.get<number>(
+      'files.maxSearchRecursionDepth',
+      RECURSION_DEPTH,
+    );
     this.supportsHiddenFiles = config.get<boolean>(
       'files.supportsHiddenFiles',
       SUPPORTS_HIDDEN,
@@ -352,6 +369,10 @@ export class ExtensionConfig {
     this.ignoreFilePathPatternOnExport = config.get<string[]>(
       'files.ignoreFilePathPatternOnExport',
       this.ignoreFilePathPatternOnExport,
+    );
+    this.maxSearchRecursionDepth = config.get<number>(
+      'files.maxSearchRecursionDepth',
+      this.maxSearchRecursionDepth,
     );
     this.supportsHiddenFiles = config.get<boolean>(
       'files.supportsHiddenFiles',
