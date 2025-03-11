@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.0] - 2025-03-10
+
+### Added
+
+- Add `vscode-marketplace-client` dependency to check for extension updates and display a notification
+
+### Changed
+
+- Improve `defaultLanguage` type handling in the extension
+- Update Localization strings for the extension
+
 ## [1.18.0] - 2025-01-17
 
 ### Added
@@ -183,7 +194,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...HEAD
+[1.19.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.16.1...v1.17.0
 [1.16.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.16.0...v1.16.1

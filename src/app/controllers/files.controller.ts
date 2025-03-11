@@ -68,6 +68,8 @@ export class FilesController {
    * @returns {Promise<void>} - The promise with no return value
    */
   async createBarrel(folderPath?: Uri): Promise<void> {
+    const { defaultLanguage, configuredDefaultFilename } = this.config;
+
     // If the folder is not valid, return
     if (!folderPath) {
       const message = l10n.t('The folder is not valid!');
@@ -86,15 +88,11 @@ export class FilesController {
 
     const content = await this.getContent(folderPath.fsPath);
 
-    const ext =
-      this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
-
-    const configuredDefaultFilename = this.config.configuredDefaultFilename;
-
-    const filename = `${configuredDefaultFilename}.${ext}`;
+    const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
+    const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
 
     if (content) {
-      this.saveFile(folderPath.fsPath, filename, content);
+      this.saveFile(folderPath.fsPath, outputFileName, content);
     }
   }
 
@@ -112,6 +110,8 @@ export class FilesController {
    * @returns {Promise<void>} - The promise with no return value
    */
   async updateBarrelInFolder(folderPath?: Uri): Promise<void> {
+    const { defaultLanguage, configuredDefaultFilename } = this.config;
+
     // If the folder is not valid, return
     if (!folderPath) {
       const message = l10n.t('The folder is not valid!');
@@ -128,15 +128,10 @@ export class FilesController {
       return;
     }
 
-    const ext =
-      this.config.defaultLanguage.toLowerCase() === 'typescript' ? 'ts' : 'js';
+    const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
+    const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
 
-    const configuredDefaultFilename = this.config.configuredDefaultFilename;
-
-    const filename = join(
-      folderPath.fsPath,
-      `${configuredDefaultFilename}.${ext}`,
-    );
+    const filename = join(folderPath.fsPath, outputFileName);
 
     if (!existsSync(filename)) {
       const message = l10n.t('The file does not exist!');

@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.18.0",
+	"version": "1.19.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -309,6 +309,7 @@
 	},
 	"dependencies": {
 		"fast-glob": "^3.3.2",
-		"ignore": "^6.0.2"
+		"ignore": "^6.0.2",
+		"vscode-marketplace-client": "^1.0.0"
 	}
 }

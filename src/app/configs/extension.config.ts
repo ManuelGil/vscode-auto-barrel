@@ -70,14 +70,14 @@ export class ExtensionConfig {
 
   /**
    * The default language.
-   * @type {string}
+   * @type {'TypeScript' | 'JavaScript'}
    * @public
    * @memberof Config
    * @example
    * const config = new Config(workspace.getConfiguration());
    * console.log(config.defaultLanguage);
    */
-  defaultLanguage: string;
+  defaultLanguage: 'TypeScript' | 'JavaScript';
 
   /**
    * The flag to disable recursive barrelling.
@@ -269,7 +269,7 @@ export class ExtensionConfig {
    */
   constructor(readonly config: WorkspaceConfiguration) {
     this.enable = config.get<boolean>('enable', true);
-    this.defaultLanguage = config.get<string>(
+    this.defaultLanguage = config.get<'TypeScript' | 'JavaScript'>(
       'language.defaultLanguage',
       DEFAULT_LANGUAGE,
     );
@@ -354,7 +354,7 @@ export class ExtensionConfig {
    */
   update(config: WorkspaceConfiguration): void {
     this.enable = config.get<boolean>('enable', this.enable);
-    this.defaultLanguage = config.get<string>(
+    this.defaultLanguage = config.get<'TypeScript' | 'JavaScript'>(
       'language.defaultLanguage',
       this.defaultLanguage,
     );
