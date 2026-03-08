@@ -21,6 +21,7 @@ import {
   USER_PUBLISHER,
 } from './app/configs';
 import { FilesController } from './app/controllers';
+import { resolveFolderResource } from './app/helpers';
 
 /**
  * Manages the lifecycle and core state of the extension.
@@ -504,12 +505,31 @@ F   */
     commandId: string,
     commandHandler: (...args: CommandArgs) => void | Promise<void>,
   ) {
-    return commands.registerCommand(commandId, (...args: CommandArgs) => {
+    return commands.registerCommand(commandId, async (...args: CommandArgs) => {
       if (!this.isExtensionEnabled()) {
         return;
       }
 
-      return commandHandler(...args);
+      try {
+        // if no args or first arg is not a Uri, resolve the active resource
+        if (!args.length || !(args[0] instanceof Uri)) {
+          const resource = resolveFolderResource(undefined);
+          if (!resource) {
+            window.showErrorMessage(l10n.t('No active file or folder found.'));
+            return;
+          }
+
+          return commandHandler(
+            ...([resource, ...args.slice(1)] as CommandArgs),
+          );
+        }
+
+        return commandHandler(...args);
+      } catch (error) {
+        window.showErrorMessage(
+          l10n.t('Auto Barrel failed: {0}', String(error)),
+        );
+      }
     });
   }
 

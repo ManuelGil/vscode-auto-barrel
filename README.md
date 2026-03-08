@@ -69,6 +69,12 @@ This extension is inspired by the [auto-barrel](https://github.com/mike-hanson/a
   - [Installation](#installation)
   - [Best Practices](#best-practices)
   - [Resources](#resources)
+  - [Development](#development)
+    - [Architecture](#architecture)
+    - [Diagnostics](#diagnostics)
+    - [Helpers](#helpers)
+    - [File Search (`findFiles`)](#file-search-findfiles)
+    - [Contribution tips](#contribution-tips)
   - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
   - [Changelog](#changelog)
@@ -137,6 +143,7 @@ Configure your project by creating or updating a `settings.json` file at the pro
     ```json
     {
       "autoBarrel.enable": true,
+      "autoBarrel.silentMode": false,
       "autoBarrel.language.defaultLanguage": "TypeScript",
       "autoBarrel.files.disableRecursiveBarrelling": false,
       "autoBarrel.files.includeExtensionOnExport": ["ts", "tsx", "vue"],
@@ -153,7 +160,8 @@ Configure your project by creating or updating a `settings.json` file at the pro
       "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
       "autoBarrel.formatting.useSingleQuotes": true,
       "autoBarrel.formatting.endOfLine": "lf",
-      "autoBarrel.formatting.insertFinalNewline": true
+      "autoBarrel.formatting.insertFinalNewline": true,
+      "autoBarrel.formatting.sortExports": 'alphabetical'
     }
     ```
 
@@ -166,6 +174,7 @@ Your project is now set up to automatically format code upon saving.
 Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor the behavior of the barrel file generation process according to your project's needs.
 
 - `autoBarrel.enable`: Whether to enable Auto Barrel. Default is `true`.
+- `autoBarrel.silentMode`: Whether to suppress notifications and messages from the extension. Default is `false`.
 - `autoBarrel.language.defaultLanguage`: The default language for the barrel file. Supported languages are `TypeScript` and `JavaScript`. Default is `TypeScript`.
 - `autoBarrel.files.disableRecursiveBarrelling`: Whether to disable recursive barrelling for subdirectories. Default is `false`.
 - `autoBarrel.files.includeExtensionOnExport`: An array of file extensions to include when exporting modules. Default is `["ts", "tsx", "vue"]`.
@@ -183,7 +192,7 @@ Configure Auto Barrel settings in your `.vscode/settings.json` file to tailor th
 - `autoBarrel.formatting.useSingleQuotes`: Whether to use single quotes for string literals in the barrel file. Default is `true`.
 - `autoBarrel.formatting.endOfLine`: The end-of-line character to use in the barrel file. Supported values are `lf` (line feed) and `crlf` (carriage return line feed). Default is `lf`.
 - `autoBarrel.formatting.insertFinalNewline`: Whether to insert a final newline at the end of the barrel file. Default is `true`.
-
+- `autoBarrel.formatting.sortExports`: How to sort exports in the barrel file. Supported values are `'none'`, `'alphabetical'`, and `'path'`. Default is `'none'`.
 These settings are customizable to match your project's specific requirements. For instance, you can adjust the default language to `javascript` or expand the list of file extensions to include when exporting modules, for example: `["js", "jsx", "ts", "tsx", "vue", "astro"]`.
 
 JavaScript example settings:
@@ -191,6 +200,7 @@ JavaScript example settings:
 ```json
 {
   "autoBarrel.enable": true,
+  "autoBarrel.silentMode": false,
   "autoBarrel.language.defaultLanguage": "JavaScript",
   "autoBarrel.files.disableRecursiveBarrelling": false,
   "autoBarrel.files.includeExtensionOnExport": ["js", "jsx"],
@@ -212,7 +222,8 @@ JavaScript example settings:
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
   "autoBarrel.formatting.useSingleQuotes": true,
   "autoBarrel.formatting.endOfLine": "crlf",
-  "autoBarrel.formatting.insertFinalNewline": false
+  "autoBarrel.formatting.insertFinalNewline": false,
+  "autoBarrel.formatting.sortExports": "none"
 }
 ```
 

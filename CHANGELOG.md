@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-03-07
+
+### Changed
+
+- Improve Command Palette integration by refining command registration.
+- Resolve active target folder automatically when no explicit resource is provided.
+- Update `package.json` menu contributions to improve command discoverability.
+
 ## [1.20.0] - 2026-03-07
 
 ### Added
@@ -28,12 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `vscode-marketplace-client` dependency to check for extension updates and display a notification
+- Add `vscode-marketplace-client` dependency to check for extension updates and display a notification.
 
 ### Changed
 
-- Improve `defaultLanguage` type handling in the extension
-- Update Localization strings for the extension
+- Improve `defaultLanguage` type handling in the extension.
+- Update Localization strings for the extension.
 
 ## [1.18.0] - 2025-01-17
 
@@ -211,7 +219,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...HEAD
+[1.21.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.17.0...v1.18.0
