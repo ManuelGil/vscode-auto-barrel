@@ -1,6 +1,7 @@
 import { WorkspaceConfiguration } from 'vscode';
 
 import {
+  CURRENT_WORKSPACE,
   DEFAULT_FILENAME,
   DEFAULT_LANGUAGE,
   DETECT_EXPORTS,
@@ -15,41 +16,17 @@ import {
   KEEP_EXTENSION,
   PRESERVE_GITIGNORE,
   RECURSION_DEPTH,
+  SILENT_MODE,
+  SORT_EXPORTS,
   SUPPORTS_HIDDEN,
   USE_NAMED_EXPORTS,
   USE_SINGLE_QUOTES,
 } from './constants.config';
 
 /**
- * The Config class.
- *
- * @class
- * @classdesc The class that represents the configuration of the extension.
- * @export
- * @public
- * @property {WorkspaceConfiguration} config - The workspace configuration
- * @property {boolean} enable - The flag to enable the extension
- * @property {string} defaultLanguage - The default language
- * @property {boolean} disableRecursiveBarrelling - The flag to disable recursive barrelling
- * @property {string[]} includeExtensionOnExport - The extensions to include in the export
- * @property {string[]} ignoreFilePathPatternOnExport - The file path patterns to ignore on export
- * @property {number} maxSearchRecursionDepth - The maximum search recursion depth
- * @property {boolean} supportsHiddenFiles - The flag to allow hidden files
- * @property {boolean} preserveGitignoreSettings - The flag to respect the .gitignore file
- * @property {boolean} keepExtensionOnExport - The flag to keep the extension on export
- * @property {boolean} detectExportsInFiles - The flag to detect exports in files
- * @property {string} useNamedExports - The filename to export the default export
- * @property {boolean} exportDefaultFilename - The filename to export the default export
- * @property {string} configuredDefaultFilename - The configured default filename
- * @property {string[]} headerCommentTemplate - The header comment template
- * @property {boolean} excludeSemiColonAtEndOfLine - The flag to exclude a semicolon at the end of a line
- * @property {boolean} useSingleQuotes - The flag to use single quotes
- * @property {string} endOfLine - The end of line character
- * @property {boolean} insertFinalNewline - The flag to insert a final newline
- * @example
- * const config = new Config(workspace.getConfiguration());
- * console.log(config.includeExtensionOnExport);
- * console.log(config.exclude);
+ * Represents the configuration of the Auto Barrel extension.
+ * This class maps workspace configuration values to strongly typed properties
+ * and handles fallback to default values.
  */
 export class ExtensionConfig {
   // -----------------------------------------------------------------
@@ -57,8 +34,9 @@ export class ExtensionConfig {
   // -----------------------------------------------------------------
 
   // Public properties
+
   /**
-   * The flag to enable the extension.
+   * Flag to enable the extension.
    * @type {boolean}
    * @public
    * @memberof ExtensionConfig
@@ -69,206 +47,243 @@ export class ExtensionConfig {
   enable: boolean;
 
   /**
-   * The default language.
+   * Flag to enable silent mode. When enabled, the extension will suppress notifications and logs.
+   * @type {boolean}
+   * @public
+   * @memberof ExtensionConfig
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * console.log(config.silentMode);
+   */
+  silentMode: boolean;
+
+  /**
+   * The default language for generated files.
    * @type {'TypeScript' | 'JavaScript'}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.defaultLanguage);
    */
   defaultLanguage: 'TypeScript' | 'JavaScript';
 
   /**
-   * The flag to disable recursive barrelling.
+   * Flag to disable recursive barreling.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.disableRecursiveBarrelling);
    */
   disableRecursiveBarrelling: boolean;
 
   /**
-   * The extensions to include in the export.
+   * File extensions to include when barreling.
    * @type {string[]}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.includeExtensionOnExport);
    */
   includeExtensionOnExport: string[];
 
   /**
-   * The file path patterns to ignore on export.
+   * File path patterns to ignore on export.
    * @type {string[]}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.ignoreFilePathPatternOnExport);
    */
   ignoreFilePathPatternOnExport: string[];
 
   /**
-   * The maximum search recursion depth.
+   * The maximum depth for recursive search.
    * @type {number}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.maxSearchRecursionDepth);
    */
   maxSearchRecursionDepth: number;
 
   /**
-   * The flag to allow hidden files.
+   * Flag to allow hidden files.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.supportsHiddenFiles);
    */
   supportsHiddenFiles: boolean;
 
   /**
-   * The flag to respect the .gitignore file.
+   * Flag to respect the .gitignore file settings.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.preserveGitignoreSettings);
    */
   preserveGitignoreSettings: boolean;
 
   /**
-   * The flag to keep the extension on export.
+   * Flag to keep the extension in export statements.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.keepExtensionOnExport);
    */
   keepExtensionOnExport: boolean;
 
   /**
-   * The flag to detect exports in files.
+   * Flag to detect existing exports in files.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.detectExportsInFiles);
    */
   detectExportsInFiles: boolean;
 
   /**
-   * The flag to use named exports.
-   * @type {string}
+   * Flag to prefer named exports over default exports.
+   * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.useNamedExports);
    */
   useNamedExports: boolean;
 
   /**
-   * The filename to export the default export.
+   * The default filename used for default exports.
    * @type {string}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.exportDefaultFilename);
    */
   exportDefaultFilename: string;
 
   /**
-   * The configured default filename.
+   * The configured default filename for the generated barrel file.
    * @type {string}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.configuredDefaultFilename);
    */
   configuredDefaultFilename: string;
 
   /**
-   * The header comment template.
-   * @type {string}
+   * The template lines for the header comment.
+   * @type {string[]}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.headerCommentTemplate);
    */
   headerCommentTemplate: string[];
 
   /**
-   * The flag to exclude a semicolon at the end of a line.
+   * Flag to exclude a semicolon at the end of export lines.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.excludeSemiColonAtEndOfLine);
    */
   excludeSemiColonAtEndOfLine: boolean;
 
   /**
-   * The flag to use single quotes.
+   * Flag to use single quotes for string literals.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.useSingleQuotes);
    */
   useSingleQuotes: boolean;
 
   /**
-   * The end of line character.
+   * The end of line character sequence ('lf' or 'crlf').
    * @type {string}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.endOfLine);
    */
   endOfLine: string;
 
   /**
-   * The flag to insert a final newline.
+   * Flag to insert a final newline at the end of the file.
    * @type {boolean}
    * @public
-   * @memberof Config
+   * @memberof ExtensionConfig
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    * console.log(config.insertFinalNewline);
    */
   insertFinalNewline: boolean;
+
+  /**
+   * Strategy for sorting exports in barrel files.
+   * @type {string}
+   * @public
+   * @memberof ExtensionConfig
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * console.log(config.sortExports);
+   */
+  sortExports: string;
+
+  /**
+   * The current active workspace folder path.
+   * @type {string}
+   * @public
+   * @memberof ExtensionConfig
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * console.log(config.workspaceSelection);
+   */
+  workspaceSelection: string;
 
   // -----------------------------------------------------------------
   // Constructor
   // -----------------------------------------------------------------
 
   /**
-   * Constructor for the Config class.
+   * Initializes a new instance of the ExtensionConfig class.
    *
-   * @constructor
-   * @param {WorkspaceConfiguration} config - The workspace configuration
-   * @public
-   * @memberof Config
+   * @param config - The initial workspace configuration provided by VS Code.
+   *
+   * @memberof ExtensionConfig
+   *
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * console.log(config.enable);
    */
   constructor(readonly config: WorkspaceConfiguration) {
     this.enable = config.get<boolean>('enable', true);
+    this.silentMode = config.get<boolean>('silentMode', SILENT_MODE);
     this.defaultLanguage = config.get<'TypeScript' | 'JavaScript'>(
       'language.defaultLanguage',
       DEFAULT_LANGUAGE,
@@ -334,6 +349,14 @@ export class ExtensionConfig {
       'formatting.insertFinalNewline',
       INSERT_FINAL_NEWLINE,
     );
+    this.sortExports = config.get<string>(
+      'formatting.sortExports',
+      SORT_EXPORTS,
+    );
+    this.workspaceSelection = config.get<string>(
+      'workspaceSelection',
+      CURRENT_WORKSPACE,
+    );
   }
 
   // -----------------------------------------------------------------
@@ -341,19 +364,23 @@ export class ExtensionConfig {
   // -----------------------------------------------------------------
 
   // Public methods
+
   /**
-   * The update method.
+   * Updates the configuration properties based on a new workspace configuration.
+   * Existing values are used as fallbacks if the new configuration does not provide them.
    *
-   * @function update
-   * @param {WorkspaceConfiguration} config - The workspace configuration
-   * @public
-   * @memberof Config
+   * @param config - The updated workspace configuration.
+   *
+   * @memberof ExtensionConfig
+   *
    * @example
-   * const config = new Config(workspace.getConfiguration());
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * // ... later when configuration changes
    * config.update(workspace.getConfiguration());
    */
   update(config: WorkspaceConfiguration): void {
     this.enable = config.get<boolean>('enable', this.enable);
+    this.silentMode = config.get<boolean>('silentMode', this.silentMode);
     this.defaultLanguage = config.get<'TypeScript' | 'JavaScript'>(
       'language.defaultLanguage',
       this.defaultLanguage,
@@ -418,6 +445,14 @@ export class ExtensionConfig {
     this.insertFinalNewline = config.get<boolean>(
       'formatting.insertFinalNewline',
       this.insertFinalNewline,
+    );
+    this.sortExports = config.get<string>(
+      'formatting.sortExports',
+      this.sortExports,
+    );
+    this.workspaceSelection = config.get<string>(
+      'workspaceSelection',
+      this.workspaceSelection,
     );
   }
 }

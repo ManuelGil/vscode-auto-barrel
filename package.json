@@ -2,7 +2,7 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.19.0",
+	"version": "1.20.0",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
@@ -10,8 +10,10 @@
 	"sponsor": {
 		"url": "https://github.com/sponsors/ManuelGil"
 	},
+	"packageManager": "pnpm@10.0.0",
 	"engines": {
-		"vscode": "^1.90.0"
+		"vscode": "^1.102.0",
+		"node": ">=22.15.1"
 	},
 	"categories": [
 		"Other"
@@ -60,6 +62,15 @@
 	],
 	"main": "./out/extension.js",
 	"l10n": "./l10n",
+	"files": [
+		"out",
+		"package*.json",
+		"README.md",
+		"LICENSE",
+		"icon.png",
+		"schemas",
+		"l10n"
+	],
 	"contributes": {
 		"configuration": {
 			"title": "Auto Barrel",
@@ -69,6 +80,12 @@
 					"default": true,
 					"scope": "resource",
 					"description": "%autoBarrel.enable%"
+				},
+				"autoBarrel.silentMode": {
+					"type": "boolean",
+					"default": false,
+					"scope": "resource",
+					"description": "%autoBarrel.silentMode%"
 				},
 				"autoBarrel.language.defaultLanguage": {
 					"type": "string",
@@ -211,6 +228,22 @@
 					"default": true,
 					"scope": "resource",
 					"description": "%autoBarrel.formatting.insertFinalNewline%"
+				},
+				"autoBarrel.formatting.sortExports": {
+					"type": "string",
+					"default": "none",
+					"enum": [
+						"none",
+						"alphabetical",
+						"path"
+					],
+					"enumDescriptions": [
+						"Do not sort exports",
+						"Sort exports alphabetically",
+						"Sort exports by path"
+					],
+					"scope": "resource",
+					"description": "%autoBarrel.formatting.sortExports%"
 				}
 			}
 		},
@@ -279,37 +312,49 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "rimraf out && tsc -p ./",
+		"vscode:prepublish": "pnpm compile",
+		"compile": "rimraf out && esbuild src/extension.ts --bundle --platform=node --target=node22 --format=cjs --external:vscode --outfile=out/extension.js --minify",
 		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"format": "biome format --write",
-		"lint": "biome lint --write",
-		"lint:check": "biome check --write",
+		"pretest": "pnpm compile && pnpm lint",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --write .",
+		"check": "biome check .",
+		"check:fix": "biome check --write --unsafe .",
 		"test": "vscode-test",
-		"compodoc": "npx compodoc -p tsconfig.doc.json -d compodoc --theme readthedocs -s",
+		"l10n:check": "node scripts/check-l10n.js",
+		"nls:check": "node scripts/check-nls.js",
 		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@commitlint/cli": "^19.6.0",
-		"@commitlint/config-conventional": "^19.6.0",
-		"@compodoc/compodoc": "^1.1.26",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.10.0",
-		"@types/vscode": "^1.90.0",
+		"@types/node": "^22.19.13",
+		"@types/vscode": "^1.102.0",
 		"@vscode/l10n-dev": "^0.0.35",
-		"@vscode/test-cli": "^0.0.10",
-		"@vscode/test-electron": "^2.4.1",
+		"@vscode/test-cli": "^0.0.12",
+		"@vscode/test-electron": "^2.5.2",
+		"esbuild": "^0.27.3",
 		"husky": "^9.1.7",
-		"lint-staged": "^15.2.10",
-		"rimraf": "^6.0.1",
-		"typescript": "^5.7.2",
-		"vscode-test": "^1.6.1"
+		"lint-staged": "^15.5.2",
+		"rimraf": "^6.1.3",
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"fast-glob": "^3.3.2",
+		"fast-glob": "^3.3.3",
 		"ignore": "^6.0.2",
 		"vscode-marketplace-client": "^1.0.0"
+	},
+	"pnpm": {
+		"overrides": {
+			"axios": "^1.13.5",
+			"diff": "^8.0.3",
+			"serialize-javascript": "^7.0.3"
+		},
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
 	}
 }

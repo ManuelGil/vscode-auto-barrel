@@ -1,13 +1,4 @@
-import * as fastGlob from 'fast-glob';
-import {
-  access,
-  existsSync,
-  mkdirSync,
-  open,
-  readFileSync,
-  writeFile,
-} from 'fs';
-import ignore from 'ignore';
+import { existsSync } from 'fs';
 import { basename, dirname, join, relative } from 'path';
 import {
   Position,
@@ -21,17 +12,11 @@ import {
 } from 'vscode';
 
 import { ExtensionConfig } from '../configs';
+import { findFiles, relativePath, saveFile, sortExports } from '../helpers';
+import { SortModel } from '../models/sort.model';
 
 /**
- * The FilesController class.
- *
- * @class
- * @classdesc The class that represents the list files controller.
- * @export
- * @public
- * @property {ExtensionConfig} config - The configuration object
- * @example
- * const controller = new FilesController(config);
+ * Controller responsible for generating and updating barrel files.
  */
 export class FilesController {
   // -----------------------------------------------------------------
@@ -39,12 +24,14 @@ export class FilesController {
   // -----------------------------------------------------------------
 
   /**
-   * Constructor for the FilesController class
+   * Initializes a new instance of the FilesController.
    *
-   * @constructor
-   * @param {ExtensionConfig} config - The configuration object
-   * @public
+   * @param config - The active extension configuration.
+   *
    * @memberof FilesController
+   *
+   * @example
+   * const config = new ExtensionConfig(workspace.getConfiguration());
    */
   constructor(readonly config: ExtensionConfig) {}
 
@@ -55,166 +42,209 @@ export class FilesController {
   // Public methods
 
   /**
-   * The createBarrel method.
+   * Creates a new barrel file in the specified folder.
    *
-   * @function createBarrel
-   * @param {Uri} [folderPath] - The path to the folder
-   * @public
-   * @async
+   * @param targetFolderUri - The URI of the folder where the barrel will be created.
+   *
+   * @remarks
+   * If a barrel file already exists in the target folder, it will be overwritten without warning.
+   * Ensure that you have a backup of any existing barrel file before running this command.
+   * After creation, the new barrel file will be opened in the editor for review.
+   * If the target folder is invalid or not part of the workspace, an error message will be shown.
+   *
    * @memberof FilesController
-   * @example
-   * controller.createBarrel();
    *
-   * @returns {Promise<void>} - The promise with no return value
+   * @example
+   * const targetFolderUri = Uri.file('/path/to/your/folder');
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * const filesController = new FilesController(config);
+   * filesController.createBarrel(targetFolderUri);
    */
-  async createBarrel(folderPath?: Uri): Promise<void> {
+  async createBarrel(targetFolderUri?: Uri): Promise<void> {
     const { defaultLanguage, configuredDefaultFilename } = this.config;
 
-    // If the folder is not valid, return
-    if (!folderPath) {
-      const message = l10n.t('The folder is not valid!');
-      window.showErrorMessage(message);
+    if (!this.validateWorkspaceUri(targetFolderUri)) {
       return;
     }
 
-    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
-
-    // If the folder is not in the workspace, return
-    if (!workspaceFolder) {
-      const message = l10n.t('The folder is not in the workspace!');
-      window.showErrorMessage(message);
-      return;
-    }
-
-    const content = await this.getContent(folderPath.fsPath);
+    const folderPath = targetFolderUri!.fsPath;
+    const barrelContent = await this.getBarrelContent(folderPath);
 
     const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
     const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
 
-    if (content) {
-      this.saveFile(folderPath.fsPath, outputFileName, content);
+    if (barrelContent) {
+      void saveFile(folderPath, outputFileName, barrelContent, this.config);
     }
   }
 
   /**
-   * The updateBarrelInFolder method.
+   * Updates an existing barrel file in the specified folder.
+   * If the barrel file does not exist, an error message is shown (unless in silent mode).
    *
-   * @function updateBarrelInFolder
-   * @param {Uri} [folderPath] - The path to the folder
-   * @public
-   * @async
+   * @param targetFolderUri - The URI of the folder containing the barrel file.
+   *
+   * @remarks
+   * The method looks for a barrel file with the configured default name and appropriate extension in the target folder.
+   * If the file is found, it will be updated with new content based on the current state of the folder.
+   * If the file does not exist, an error message will be displayed to the user (unless silent mode is enabled).
+   * After updating, the barrel file will be opened in the editor for review.
+   *
    * @memberof FilesController
-   * @example
-   * controller.updateBarrelInFolder();
    *
-   * @returns {Promise<void>} - The promise with no return value
+   * @example
+   * const targetFolderUri = Uri.file('/path/to/your/folder');
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * const filesController = new FilesController(config);
+   * filesController.updateBarrelInFolder(targetFolderUri);
    */
-  async updateBarrelInFolder(folderPath?: Uri): Promise<void> {
+  async updateBarrelInFolder(targetFolderUri?: Uri): Promise<void> {
     const { defaultLanguage, configuredDefaultFilename } = this.config;
 
-    // If the folder is not valid, return
-    if (!folderPath) {
-      const message = l10n.t('The folder is not valid!');
-      window.showErrorMessage(message);
+    if (!this.validateWorkspaceUri(targetFolderUri)) {
       return;
     }
 
-    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
-
-    // If the folder is not in the workspace, return
-    if (!workspaceFolder) {
-      const message = l10n.t('The folder is not in the workspace!');
-      window.showErrorMessage(message);
-      return;
-    }
-
+    const folderPath = targetFolderUri!.fsPath;
     const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
     const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
 
-    const filename = join(folderPath.fsPath, outputFileName);
+    const fullFilePath = join(folderPath, outputFileName);
 
-    if (!existsSync(filename)) {
-      const message = l10n.t('The file does not exist!');
-      window.showErrorMessage(message);
+    if (!existsSync(fullFilePath)) {
+      if (!this.config.silentMode) {
+        const errorMessage = l10n.t(
+          'The barrel file does not exist in the folder! Please create it first.',
+        );
+        window.showErrorMessage(errorMessage);
+      }
+
       return;
     }
 
-    const openPath = Uri.file(filename);
+    const fileUri = Uri.file(fullFilePath);
 
-    this.updateBarrel(openPath);
+    this.updateBarrel(fileUri);
   }
 
   /**
-   * The updateBarrel method.
+   * Updates a specific barrel file.
    *
-   * @function updateBarrel
-   * @param {Uri} [folderPath] - The path to the folder
-   * @public
-   * @async
+   * @param targetFileUri - The URI of the barrel file to update.
+   *
+   * @remarks
+   * This method performs a direct update on the specified barrel file URI.
+   * It validates that the URI belongs to an active workspace folder before proceeding.
+   * If the file is found and updated successfully, it will be opened in the editor.
+   * If the URI is invalid or outside the workspace, an error message will be shown.
+   *
    * @memberof FilesController
-   * @example
-   * controller.updateBarrel();
    *
-   * @returns {Promise<void>} - The promise with no return value
+   * @example
+   * const targetFileUri = Uri.file('/path/to/your/folder/index.ts');
+   * const config = new ExtensionConfig(workspace.getConfiguration());
+   * const filesController = new FilesController(config);
+   * filesController.updateBarrel(targetFileUri);
    */
-  async updateBarrel(folderPath?: Uri): Promise<void> {
-    // If the folder is not valid, return
-    if (!folderPath) {
-      const message = l10n.t('The folder is not valid!');
-      window.showErrorMessage(message);
+  async updateBarrel(targetFileUri?: Uri): Promise<void> {
+    if (!this.validateWorkspaceUri(targetFileUri)) {
       return;
     }
 
-    const workspaceFolder = workspace.getWorkspaceFolder(folderPath);
+    const filePath = targetFileUri!.fsPath;
+    const folderDirectory = dirname(filePath);
 
-    // If the folder is not in the workspace, return
-    if (!workspaceFolder) {
-      const message = l10n.t('The folder is not in the workspace!');
-      window.showErrorMessage(message);
-      return;
-    }
+    const barrelContent = await this.getBarrelContent(folderDirectory);
 
-    const baseDir = dirname(folderPath.fsPath);
+    if (barrelContent) {
+      const textDocument = await workspace.openTextDocument(targetFileUri!);
 
-    const content = await this.getContent(baseDir);
+      const workspaceEdit = new WorkspaceEdit();
+      const startPosition = new Position(0, 0);
+      const endPosition = new Position(textDocument.lineCount, 0);
+      const fullDocumentRange = new Range(startPosition, endPosition);
 
-    if (content) {
-      const document = await workspace.openTextDocument(folderPath);
+      workspaceEdit.replace(textDocument.uri, fullDocumentRange, barrelContent);
 
-      const edit = new WorkspaceEdit();
-      const start = new Position(0, 0);
-      const end = new Position(document.lineCount, 0);
-      const range = new Range(start, end);
-
-      edit.replace(document.uri, range, content);
-
-      await workspace.applyEdit(edit);
+      await workspace.applyEdit(workspaceEdit);
 
       await commands.executeCommand('workbench.action.files.saveAll');
-      await window.showTextDocument(document);
+      window.showTextDocument(textDocument);
 
-      const message = l10n.t('File successfully updated!');
-      window.showInformationMessage(message);
+      if (!this.config.silentMode) {
+        const successMessage = l10n.t(
+          'File updated successfully: {0}',
+          filePath,
+        );
+        window.showInformationMessage(successMessage);
+      }
     }
   }
 
   // Private methods
 
   /**
-   * The getContent method.
+   * Validates if a given URI belongs to an active workspace folder.
    *
-   * @function getContent
-   * @param {string} folderPath - The folder path
-   * @private
-   * @async
+   * @param targetUri - The URI to validate.
+   * @returns True if valid, false otherwise.
+   *
+   * @remarks
+   * This method checks if the provided URI is defined and belongs to one of the currently open workspace folders.
+   * If the URI is invalid or outside the workspace, it displays an appropriate error message to the user.
+   *
    * @memberof FilesController
-   * @example
-   * controller.getContent();
    *
-   * @returns {Promise<string | undefined>} - The promise with the content
+   * @example
+   * const targetUri = Uri.file('/path/to/your/folder');
+   * const filesController = new FilesController(config);
+   * const isValid = filesController.validateWorkspaceUri(targetUri);
+   * console.log(isValid); // true if valid, false if not
    */
-  private async getContent(folderPath: string): Promise<string | undefined> {
-    // Get the configuration values
+  private validateWorkspaceUri(targetUri?: Uri): boolean {
+    if (!targetUri) {
+      const invalidFolderMessage = l10n.t('The folder is not valid!');
+      window.showErrorMessage(invalidFolderMessage);
+      return false;
+    }
+
+    const workspaceFolder = workspace.getWorkspaceFolder(targetUri);
+
+    if (!workspaceFolder) {
+      const outsideWorkspaceMessage = l10n.t(
+        'The folder is not in the workspace!',
+      );
+      window.showErrorMessage(outsideWorkspaceMessage);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Generates the content for a barrel file based on the target folder path.
+   *
+   * @param targetFolderPath - The absolute path to the folder.
+   * @returns The generated barrel content, or undefined if no files were found.
+   *
+   * @remarks
+   * This method performs the core logic of discovering files in the target folder, applying include/exclude patterns,
+   * and generating export statements based on the file contents and extension configuration.
+   * It also constructs a header comment if specified in the configuration.
+   * If no matching files are found, it provides user feedback explaining whether the folder is empty or if files were filtered out.
+   *
+   * @memberof FilesController
+   *
+   * @example
+   * const targetFolderPath = '/path/to/your/folder';
+   * const filesController = new FilesController(config);
+   * const barrelContent = await filesController.getBarrelContent(targetFolderPath);
+   * console.log(barrelContent);
+   */
+  private async getBarrelContent(
+    targetFolderPath: string,
+  ): Promise<string | undefined> {
+    // Extract configuration properties
     const {
       disableRecursiveBarrelling,
       includeExtensionOnExport,
@@ -224,351 +254,379 @@ export class FilesController {
       preserveGitignoreSettings,
       useSingleQuotes,
       excludeSemiColonAtEndOfLine,
-      keepExtensionOnExport,
       endOfLine,
-      detectExportsInFiles,
-      useNamedExports,
-      exportDefaultFilename,
       headerCommentTemplate,
       insertFinalNewline,
     } = this.config;
 
-    const quote = useSingleQuotes ? "'" : '"';
-    const semi = excludeSemiColonAtEndOfLine ? '' : ';';
-    const newline = endOfLine === 'crlf' ? '\r\n' : '\n';
+    const quoteCharacter = useSingleQuotes ? "'" : '"';
+    const semicolonCharacter = excludeSemiColonAtEndOfLine ? '' : ';';
+    const newlineCharacter = endOfLine === 'crlf' ? '\r\n' : '\n';
 
-    const include =
+    const includePattern =
       includeExtensionOnExport.length === 1
         ? `**/*.${includeExtensionOnExport[0]}`
         : `**/*.{${includeExtensionOnExport.join(',')}}`;
 
-    // Retrieve matching files
-    const files = await this.findFiles(
-      folderPath,
-      [include],
-      ignoreFilePathPatternOnExport,
-      disableRecursiveBarrelling,
-      maxSearchRecursionDepth,
-      supportsHiddenFiles,
-      preserveGitignoreSettings,
-    );
+    // Configure options for file discovery
+    const findFilesOptions = {
+      baseDirectoryPath: targetFolderPath,
+      includeFilePatterns: [includePattern],
+      excludedPatterns: ignoreFilePathPatternOnExport,
+      disableRecursive: disableRecursiveBarrelling,
+      maxRecursionDepth: maxSearchRecursionDepth,
+      includeDotfiles: supportsHiddenFiles,
+      enableGitignoreDetection: preserveGitignoreSettings,
+    };
 
-    // If no files are found, return
-    if (files.length === 0) {
-      const relativePath = workspace.asRelativePath(folderPath);
-      const allFilesInFolder = await workspace.findFiles(
-        `${relativePath}/**/*`,
+    // Retrieve candidate files
+    const foundFiles = await findFiles(findFilesOptions);
+
+    // If no matching files, explain why to the user
+    if (foundFiles.length === 0) {
+      const relativeFolderPath = relativePath(
+        Uri.file(targetFolderPath),
+        true,
+        this.config,
       );
 
+      const allFilesInFolder = await workspace.findFiles(
+        `${relativeFolderPath}/**/*`,
+      );
+
+      // Check if folder is completely empty or just filtered out
       if (allFilesInFolder.length === 0) {
-        const message = l10n.t('The {0} folder is empty!', [relativePath]);
-        window.showWarningMessage(message);
-      } else {
-        const message = l10n.t(
-          'No files found matching the specified patterns in the {0} folder! Please check the include and exclude files in the settings',
-          [relativePath],
+        const emptyFolderMessage = l10n.t(
+          'The {0} folder is empty!',
+          relativeFolderPath,
         );
-        window.showWarningMessage(message);
+        window.showWarningMessage(emptyFolderMessage);
+      } else {
+        const noMatchesMessage = l10n.t(
+          'No files found matching the specified patterns in the {0} folder! Please check the include and exclude files in the settings',
+          relativeFolderPath,
+        );
+        window.showWarningMessage(noMatchesMessage);
       }
 
       return;
     }
 
-    let content: string = '';
+    let barrelContent = '';
 
-    if (headerCommentTemplate.length > 0) {
-      content += headerCommentTemplate.join(newline) + newline + newline;
+    barrelContent += this.buildHeaderComment(
+      headerCommentTemplate,
+      newlineCharacter,
+    );
+
+    const generatedExportLines = await this.generateExportLines(
+      foundFiles,
+      targetFolderPath,
+      quoteCharacter,
+      semicolonCharacter,
+      this.config,
+    );
+
+    const sortedExportLines = sortExports(
+      generatedExportLines,
+      this.config.sortExports as SortModel,
+    );
+
+    barrelContent += sortedExportLines.join(newlineCharacter);
+
+    // Add trailing newline if specified in config
+    if (insertFinalNewline) {
+      barrelContent += newlineCharacter;
     }
 
-    const exports: string[] = [];
+    return barrelContent;
+  }
 
-    for (const file of files) {
-      let relativePath = relative(folderPath, file.fsPath).replace(/\\/g, '/');
+  /**
+   * Constructs the header comment for the barrel file.
+   *
+   * @param headerLines - The array of lines forming the header.
+   * @param newlineCharacter - The character sequence to use for newlines.
+   * @returns The formatted header string.
+   *
+   * @remarks
+   * This method takes an array of header lines and joins them into a single string with appropriate newlines.
+   * If the headerLines array is empty, it returns an empty string.
+   * The resulting header will be followed by two additional newlines to separate it from the export statements.
+   *
+   * @memberof FilesController
+   *
+   * @example
+   * const headerLines = [
+   *   'This barrel file was auto-generated.',
+   *   'Do not edit this file directly.',
+   * ];
+   */
+  private buildHeaderComment(
+    headerLines: string[],
+    newlineCharacter: string,
+  ): string {
+    if (headerLines.length > 0) {
+      return headerLines.join(newlineCharacter) + newlineCharacter.repeat(2);
+    }
 
+    return '';
+  }
+
+  /**
+   * Generates export statements for a list of target files.
+   *
+   * @param targetFiles - The files to inspect and export from.
+   * @param baseFolderPath - The folder path to calculate relative imports.
+   * @param quoteCharacter - The quote character to use in generated code.
+   * @param semicolonCharacter - The semicolon character (or empty string).
+   * @param extensionConfig - The active extension configuration.
+   * @returns An array of generated export statement strings.
+   *
+   * @remarks
+   * This method analyzes each target file to determine the appropriate export statements to generate.
+   * It supports different export styles based on the presence of default exports, named exports, and bracketed exports.
+   * The method also formats export names according to the configured naming style and handles file extensions based on settings.
+   * If deep export detection is disabled, it defaults to a simple namespace export for each file.
+   * The generated export statements are returned as an array of strings, which can then be sorted and joined to form the final barrel content.
+   *
+   * @memberof FilesController
+   *
+   * @example
+   * const targetFiles = [Uri.file('/path/to/file1.ts'), Uri.file('/path/to/file2.ts')];
+   * const baseFolderPath = '/path/to';
+   * const quoteCharacter = '"';
+   * const semicolonCharacter = ';';
+   * const extensionConfig = new ExtensionConfig(workspace.getConfiguration());
+   * const exportLines = await filesController.generateExportLines(
+   *   targetFiles,
+   *   baseFolderPath,
+   *   quoteCharacter,
+   *   semicolonCharacter,
+   *   extensionConfig,
+   * );
+   * console.log(exportLines);
+   */
+  private async generateExportLines(
+    targetFiles: Uri[],
+    baseFolderPath: string,
+    quoteCharacter: string,
+    semicolonCharacter: string,
+    extensionConfig: ExtensionConfig,
+  ): Promise<string[]> {
+    const {
+      keepExtensionOnExport,
+      detectExportsInFiles,
+      useNamedExports,
+      exportDefaultFilename,
+    } = extensionConfig;
+
+    const exportStatements: string[] = [];
+
+    // Match default exports, considering optional keywords like async, function, or var
+    const defaultExportRegex =
+      /\bexport\s*(?:async|function|const|let|var)?\s*default\s+/g;
+
+    // Match exported members destructured via curly braces
+    const exportedMembersRegex = /\bexport\s*\{\s*[^}]*\s*\}/g;
+
+    // Match named exports of variables, functions, classes, types, interfaces, or enums
+    const namedExportRegex =
+      /\bexport\s+(?:(async|abstract|declare|const|let|var)\s*)?(enum|function|class|type|interface|const|let|var)\s+(\w+)\b/g;
+
+    for (const currentFile of targetFiles) {
+      let moduleRelativePath = relative(
+        baseFolderPath,
+        currentFile.fsPath,
+      ).replace(/\\/g, '/');
+
+      // Strip file extension from the path if configured not to keep it
       if (!keepExtensionOnExport) {
-        relativePath = relativePath.replace(/\.[^/.]+$/, '');
+        moduleRelativePath = moduleRelativePath.replace(/\.[^/.]+$/, '');
       }
 
       if (detectExportsInFiles) {
-        // Get formatted filename
-        const baseName = basename(file.path).replace(/\.[^/.]+$/, '');
-        const formattedFileName = this.formatFileName(
-          baseName,
+        // Prepare formatted filename for potential aliasing
+        const fileBaseName = basename(currentFile.fsPath).replace(
+          /\.[^/.]+$/,
+          '',
+        );
+        const formattedExportName = this.formatExportName(
+          fileBaseName,
           exportDefaultFilename,
         );
 
-        const document = await workspace.openTextDocument(file.path);
-        const text = document.getText();
+        const textDocument = await workspace.openTextDocument(currentFile);
+        const fileTextContent = textDocument.getText();
 
-        // Check if the file has a default export
-        const defaultExportRegex =
-          /\bexport\s*(?:async|function|const|let|var)?\s*default\s+/g;
-        // Check if the file has exported members
-        const exportedMembersRegex = /\bexport\s*\{\s*[^}]*\s*\}/g;
-        // Check if the file has a named export
-        const namedExportRegex =
-          /\bexport\s+(?:(async|abstract|declare|const|let|var)\s*)?(enum|function|class|type|interface|const|let|var)\s+(\w+)\b/g;
-
-        if (text.match(defaultExportRegex)) {
-          exports.push(
-            `export { default as ${formattedFileName} } from ${quote}./${relativePath}${quote}${semi}`,
+        // Check for default exports
+        if (fileTextContent.match(defaultExportRegex)) {
+          exportStatements.push(
+            `export { default as ${formattedExportName} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
           );
 
           continue;
         }
 
-        if (text.match(exportedMembersRegex)) {
+        // Check for bracketed export members (e.g., export { A, B })
+        if (fileTextContent.match(exportedMembersRegex)) {
           if (useNamedExports) {
-            const fileMembers: string[] = [];
+            const extractedFileMembers: string[] = [];
 
-            for (const [, members] of text.matchAll(exportedMembersRegex)) {
-              for (const member of members.split(',')) {
-                const name = member.trim();
-                fileMembers.push(name);
+            for (const [, exportedBlock] of fileTextContent.matchAll(
+              exportedMembersRegex,
+            )) {
+              for (const memberName of exportedBlock.split(',')) {
+                const trimmedMemberName = memberName.trim();
+                extractedFileMembers.push(trimmedMemberName);
               }
             }
 
-            if (fileMembers.length > 0) {
-              const exportName = fileMembers.join(', ');
-              exports.push(
-                `export { ${exportName} } from ${quote}./${relativePath}${quote}${semi}`,
+            if (extractedFileMembers.length > 0) {
+              const joinedExportNames = extractedFileMembers.join(', ');
+              exportStatements.push(
+                `export { ${joinedExportNames} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
               );
             }
           } else {
-            exports.push(
-              `export * as ${formattedFileName} from ${quote}./${relativePath}${quote}${semi}`,
+            // Fallback to namespace export
+            exportStatements.push(
+              `export * as ${formattedExportName} from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
             );
           }
 
           continue;
         }
 
-        if (text.match(namedExportRegex)) {
+        // Check for named inline exports (e.g., export const A = 1)
+        if (fileTextContent.match(namedExportRegex)) {
           if (useNamedExports) {
-            const fileTypeExports: string[] = [];
-            const fileExports: string[] = [];
+            const extractedTypeExports: string[] = [];
+            const extractedValueExports: string[] = [];
 
-            for (const [, , type, name] of text.matchAll(namedExportRegex)) {
-              (type === 'interface' || type === 'type'
-                ? fileTypeExports
-                : fileExports
-              ).push(name);
+            for (const [
+              ,
+              ,
+              exportTypeKeyword,
+              exportName,
+            ] of fileTextContent.matchAll(namedExportRegex)) {
+              // Segregate type vs value exports
+              if (
+                exportTypeKeyword === 'interface' ||
+                exportTypeKeyword === 'type'
+              ) {
+                extractedTypeExports.push(exportName);
+              } else {
+                extractedValueExports.push(exportName);
+              }
             }
 
-            if (fileTypeExports.length > 0 || fileExports.length > 0) {
-              if (!fileExports.length) {
+            if (
+              extractedTypeExports.length > 0 ||
+              extractedValueExports.length > 0
+            ) {
+              if (extractedValueExports.length === 0) {
                 // Only type exports exist
-                const typeExports = fileTypeExports.join(', ');
+                const joinedTypeExports = extractedTypeExports.join(', ');
 
-                exports.push(
-                  `export type { ${typeExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                exportStatements.push(
+                  `export type { ${joinedTypeExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
                 );
-              } else if (!fileTypeExports.length) {
+              } else if (extractedTypeExports.length === 0) {
                 // Only value exports exist
-                const valueExports = fileExports.join(', ');
+                const joinedValueExports = extractedValueExports.join(', ');
 
-                exports.push(
-                  `export { ${valueExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                exportStatements.push(
+                  `export { ${joinedValueExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
                 );
               } else {
-                // Both type and value exports exist
-                const combinedExports = [
-                  ...fileTypeExports.map((name) => `type ${name}`),
-                  ...fileExports,
+                // Both type and value exports exist, combine them correctly
+                const combinedTypeAndValueExports = [
+                  ...extractedTypeExports.map(
+                    (exportName) => `type ${exportName}`,
+                  ),
+                  ...extractedValueExports,
                 ].join(', ');
 
-                exports.push(
-                  `export { ${combinedExports} } from ${quote}./${relativePath}${quote}${semi}`,
+                exportStatements.push(
+                  `export { ${combinedTypeAndValueExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
                 );
               }
             }
           } else {
-            exports.push(
-              `export * as ${formattedFileName} from ${quote}./${relativePath}${quote}${semi}`,
+            // Fallback to namespace export
+            exportStatements.push(
+              `export * as ${formattedExportName} from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
             );
           }
 
           continue;
         }
       } else {
-        exports.push(`export * from ${quote}./${relativePath}${quote}${semi}`);
+        // Standard re-export when deep detection is disabled
+        exportStatements.push(
+          `export * from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
+        );
       }
     }
 
-    content += exports.join(newline);
-
-    // Add a final newline
-    if (insertFinalNewline) {
-      content += newline;
-    }
-
-    return content;
+    return exportStatements;
   }
 
   /**
-   * The formatFileName method.
+   * Formats an original export name into a specified naming style.
    *
-   * @function formatFileName
-   * @param {string} fileName - The file name
-   * @param {string} style - The style
-   * @private
+   * @param originalName - The base file name or raw name.
+   * @param namingStyle - The desired casing style (e.g., 'camelCase', 'pascalCase').
+   * @returns The formatted name string.
+   *
+   * @remarks
+   * This method transforms a given name into the specified naming convention by applying regex replacements.
+   * It supports camelCase, PascalCase, kebab-case, and snake_case styles.
+   * The original name is typically derived from the file name, and the method ensures that delimiters like dashes and dots are handled appropriately during formatting.
+   *
    * @memberof FilesController
-   * @example
-   * controller.formatFileName('fileName', 'style');
    *
-   * @returns {string} - The formatted file name
+   * @example
+   * const originalName = 'my-file.name';
+   * const namingStyle = 'camelCase';
+   * const formattedName = filesController.formatExportName(originalName, namingStyle);
+   * console.log(formattedName); // Outputs: 'myFileName'
    */
-  private formatFileName(fileName: string, style: string): string {
-    switch (style) {
+  private formatExportName(originalName: string, namingStyle: string): string {
+    let formattedName = originalName;
+
+    switch (namingStyle) {
       case 'camelCase':
-        fileName = fileName.replace(/[-.](.)/g, (_, c) => c.toUpperCase());
+        formattedName = formattedName.replace(
+          /[-.](.)/g,
+          (_, characterToUppercase) => characterToUppercase.toUpperCase(),
+        );
         break;
 
       case 'pascalCase':
-        fileName = fileName
-          .replace(/[-.]\w/g, (match) => match.charAt(1).toUpperCase())
-          .replace(/^./, (match) => match.toUpperCase());
+        formattedName = formattedName
+          .replace(/[-.]\w/g, (matchedString) =>
+            matchedString.charAt(1).toUpperCase(),
+          )
+          .replace(/^./, (matchedString) => matchedString.toUpperCase());
         break;
 
       case 'kebabCase':
-        fileName = fileName.replace(/[-.](.)/g, (_, c) => `-${c}`);
+        formattedName = formattedName.replace(
+          /[-.](.)/g,
+          (_, characterToKebab) => `-${characterToKebab}`,
+        );
         break;
 
       case 'snakeCase':
-        fileName = fileName.replace(/[-.](.)/g, (_, c) => `_${c}`);
+        formattedName = formattedName.replace(
+          /[-.](.)/g,
+          (_, characterToSnake) => `_${characterToSnake}`,
+        );
         break;
     }
 
-    return fileName;
-  }
-
-  /**
-   * The saveFile method.
-   *
-   * @function saveFile
-   * @param {string} path - The path
-   * @param {string} filename - The filename
-   * @param {string} data - The data
-   * @private
-   * @async
-   * @memberof FilesController
-   * @example
-   * controller.saveFile('path', 'filename', 'data');
-   *
-   * @returns {Promise<void>} - The promise with no return value
-   */
-  private async saveFile(
-    path: string,
-    filename: string,
-    data: string,
-  ): Promise<void> {
-    const file = join(path, filename);
-
-    if (!existsSync(dirname(file))) {
-      mkdirSync(dirname(file), { recursive: true });
-    }
-
-    access(file, (err: any) => {
-      if (err) {
-        open(file, 'w+', (err: any, fd: any) => {
-          if (err) {
-            const message = l10n.t('The file has not been created!');
-            window.showErrorMessage(message);
-            return;
-          }
-
-          writeFile(fd, data, 'utf8', (err: any) => {
-            if (err) {
-              const message = l10n.t('The file has not been created!');
-              window.showErrorMessage(message);
-              return;
-            }
-
-            const openPath = Uri.file(file);
-
-            workspace.openTextDocument(openPath).then(async (filename) => {
-              await commands.executeCommand('workbench.action.files.saveAll');
-              await window.showTextDocument(filename);
-            });
-          });
-        });
-
-        const message = l10n.t('File created successfully!');
-        window.showInformationMessage(message);
-      } else {
-        const message = l10n.t('The file name already exists!');
-        window.showWarningMessage(message);
-      }
-    });
-  }
-
-  /**
-   * The findFiles method.
-   *
-   * @function findFiles
-   * @param {string} baseDir - The base directory
-   * @param {string[]} includeFilePatterns - The include pattern
-   * @param {string[]} excludedPatterns - The exclude pattern
-   * @param {boolean} includeOnlyFiles - The flag to include only files
-   * @param {boolean} disableRecursive - The flag to disable recursive searching
-   * @param {number} deep - The recursion depth
-   * @param {boolean} includeDotfiles - The flag to include dotfiles
-   * @param {boolean} enableGitignoreDetection - The flag to enable .gitignore detection
-   * @private
-   * @async
-   * @memberof FilesController
-   * @example
-   * controller.findFiles('baseDir', ['include'], ['exclude']);
-   *
-   * @returns {Promise<Uri[]>} - The promise with the files
-   */
-  private async findFiles(
-    baseDir: string,
-    includeFilePatterns: string[],
-    excludedPatterns: string[],
-    disableRecursive: boolean = false,
-    deep: number = 0,
-    includeDotfiles: boolean = false,
-    enableGitignoreDetection: boolean = false,
-  ): Promise<Uri[]> {
-    // If we need to respect .gitignore, we need to load it
-    let gitignore;
-    if (enableGitignoreDetection) {
-      const gitignorePath = join(baseDir, '.gitignore');
-      // Load .gitignore if it exists
-      if (existsSync(gitignorePath)) {
-        gitignore = ignore().add(readFileSync(gitignorePath, 'utf8'));
-      }
-    }
-
-    // Configure fast-glob options
-    const options = {
-      cwd: baseDir, // Set the base directory for searching
-      absolute: true, // Return absolute paths for files found
-      onlyFiles: true, // Match only files, not directories
-      dot: includeDotfiles, // Include the files and directories starting with a dot
-      deep: disableRecursive ? 1 : deep === 0 ? undefined : deep, // Set the recursion depth
-      ignore: excludedPatterns, // Set the patterns to ignore files and directories
-    };
-
-    try {
-      // Use fast-glob to find matching files
-      let foundFilePaths = await fastGlob(includeFilePatterns, options);
-
-      if (gitignore) {
-        // Filter out files that are ignored by .gitignore
-        foundFilePaths = foundFilePaths.filter((filePath) => {
-          const relativePath = relative(baseDir, filePath); // Convert to relative paths
-          return !gitignore.ignores(relativePath);
-        });
-      }
-
-      // Convert file paths to VS Code Uri objects
-      return foundFilePaths.sort().map((filePath) => Uri.file(filePath));
-    } catch (error) {
-      const message = l10n.t('Error while finding files: {0}', [error]);
-      window.showErrorMessage(message);
-      return [];
-    }
+    return formattedName;
   }
 }

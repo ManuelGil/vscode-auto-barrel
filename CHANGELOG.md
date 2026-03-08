@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-03-07
+
+### Added
+
+- Add `find-files.helper.ts` to perform glob-based file discovery supporting both local and remote search strategies.
+- Caching layer with TTL-based eviction to optimize repeated file discovery operations.
+- Add `relative-path.helper.ts` to transform absolute URIs into workspace-relative paths.
+- Add `save-file.helper.ts` to safely persist generated file contents to disk.
+- Add `sort-exports.helper.ts` to organize export statements according to configurable sorting modes.
+- Add `workspace-root.helper.ts` to resolve the effective root path of the active workspace.
+- Add `sort.model.ts` defining the available export-sorting strategies.
+- Add `commands.config.ts` and `context.config.ts` to centralize command definitions and context key management.
+
+### Changed
+
+- `extension.runtime.ts` now registers and wires commands related to file operations during extension activation.
+
 ## [1.19.0] - 2025-03-10
 
 ### Added
@@ -194,7 +211,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.16.1...v1.17.0

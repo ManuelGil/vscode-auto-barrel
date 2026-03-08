@@ -1,3 +1,5 @@
 {
-  "./**/*.ts": ["biome format --write", "biome lint --write", "git add ."]
+  "*.{ts,tsx,js,jsx,json}": [
+    "biome check --write --unsafe"
+  ]
 }

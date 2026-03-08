@@ -1,5 +1,6 @@
 {
 	"autoBarrel.enable": "Enable or disable the Auto Barrel extension",
+	"autoBarrel.silentMode": "Enable silent mode to reduce notifications from the extension",
 	"autoBarrel.language.defaultLanguage": "Default language to use when creating the barrel file.",
 	"autoBarrel.files.disableRecursiveBarrelling": "Disable the recurtion for subdirectories when creating the barrel file.",
 	"autoBarrel.files.includeExtensionOnExport": "Extensions to include on the export. This is used to filter the files to export.",
@@ -17,6 +18,7 @@
 	"autoBarrel.formatting.useSingleQuotes": "Use single quotes instead of double quotes.",
 	"autoBarrel.formatting.endOfLine": "End of line character to use.",
 	"autoBarrel.formatting.insertFinalNewline": "Insert a final newline at the end of the file.",
+	"autoBarrel.formatting.sortExports": "Sort order for exports in the barrel file.",
 	"autoBarrel.createBarrel": "Create a barrel file",
 	"autoBarrel.updateBarrelInFolder": "Update the barrel file",
 	"autoBarrel.updateBarrel": "Update the barrel file"
