@@ -28,7 +28,7 @@ importers:
         version: 1.9.4
       '@commitlint/cli':
         specifier: ^19.8.1
-        version: 19.8.1(@types/node@22.19.13)(typescript@5.9.3)
+        version: 19.8.1(@types/node@22.19.15)(typescript@5.9.3)
       '@commitlint/config-conventional':
         specifier: ^19.8.1
         version: 19.8.1
@@ -36,8 +36,8 @@ importers:
         specifier: ^10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: ^22.19.13
-        version: 22.19.13
+        specifier: ^22.19.15
+        version: 22.19.15
       '@types/vscode':
         specifier: ^1.102.0
         version: 1.109.0
@@ -437,8 +437,8 @@ packages:
   '@types/mocha@10.0.10':
     resolution: {integrity: sha512-xPyYSz1cMPnJQhl0CLMH68j3gprKZaTjG3s5Vi+fDgx+uhG9NOXwbVt52eFS8ECyXhyKcjDLCBEqBExKuiZb7Q==}
 
-  '@types/node@22.19.13':
-    resolution: {integrity: sha512-akNQMv0wW5uyRpD2v2IEyRSZiR+BeGuoB6L310EgGObO44HSMNT8z1xzio28V8qOrgYaopIDNA18YgdXd+qTiw==}
+  '@types/node@22.19.15':
+    resolution: {integrity: sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==}
 
   '@types/vscode@1.109.0':
     resolution: {integrity: sha512-0Pf95rnwEIwDbmXGC08r0B4TQhAbsHQ5UyTIgVgoieDe4cOnf92usuR5dEczb6bTKEp7ziZH4TV1TRGPPCExtw==}
@@ -849,6 +849,7 @@ packages:
   git-raw-commits@4.0.0:
     resolution: {integrity: sha512-ICsMM1Wk8xSGMowkOmPrzo2Fgmfo4bMHLNX6ytHjajRJUqvHOw/TFapQ+QG75c3X/tTDDhOSRPGC52dDbNM8FQ==}
     engines: {node: '>=16'}
+    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
     hasBin: true
 
   glob-parent@5.1.2:
@@ -1678,11 +1679,11 @@ snapshots:
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
 
-  '@commitlint/cli@19.8.1(@types/node@22.19.13)(typescript@5.9.3)':
+  '@commitlint/cli@19.8.1(@types/node@22.19.15)(typescript@5.9.3)':
     dependencies:
       '@commitlint/format': 19.8.1
       '@commitlint/lint': 19.8.1
-      '@commitlint/load': 19.8.1(@types/node@22.19.13)(typescript@5.9.3)
+      '@commitlint/load': 19.8.1(@types/node@22.19.15)(typescript@5.9.3)
       '@commitlint/read': 19.8.1
       '@commitlint/types': 19.8.1
       tinyexec: 1.0.2
@@ -1729,7 +1730,7 @@ snapshots:
       '@commitlint/rules': 19.8.1
       '@commitlint/types': 19.8.1
 
-  '@commitlint/load@19.8.1(@types/node@22.19.13)(typescript@5.9.3)':
+  '@commitlint/load@19.8.1(@types/node@22.19.15)(typescript@5.9.3)':
     dependencies:
       '@commitlint/config-validator': 19.8.1
       '@commitlint/execute-rule': 19.8.1
@@ -1737,7 +1738,7 @@ snapshots:
       '@commitlint/types': 19.8.1
       chalk: 5.6.2
       cosmiconfig: 9.0.0(typescript@5.9.3)
-      cosmiconfig-typescript-loader: 6.2.0(@types/node@22.19.13)(cosmiconfig@9.0.0(typescript@5.9.3))(typescript@5.9.3)
+      cosmiconfig-typescript-loader: 6.2.0(@types/node@22.19.15)(cosmiconfig@9.0.0(typescript@5.9.3))(typescript@5.9.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -1905,13 +1906,13 @@ snapshots:
 
   '@types/conventional-commits-parser@5.0.2':
     dependencies:
-      '@types/node': 22.19.13
+      '@types/node': 22.19.15
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
   '@types/mocha@10.0.10': {}
 
-  '@types/node@22.19.13':
+  '@types/node@22.19.15':
     dependencies:
       undici-types: 6.21.0
 
@@ -2130,9 +2131,9 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig-typescript-loader@6.2.0(@types/node@22.19.13)(cosmiconfig@9.0.0(typescript@5.9.3))(typescript@5.9.3):
+  cosmiconfig-typescript-loader@6.2.0(@types/node@22.19.15)(cosmiconfig@9.0.0(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
-      '@types/node': 22.19.13
+      '@types/node': 22.19.15
       cosmiconfig: 9.0.0(typescript@5.9.3)
       jiti: 2.6.1
       typescript: 5.9.3
