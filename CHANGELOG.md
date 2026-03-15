@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-03-15
+
+### Added
+
+- Add Spanish translations for Auto Barrel error messages.
+- Add Spanish translation for the `silentMode` configuration setting.
+- Add Spanish translation for the `sortExports` formatting option.
+
 ## [1.22.0] - 2026-03-14
 
 ### Added
@@ -240,7 +248,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.1...HEAD
+[1.22.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...v1.20.0
