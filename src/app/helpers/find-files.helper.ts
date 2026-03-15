@@ -8,12 +8,15 @@
  *
  * Includes a shared in-memory cache with TTL-based eviction and deduplication
  * of concurrent in-flight requests to avoid redundant filesystem scans.
+ * Consumers should invoke `clearCache()` after commands, generators, or file
+ * watchers create, delete, or rename files so discovery data stays current.
  */
 
 import { posix } from 'path';
 import FastGlob from 'fast-glob';
 import ignore, { type Ignore } from 'ignore';
 import { RelativePattern, Uri, type WorkspaceFolder, workspace } from 'vscode';
+import { toPosixPath } from './path-format.helper';
 
 // Shared cache for all file operations across the extension
 const fileDiscoveryCache: Map<string, { files: Uri[]; timestamp: number }> =
@@ -43,10 +46,9 @@ export interface FindFilesOptions {
   includeDotfiles?: boolean;
   /** When `true`, read the workspace `.gitignore` and apply its rules as exclude filters. */
   enableGitignoreDetection?: boolean;
+  /** Optional upper bound for the number of files returned (defaults to MAX_INDEXABLE_FILES). */
+  maxResults?: number;
 }
-
-/** Normalizes a file path to POSIX separators for cross-platform glob matching. */
-const toPosixPath = (filePath: string) => filePath.replace(/\\/g, '/');
 
 /**
  * Builds an ignore matcher that combines explicit exclude patterns with
@@ -96,6 +98,7 @@ const discoverFilesRemotely = async (
   ignoreMatcher?: Ignore,
 ): Promise<Uri[]> => {
   const { includeFilePatterns, excludedPatterns = [] } = options;
+  const maxResults = options.maxResults ?? MAX_INDEXABLE_FILES;
 
   const processedPaths = new Set<string>();
   const collectedUris: Uri[] = [];
@@ -110,7 +113,7 @@ const discoverFilesRemotely = async (
 
   // Sequentially execute include patterns to respect file limits
   for (const includePatternGlob of includeFilePatterns) {
-    if (totalCollected >= MAX_INDEXABLE_FILES) {
+    if (totalCollected >= maxResults) {
       break;
     }
 
@@ -122,7 +125,7 @@ const discoverFilesRemotely = async (
     const discoveredFiles = await workspace.findFiles(
       searchPattern,
       combinedExcludePattern,
-      MAX_INDEXABLE_FILES - totalCollected,
+      maxResults - totalCollected,
     );
 
     for (const fileUri of discoveredFiles) {
@@ -134,7 +137,7 @@ const discoverFilesRemotely = async (
       collectedUris.push(fileUri);
       totalCollected++;
 
-      if (totalCollected >= MAX_INDEXABLE_FILES) {
+      if (totalCollected >= maxResults) {
         break;
       }
     }
@@ -193,7 +196,7 @@ const discoverFilesRemotely = async (
     .filter(passesDepthFilter)
     .filter(passesDotfileFilter)
     .filter(passesIgnoreFilter)
-    .slice(0, MAX_INDEXABLE_FILES);
+    .slice(0, maxResults);
 };
 
 /**
@@ -209,6 +212,7 @@ const discoverFilesLocally = async (
     includeFilePatterns,
     excludedPatterns = [],
   } = options;
+  const maxResults = options.maxResults ?? MAX_INDEXABLE_FILES;
 
   const normalizedIncludeGlobs = includeFilePatterns.map(toPosixPath);
 
@@ -295,7 +299,7 @@ const discoverFilesLocally = async (
       collectedUris.push(candidateUri);
       totalCollected++;
 
-      if (totalCollected >= MAX_INDEXABLE_FILES) {
+      if (totalCollected >= maxResults) {
         // Stop stream early once limit is reached
         if (typeof (globStream as any).destroy === 'function') {
           try {
@@ -319,7 +323,7 @@ const discoverFilesLocally = async (
   }
 
   // NOTE: Sorting intentionally removed for performance reasons.
-  return collectedUris.slice(0, MAX_INDEXABLE_FILES);
+  return collectedUris.slice(0, maxResults);
 };
 
 /**
@@ -350,7 +354,9 @@ const updateDiscoveryCache = (cacheKey: string, files: Uri[]) => {
 
 /**
  * Clears the shared cache for file operations.
- * Useful when files have been created, deleted, or modified.
+ * Call this after filesystem mutations (create/delete/rename) or structural
+ * changes triggered by commands, generators, or file watchers so cached search
+ * results and in-flight discoveries reflect the latest workspace state.
  */
 export const clearCache = (): void => {
   fileDiscoveryCache.clear();
@@ -375,6 +381,7 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
     includeDotfiles = false,
     enableGitignoreDetection = false,
   } = options;
+  const maxResults = options.maxResults ?? MAX_INDEXABLE_FILES;
 
   try {
     if (includeFilePatterns.length === 0) {
@@ -398,8 +405,13 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
 
     const discoveryTask = (async (): Promise<Uri[]> => {
       const cachedResult = fileDiscoveryCache.get(cacheKey);
-      if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL_MS) {
-        return cachedResult.files;
+      if (cachedResult) {
+        const cacheAge = Date.now() - cachedResult.timestamp;
+        if (cacheAge < CACHE_TTL_MS) {
+          return cachedResult.files;
+        }
+
+        fileDiscoveryCache.delete(cacheKey);
       }
 
       const ignoreMatcher = await buildIgnoreMatcher({
@@ -415,8 +427,12 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
         !!workspaceFolder?.uri.scheme && workspaceFolder.uri.scheme !== 'file';
 
       const discoveredFiles = isRemoteWorkspace
-        ? await discoverFilesRemotely(options, workspaceFolder, ignoreMatcher)
-        : await discoverFilesLocally(options, ignoreMatcher);
+        ? await discoverFilesRemotely(
+            { ...options, maxResults },
+            workspaceFolder,
+            ignoreMatcher,
+          )
+        : await discoverFilesLocally({ ...options, maxResults }, ignoreMatcher);
 
       updateDiscoveryCache(cacheKey, discoveredFiles);
       return discoveredFiles;
