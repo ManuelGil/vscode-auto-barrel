@@ -12,9 +12,10 @@ updates:
 
     # Regular dependency updates
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "monday"
       time: "09:00"
-      timezone: "UTC"
+      timezone: "Etc/UTC"
 
     # Limit noise and cognitive load
     open-pull-requests-limit: 2
