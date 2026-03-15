@@ -21,7 +21,7 @@ import {
   USER_PUBLISHER,
 } from './app/configs';
 import { FilesController } from './app/controllers';
-import { resolveFolderResource } from './app/helpers';
+import { clearCache, resolveFolderResource } from './app/helpers';
 
 /**
  * Manages the lifecycle and core state of the extension.
@@ -139,6 +139,7 @@ F   */
   start(): void {
     this.registerWorkspaceCommands();
     this.registerFileCommands();
+    this.registerFilesystemWatcher();
   }
 
   /**
@@ -623,5 +624,39 @@ F   */
       );
       this.extensionContext.subscriptions.push(registeredCommandDisposable);
     });
+  }
+
+  /**
+   * Registers a filesystem watcher that invalidates the discovery cache
+   * when relevant files are created or deleted.
+   *
+   * The watcher observes only the extensions configured in
+   * `includeExtensionOnExport` and does not trigger barrel generation.
+   *
+   * @memberof ExtensionRuntime
+   *
+   * @example
+   * ```typescript
+   * this.registerFilesystemWatcher();
+   * ```
+   */
+  private registerFilesystemWatcher(): void {
+    const extensions = this.extensionConfig.includeExtensionOnExport;
+
+    if (!extensions?.length) {
+      return;
+    }
+
+    // Build glob pattern from configured extensions.
+    const globPattern = `**/*.{${extensions.join(',')}}`;
+
+    const watcher = workspace.createFileSystemWatcher(globPattern);
+
+    // Structural changes may affect barrel composition.
+    watcher.onDidCreate(() => clearCache());
+    watcher.onDidDelete(() => clearCache());
+
+    // Ensure automatic disposal on extension shutdown.
+    this.extensionContext.subscriptions.push(watcher);
   }
 }
