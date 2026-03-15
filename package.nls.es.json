@@ -1,5 +1,6 @@
 {
 	"autoBarrel.enable": "Habilita o deshabilita la extensión Auto Barrel",
+	"autoBarrel.silentMode": "Habilita el modo silencioso para reducir las notificaciones de la extensión",
 	"autoBarrel.language.defaultLanguage": "Lenguaje predeterminado a utilizar al crear el archivo de barril.",
 	"autoBarrel.files.disableRecursiveBarrelling": "Deshabilitar la recursión para subdirectorios al crear el archivo de barril.",
 	"autoBarrel.files.includeExtensionOnExport": "Extensiones a incluir en la exportación. Esto se utiliza para filtrar los archivos a exportar.",
@@ -17,6 +18,7 @@
 	"autoBarrel.formatting.useSingleQuotes": "Utilizar comillas simples en lugar de comillas dobles.",
 	"autoBarrel.formatting.endOfLine": "Carácter de fin de línea a utilizar.",
 	"autoBarrel.formatting.insertFinalNewline": "Insertar una nueva línea al final del archivo.",
+	"autoBarrel.formatting.sortExports": "Orden de clasificación para las exportaciones en el archivo de barril.",
 	"autoBarrel.createBarrel": "Crear un archivo de barrel",
 	"autoBarrel.updateBarrelInFolder": "Actualizar el archivo barrel",
 	"autoBarrel.updateBarrel": "Actualizar el archivo barrel"

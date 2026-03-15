@@ -516,7 +516,7 @@ F   */
         if (!args.length || !(args[0] instanceof Uri)) {
           const resource = resolveFolderResource(undefined);
           if (!resource) {
-            window.showErrorMessage(l10n.t('No active file or folder found.'));
+            window.showErrorMessage(l10n.t('No active file or folder found'));
             return;
           }
 

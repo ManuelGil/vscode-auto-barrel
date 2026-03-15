@@ -24,5 +24,7 @@
 	"Select a workspace folder to use": "Selecciona una carpeta de espacio de trabajo para usar",
 	"Switched to workspace folder: {0}": "Cambiado a la carpeta de espacio de trabajo: {0}",
 	"The barrel file does not exist in the folder! Please create it first.": "¡El archivo de barril no existe en la carpeta! Por favor, créalo primero.",
-	"Using workspace folder: {0}": "Usando carpeta de espacio de trabajo: {0}"
+	"Using workspace folder: {0}": "Usando carpeta de espacio de trabajo: {0}",
+	"Auto Barrel failed: {0}": "Auto Barrel falló: {0}",
+	"No active file or folder found": "No se encontró un archivo o carpeta activa"
 }
