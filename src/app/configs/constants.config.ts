@@ -116,7 +116,17 @@ export const DISABLE_RECURSIVE: boolean = false;
  *
  * @returns {string[]} - The files to include
  */
-export const INCLUDE_EXTENSIONS: string[] = ['ts', 'tsx', 'vue'];
+export const INCLUDE_EXTENSIONS: string[] = [
+  'ts',
+  'tsx',
+  'js',
+  'jsx',
+  'mjs',
+  'cjs',
+  'vue',
+  'astro',
+  'svelte',
+];
 
 /**
  * Glob patterns to exclude when barreling.

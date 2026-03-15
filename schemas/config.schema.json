@@ -27,7 +27,17 @@
 		},
 		"autoBarrel.files.includeExtensionOnExport": {
 			"type": "array",
-			"default": ["ts", "tsx", "vue"],
+			"default": [
+				"ts",
+				"tsx",
+				"js",
+				"jsx",
+				"mjs",
+				"cjs",
+				"vue",
+				"astro",
+				"svelte"
+			],
 			"scope": "resource",
 			"description": "Extensions to include on the export. This is used to filter the files to export."
 		},
