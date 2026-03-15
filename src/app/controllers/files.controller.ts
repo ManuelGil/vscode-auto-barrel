@@ -12,7 +12,14 @@ import {
 } from 'vscode';
 
 import { ExtensionConfig } from '../configs';
-import { findFiles, relativePath, saveFile, sortExports } from '../helpers';
+import {
+  findFiles,
+  readFileContent,
+  relativePath,
+  saveFile,
+  sortExports,
+  toPosixPath,
+} from '../helpers';
 import { SortModel } from '../models/sort.model';
 
 /**
@@ -423,158 +430,125 @@ export class FilesController {
 
     const exportStatements: string[] = [];
 
-    // Match default exports, considering optional keywords like async, function, or var
     const defaultExportRegex =
-      /\bexport\s*(?:async|function|const|let|var)?\s*default\s+/g;
-
-    // Match exported members destructured via curly braces
-    const exportedMembersRegex = /\bexport\s*\{\s*[^}]*\s*\}/g;
-
-    // Match named exports of variables, functions, classes, types, interfaces, or enums
+      /\bexport\s*(?:async|function|const|let|var)?\s*default\s+/;
+    const exportedMembersRegex = /\bexport\s*\{\s*([^}]*)\s*\}/g;
     const namedExportRegex =
       /\bexport\s+(?:(async|abstract|declare|const|let|var)\s*)?(enum|function|class|type|interface|const|let|var)\s+(\w+)\b/g;
 
     for (const currentFile of targetFiles) {
-      let moduleRelativePath = relative(
-        baseFolderPath,
-        currentFile.fsPath,
-      ).replace(/\\/g, '/');
+      let moduleRelativePath = toPosixPath(
+        relative(baseFolderPath, currentFile.fsPath),
+      );
 
-      // Strip file extension from the path if configured not to keep it
       if (!keepExtensionOnExport) {
-        moduleRelativePath = moduleRelativePath.replace(/\.[^/.]+$/, '');
+        moduleRelativePath = this.stripFileExtension(moduleRelativePath);
       }
 
-      if (detectExportsInFiles) {
-        // Prepare formatted filename for potential aliasing
-        const fileBaseName = basename(currentFile.fsPath).replace(
-          /\.[^/.]+$/,
-          '',
-        );
-        const formattedExportName = this.formatExportName(
-          fileBaseName,
-          exportDefaultFilename,
-        );
+      const moduleSpecifier = `${quoteCharacter}./${moduleRelativePath}${quoteCharacter}`;
+      const wildcardExportLine = `export * from ${moduleSpecifier}${semicolonCharacter}`;
 
-        const textDocument = await workspace.openTextDocument(currentFile);
-        const fileTextContent = textDocument.getText();
+      if (!detectExportsInFiles) {
+        exportStatements.push(wildcardExportLine);
+        continue;
+      }
 
-        // Check for default exports
-        if (fileTextContent.match(defaultExportRegex)) {
-          exportStatements.push(
-            `export { default as ${formattedExportName} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
+      const fileBaseName = this.stripFileExtension(
+        basename(currentFile.fsPath),
+      );
+      const formattedExportName = this.formatExportName(
+        fileBaseName,
+        exportDefaultFilename,
+      );
+      const namespaceExportLine = `export * as ${formattedExportName} from ${moduleSpecifier}${semicolonCharacter}`;
+
+      const fileTextContent = await this.readFileContentSafely(currentFile);
+      if (!fileTextContent) {
+        exportStatements.push(wildcardExportLine);
+        continue;
+      }
+
+      if (defaultExportRegex.test(fileTextContent)) {
+        exportStatements.push(
+          `export { default as ${formattedExportName} } from ${moduleSpecifier}${semicolonCharacter}`,
+        );
+        continue;
+      }
+
+      exportedMembersRegex.lastIndex = 0;
+      const exportedMemberMatches = Array.from(
+        fileTextContent.matchAll(exportedMembersRegex),
+      );
+      if (exportedMemberMatches.length > 0) {
+        if (useNamedExports) {
+          const extractedMembers = this.extractExportedMembers(
+            exportedMemberMatches,
           );
 
+          if (extractedMembers.length > 0) {
+            const joinedExportNames = extractedMembers.join(', ');
+            exportStatements.push(
+              `export { ${joinedExportNames} } from ${moduleSpecifier}${semicolonCharacter}`,
+            );
+            continue;
+          }
+        } else {
+          exportStatements.push(namespaceExportLine);
           continue;
         }
+      }
 
-        // Check for bracketed export members (e.g., export { A, B })
-        if (fileTextContent.match(exportedMembersRegex)) {
-          if (useNamedExports) {
-            const extractedFileMembers: string[] = [];
+      namedExportRegex.lastIndex = 0;
+      const namedExportMatches = Array.from(
+        fileTextContent.matchAll(namedExportRegex),
+      );
+      if (namedExportMatches.length > 0) {
+        if (useNamedExports) {
+          const { extractedTypeExports, extractedValueExports } =
+            this.categorizeNamedInlineExports(namedExportMatches);
 
-            for (const [, exportedBlock] of fileTextContent.matchAll(
-              exportedMembersRegex,
-            )) {
-              for (const memberName of exportedBlock.split(',')) {
-                const trimmedMemberName = memberName.trim();
-                extractedFileMembers.push(trimmedMemberName);
-              }
-            }
-
-            if (extractedFileMembers.length > 0) {
-              const joinedExportNames = extractedFileMembers.join(', ');
+          if (
+            extractedTypeExports.length > 0 ||
+            extractedValueExports.length > 0
+          ) {
+            if (extractedValueExports.length === 0) {
+              const joinedTypeExports = extractedTypeExports.join(', ');
               exportStatements.push(
-                `export { ${joinedExportNames} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
+                `export type { ${joinedTypeExports} } from ${moduleSpecifier}${semicolonCharacter}`,
+              );
+            } else if (extractedTypeExports.length === 0) {
+              const joinedValueExports = extractedValueExports.join(', ');
+              exportStatements.push(
+                `export { ${joinedValueExports} } from ${moduleSpecifier}${semicolonCharacter}`,
+              );
+            } else {
+              const combinedTypeAndValueExports = [
+                ...extractedTypeExports.map(
+                  (exportName) => `type ${exportName}`,
+                ),
+                ...extractedValueExports,
+              ].join(', ');
+              exportStatements.push(
+                `export { ${combinedTypeAndValueExports} } from ${moduleSpecifier}${semicolonCharacter}`,
               );
             }
-          } else {
-            // Fallback to namespace export
-            exportStatements.push(
-              `export * as ${formattedExportName} from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-            );
-          }
 
+            continue;
+          }
+        } else {
+          exportStatements.push(namespaceExportLine);
           continue;
         }
-
-        // Check for named inline exports (e.g., export const A = 1)
-        if (fileTextContent.match(namedExportRegex)) {
-          if (useNamedExports) {
-            const extractedTypeExports: string[] = [];
-            const extractedValueExports: string[] = [];
-
-            for (const [
-              ,
-              ,
-              exportTypeKeyword,
-              exportName,
-            ] of fileTextContent.matchAll(namedExportRegex)) {
-              // Segregate type vs value exports
-              if (
-                exportTypeKeyword === 'interface' ||
-                exportTypeKeyword === 'type'
-              ) {
-                extractedTypeExports.push(exportName);
-              } else {
-                extractedValueExports.push(exportName);
-              }
-            }
-
-            if (
-              extractedTypeExports.length > 0 ||
-              extractedValueExports.length > 0
-            ) {
-              if (extractedValueExports.length === 0) {
-                // Only type exports exist
-                const joinedTypeExports = extractedTypeExports.join(', ');
-
-                exportStatements.push(
-                  `export type { ${joinedTypeExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-                );
-              } else if (extractedTypeExports.length === 0) {
-                // Only value exports exist
-                const joinedValueExports = extractedValueExports.join(', ');
-
-                exportStatements.push(
-                  `export { ${joinedValueExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-                );
-              } else {
-                // Both type and value exports exist, combine them correctly
-                const combinedTypeAndValueExports = [
-                  ...extractedTypeExports.map(
-                    (exportName) => `type ${exportName}`,
-                  ),
-                  ...extractedValueExports,
-                ].join(', ');
-
-                exportStatements.push(
-                  `export { ${combinedTypeAndValueExports} } from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-                );
-              }
-            }
-          } else {
-            // Fallback to namespace export
-            exportStatements.push(
-              `export * as ${formattedExportName} from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-            );
-          }
-
-          continue;
-        }
-      } else {
-        // Standard re-export when deep detection is disabled
-        exportStatements.push(
-          `export * from ${quoteCharacter}./${moduleRelativePath}${quoteCharacter}${semicolonCharacter}`,
-        );
       }
+
+      exportStatements.push(wildcardExportLine);
     }
 
     return exportStatements;
   }
 
   /**
-   * Formats an original export name into a specified naming style.
+   * Formats a given name according to the specified naming convention.
    *
    * @param originalName - The base file name or raw name.
    * @param namingStyle - The desired casing style (e.g., 'camelCase', 'pascalCase').
@@ -628,5 +602,85 @@ export class FilesController {
     }
 
     return formattedName;
+  }
+
+  private stripFileExtension(targetPath: string): string {
+    return targetPath.replace(/\.[^./\\]+$/, '');
+  }
+
+  private async readFileContentSafely(
+    fileUri: Uri,
+  ): Promise<string | undefined> {
+    try {
+      return await readFileContent(fileUri);
+    } catch (error) {
+      console.warn('Failed to read file for export detection', error);
+      return undefined;
+    }
+  }
+
+  private extractExportedMembers(
+    exportedMemberMatches: RegExpMatchArray[],
+  ): string[] {
+    const extractedMembers: string[] = [];
+    const seenMembers = new Set<string>();
+
+    for (const match of exportedMemberMatches) {
+      const membersBlock = match[1];
+      if (!membersBlock) {
+        continue;
+      }
+
+      for (const memberName of membersBlock.split(',')) {
+        const trimmedMemberName = memberName.trim();
+        if (!trimmedMemberName || seenMembers.has(trimmedMemberName)) {
+          continue;
+        }
+
+        seenMembers.add(trimmedMemberName);
+        extractedMembers.push(trimmedMemberName);
+      }
+    }
+
+    return extractedMembers;
+  }
+
+  private categorizeNamedInlineExports(
+    namedExportMatches: RegExpMatchArray[],
+  ): {
+    extractedTypeExports: string[];
+    extractedValueExports: string[];
+  } {
+    const extractedTypeExports: string[] = [];
+    const extractedValueExports: string[] = [];
+    const seenTypeExports = new Set<string>();
+    const seenValueExports = new Set<string>();
+
+    for (const match of namedExportMatches) {
+      const exportTypeKeyword = match[2];
+      const exportName = match[3];
+
+      if (!exportTypeKeyword || !exportName) {
+        continue;
+      }
+
+      if (exportTypeKeyword === 'interface' || exportTypeKeyword === 'type') {
+        if (seenTypeExports.has(exportName)) {
+          continue;
+        }
+
+        seenTypeExports.add(exportName);
+        extractedTypeExports.push(exportName);
+      } else {
+        if (seenValueExports.has(exportName)) {
+          continue;
+        }
+
+        seenValueExports.add(exportName);
+        extractedValueExports.push(exportName);
+      }
+    }
+
+    return { extractedTypeExports, extractedValueExports };
   }
 }
