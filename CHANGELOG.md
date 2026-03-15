@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-03-14
+
+### Added
+
+- Add support for additional module file extensions in barrel discovery including `js`, `jsx`, `mjs`, `cjs`, `vue`, `astro`, and `svelte`.
+- Add filesystem watcher that invalidates the file discovery cache when workspace files change.
+- Add `toPosixPath` helper to normalize paths consistently across platforms.
+- Add `readFileContent` helper to safely read files using the VS Code filesystem API.
+
+### Changed
+
+- Improve the barrel generation pipeline to better support mixed JavaScript, TypeScript, and framework-based projects.
+- Align default discovery extensions across configuration schema and runtime configuration.
+- Centralize path normalization logic used by the file discovery engine.
+- Refactor export generation logic in `FilesController` to improve robustness and maintainability.
+
+### Fixed
+
+- Prevent duplicate export members when parsing named exports from source files.
+- Ensure barrel generation falls back to wildcard exports when export detection fails or files cannot be read.
+
 ## [1.21.0] - 2026-03-07
 
 ### Changed
@@ -219,7 +240,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.0...HEAD
+[1.22.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.18.0...v1.19.0
