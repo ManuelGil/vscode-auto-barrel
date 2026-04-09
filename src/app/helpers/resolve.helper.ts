@@ -1,5 +1,4 @@
-import * as path from 'path';
-import { Uri, window, workspace } from 'vscode';
+import { FileType, Uri, window, workspace } from 'vscode';
 
 /**
  * Resolves the destination folder URI where a barrel file should be created or updated.
@@ -15,7 +14,9 @@ import { Uri, window, workspace } from 'vscode';
  * @param inputUri Optional URI provided by VS Code command execution
  * @returns A directory URI or undefined if no valid context exists
  */
-export const resolveFolderResource = (inputUri?: Uri): Uri | undefined => {
+export const resolveFolderResource = async (
+  inputUri?: Uri,
+): Promise<Uri | undefined> => {
   if (inputUri) {
     return asDirectoryUri(inputUri);
   }
@@ -25,7 +26,21 @@ export const resolveFolderResource = (inputUri?: Uri): Uri | undefined => {
     return asDirectoryUri(activeFileUri);
   }
 
-  return workspace.workspaceFolders?.[0]?.uri;
+  const availableWorkspaceFolders = workspace.workspaceFolders;
+
+  if (!availableWorkspaceFolders?.length) {
+    return undefined;
+  }
+
+  if (availableWorkspaceFolders.length === 1) {
+    return availableWorkspaceFolders[0].uri;
+  }
+
+  const selectedFolder = await window.showWorkspaceFolderPick({
+    placeHolder: 'Select a workspace folder to use',
+  });
+
+  return selectedFolder?.uri;
 };
 
 /**
@@ -35,7 +50,16 @@ export const resolveFolderResource = (inputUri?: Uri): Uri | undefined => {
  * @param uri File or directory URI
  * @returns Directory URI
  */
-const asDirectoryUri = (uri: Uri): Uri => {
-  const filePath = uri.fsPath;
-  return path.extname(filePath) ? Uri.file(path.dirname(filePath)) : uri;
+const asDirectoryUri = async (uri: Uri): Promise<Uri> => {
+  try {
+    const resourceStat = await workspace.fs.stat(uri);
+
+    if ((resourceStat.type & FileType.Directory) !== 0) {
+      return uri;
+    }
+
+    return Uri.joinPath(uri, '..');
+  } catch {
+    return uri;
+  }
 };

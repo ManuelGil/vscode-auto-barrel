@@ -7,9 +7,9 @@
 import { isAbsolute, normalize } from 'path';
 import {
   FileSystemError,
+  l10n,
   ProgressLocation,
   Uri,
-  l10n,
   window,
   workspace,
 } from 'vscode';
@@ -33,7 +33,12 @@ export const saveFile = async (
   fileContent: string,
   config: ExtensionConfig,
 ): Promise<void> => {
-  const activeWorkspaceRoot = getWorkspaceRoot(config);
+  const normalizedDirPath = normalize(directoryPath || '.');
+  const providedDirectoryUri = isAbsolute(normalizedDirPath)
+    ? Uri.file(normalizedDirPath)
+    : undefined;
+
+  const activeWorkspaceRoot = getWorkspaceRoot(config, providedDirectoryUri);
 
   if (!activeWorkspaceRoot) {
     const noWorkspaceMessage = l10n.t(
@@ -44,8 +49,6 @@ export const saveFile = async (
     return;
   }
 
-  // Normalize input path to prevent malformed segments
-  const normalizedDirPath = normalize(directoryPath || '.');
   const workspaceRootUri = Uri.file(activeWorkspaceRoot);
 
   /**
@@ -55,7 +58,7 @@ export const saveFile = async (
    * Relative paths are resolved against the workspace root.
    */
   const resolvedDirectoryUri = isAbsolute(normalizedDirPath)
-    ? Uri.file(normalizedDirPath)
+    ? providedDirectoryUri!
     : Uri.joinPath(workspaceRootUri, normalizedDirPath);
 
   /**

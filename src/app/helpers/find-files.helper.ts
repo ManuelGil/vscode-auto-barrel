@@ -12,9 +12,9 @@
  * watchers create, delete, or rename files so discovery data stays current.
  */
 
-import { posix } from 'path';
 import FastGlob from 'fast-glob';
 import ignore, { type Ignore } from 'ignore';
+import { posix } from 'path';
 import { RelativePattern, Uri, type WorkspaceFolder, workspace } from 'vscode';
 import { toPosixPath } from './path-format.helper';
 
@@ -34,6 +34,8 @@ const MAX_CACHE_ENTRIES = 100;
 export interface FindFilesOptions {
   /** Absolute path to the directory to search within. */
   baseDirectoryPath: string;
+  /** URI of the directory to search within, preferred when available. */
+  baseDirectoryUri?: Uri;
   /** Glob patterns for files to include (e.g. `["**\/*.controller.ts"]`). */
   includeFilePatterns: string[];
   /** Glob patterns for files/directories to exclude. */
@@ -56,11 +58,16 @@ export interface FindFilesOptions {
  */
 const buildIgnoreMatcher = async (options: {
   baseDirectoryPath: string;
+  baseDirectoryUri?: Uri;
   excludedPatterns: string[];
   enableGitignoreDetection: boolean;
 }): Promise<Ignore> => {
-  const { baseDirectoryPath, excludedPatterns, enableGitignoreDetection } =
-    options;
+  const {
+    baseDirectoryPath,
+    baseDirectoryUri,
+    excludedPatterns,
+    enableGitignoreDetection,
+  } = options;
 
   const ignoreMatcher = ignore();
 
@@ -73,7 +80,7 @@ const buildIgnoreMatcher = async (options: {
   if (enableGitignoreDetection) {
     try {
       const gitignoreUri = Uri.joinPath(
-        Uri.file(baseDirectoryPath),
+        baseDirectoryUri ?? Uri.file(baseDirectoryPath),
         '.gitignore',
       );
       await workspace.fs.stat(gitignoreUri);
@@ -374,6 +381,7 @@ export const clearCache = (): void => {
 export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
   const {
     baseDirectoryPath,
+    baseDirectoryUri,
     includeFilePatterns,
     excludedPatterns = [],
     disableRecursive = false,
@@ -382,6 +390,12 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
     enableGitignoreDetection = false,
   } = options;
   const maxResults = options.maxResults ?? MAX_INDEXABLE_FILES;
+  const effectiveBaseDirectoryUri =
+    baseDirectoryUri ?? Uri.file(baseDirectoryPath);
+  const workspaceFolder = workspace.getWorkspaceFolder(
+    effectiveBaseDirectoryUri,
+  );
+  const workspaceIdentity = workspaceFolder?.uri.toString();
 
   try {
     if (includeFilePatterns.length === 0) {
@@ -389,6 +403,7 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
     }
 
     const cacheKey = JSON.stringify({
+      workspace: workspaceIdentity,
       baseDir: baseDirectoryPath,
       include: [...includeFilePatterns].map(toPosixPath).sort(),
       exclude: [...excludedPatterns].map(toPosixPath).sort(),
@@ -416,12 +431,10 @@ export const findFiles = async (options: FindFilesOptions): Promise<Uri[]> => {
 
       const ignoreMatcher = await buildIgnoreMatcher({
         baseDirectoryPath,
+        baseDirectoryUri,
         excludedPatterns,
         enableGitignoreDetection,
       });
-
-      const baseUri = Uri.file(baseDirectoryPath);
-      const workspaceFolder = workspace.getWorkspaceFolder(baseUri);
 
       const isRemoteWorkspace =
         !!workspaceFolder?.uri.scheme && workspaceFolder.uri.scheme !== 'file';

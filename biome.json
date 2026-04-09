@@ -1,10 +1,9 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
 	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
 	"files": {
-		"include": ["src/**/*.ts"],
-		"ignoreUnknown": false,
-		"ignore": []
+		"includes": ["**/src/**/*.ts"],
+		"ignoreUnknown": false
 	},
 	"formatter": {
 		"enabled": true,
@@ -16,18 +15,19 @@
 		"lineWidth": 80,
 		"attributePosition": "auto",
 		"bracketSpacing": true,
-		"ignore": [
-			"./.vscode",
-			"./compodoc",
-			"./coverage",
-			"./docs",
-			"./node_modules",
-			"./out",
-			"./tests",
-			"**/commitlint.config.js"
+		"includes": [
+			"**",
+			"!.vscode",
+			"!compodoc",
+			"!coverage",
+			"!docs",
+			"!node_modules",
+			"!out",
+			"!tests",
+			"!**/commitlint.config.js"
 		]
 	},
-	"organizeImports": { "enabled": true },
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -59,36 +59,36 @@
 	},
 	"overrides": [
 		{
-			"ignore": [
-				"**/out",
-				"**/*.d.ts",
-				"**/.vscode/",
-				"**/compodoc/",
-				"**/coverage/",
-				"**/docs/",
-				"**/node_modules/",
-				"**/out/",
-				"**/tests/",
-				"**/commitlint.config.js",
-				"**/eslint.config.mjs"
-			],
-			"include": ["**/*.ts"]
+			"includes": [
+				"**/*.ts",
+				"!**/out",
+				"!**/*.d.ts",
+				"!**/.vscode/",
+				"!**/compodoc/",
+				"!**/coverage/",
+				"!**/docs/",
+				"!**/node_modules/",
+				"!**/out/",
+				"!**/tests/",
+				"!**/commitlint.config.js",
+				"!**/eslint.config.mjs"
+			]
 		},
 		{
-			"ignore": [
-				"**/out",
-				"**/*.d.ts",
-				"**/.vscode/",
-				"**/compodoc/",
-				"**/coverage/",
-				"**/docs/",
-				"**/node_modules/",
-				"**/out/",
-				"**/tests/",
-				"**/commitlint.config.js",
-				"**/eslint.config.mjs"
-			],
-			"include": ["**/*.ts"]
+			"includes": [
+				"**/*.ts",
+				"!**/out",
+				"!**/*.d.ts",
+				"!**/.vscode/",
+				"!**/compodoc/",
+				"!**/coverage/",
+				"!**/docs/",
+				"!**/node_modules/",
+				"!**/out/",
+				"!**/tests/",
+				"!**/commitlint.config.js",
+				"!**/eslint.config.mjs"
+			]
 		}
 	]
 }

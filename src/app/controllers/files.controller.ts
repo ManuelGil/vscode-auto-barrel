@@ -1,12 +1,12 @@
-import { existsSync } from 'fs';
-import { basename, dirname, join, relative } from 'path';
+import { basename, relative } from 'path';
 import {
+  commands,
+  FileType,
+  l10n,
   Position,
   Range,
   Uri,
   WorkspaceEdit,
-  commands,
-  l10n,
   window,
   workspace,
 } from 'vscode';
@@ -75,7 +75,7 @@ export class FilesController {
     }
 
     const folderPath = targetFolderUri!.fsPath;
-    const barrelContent = await this.getBarrelContent(folderPath);
+    const barrelContent = await this.getBarrelContent(targetFolderUri!);
 
     const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
     const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
@@ -112,13 +112,18 @@ export class FilesController {
       return;
     }
 
-    const folderPath = targetFolderUri!.fsPath;
     const fileExtension = defaultLanguage === 'TypeScript' ? 'ts' : 'js';
     const outputFileName = `${configuredDefaultFilename}.${fileExtension}`;
 
-    const fullFilePath = join(folderPath, outputFileName);
+    const targetBarrelFileUri = Uri.joinPath(targetFolderUri!, outputFileName);
 
-    if (!existsSync(fullFilePath)) {
+    try {
+      const fileStat = await workspace.fs.stat(targetBarrelFileUri);
+
+      if ((fileStat.type & FileType.File) === 0) {
+        throw new Error('Target resource is not a file');
+      }
+    } catch {
       if (!this.config.silentMode) {
         const errorMessage = l10n.t(
           'The barrel file does not exist in the folder! Please create it first.',
@@ -129,9 +134,9 @@ export class FilesController {
       return;
     }
 
-    const fileUri = Uri.file(fullFilePath);
-
-    this.updateBarrel(fileUri);
+    await this.updateBarrel(targetBarrelFileUri).catch((error) => {
+      console.error('Error updating barrel file:', error);
+    });
   }
 
   /**
@@ -159,9 +164,9 @@ export class FilesController {
     }
 
     const filePath = targetFileUri!.fsPath;
-    const folderDirectory = dirname(filePath);
+    const folderDirectoryUri = Uri.joinPath(targetFileUri!, '..');
 
-    const barrelContent = await this.getBarrelContent(folderDirectory);
+    const barrelContent = await this.getBarrelContent(folderDirectoryUri);
 
     if (barrelContent) {
       const textDocument = await workspace.openTextDocument(targetFileUri!);
@@ -249,8 +254,10 @@ export class FilesController {
    * console.log(barrelContent);
    */
   private async getBarrelContent(
-    targetFolderPath: string,
+    targetFolderUri: Uri,
   ): Promise<string | undefined> {
+    const targetFolderPath = targetFolderUri.fsPath;
+
     // Extract configuration properties
     const {
       disableRecursiveBarrelling,
@@ -278,6 +285,7 @@ export class FilesController {
     // Configure options for file discovery
     const findFilesOptions = {
       baseDirectoryPath: targetFolderPath,
+      baseDirectoryUri: targetFolderUri,
       includeFilePatterns: [includePattern],
       excludedPatterns: ignoreFilePathPatternOnExport,
       disableRecursive: disableRecursiveBarrelling,
@@ -291,8 +299,8 @@ export class FilesController {
 
     // If no matching files, explain why to the user
     if (foundFiles.length === 0) {
-      const relativeFolderPath = relativePath(
-        Uri.file(targetFolderPath),
+      const relativeFolderPath = await relativePath(
+        targetFolderUri,
         true,
         this.config,
       );

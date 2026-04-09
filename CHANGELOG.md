@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.0] - 2026-06-08
+
+### Changed
+
+- Refactor file handling and path resolution using `Uri` instead of string paths.
+- Update helpers to support both path and `Uri` where needed.
+- Normalize directory handling and improve workspace folder resolution.
+
+### Fixed
+
+- Improve error handling when checking file existence with `workspace.fs.stat`.
+
 ## [1.22.1] - 2026-03-15
 
 ### Added
@@ -248,7 +260,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.1...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.23.0...HEAD
+[1.23.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.1...v1.23.0
 [1.22.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.20.0...v1.21.0

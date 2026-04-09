@@ -5,9 +5,8 @@
  * file generation.
  */
 
-import { statSync } from 'fs';
-import { relative, resolve } from 'path';
-import { Uri, workspace } from 'vscode';
+import { relative } from 'path';
+import { FileType, Uri, workspace } from 'vscode';
 
 import { ExtensionConfig } from '../configs';
 import { getWorkspaceRoot } from './workspace-root.helper';
@@ -32,22 +31,30 @@ import { getWorkspaceRoot } from './workspace-root.helper';
  * @param config - The extension configuration instance.
  * @returns The workspace-relative directory path, or an empty string when no path is provided.
  */
-export const relativePath = (
+export const relativePath = async (
   targetUri: Uri | undefined,
   isRootContext: boolean,
   config: ExtensionConfig,
-): string => {
+): Promise<string> => {
   let resolvedUri = targetUri;
 
-  // Resolve to parent directory if the URI points to a file
-  if (resolvedUri && statSync(resolvedUri.fsPath).isFile()) {
-    resolvedUri = Uri.file(resolve(resolvedUri.fsPath, '..'));
+  // Resolve to parent directory when the URI points to a file.
+  if (resolvedUri) {
+    try {
+      const resourceStat = await workspace.fs.stat(resolvedUri);
+
+      if ((resourceStat.type & FileType.File) !== 0) {
+        resolvedUri = Uri.joinPath(resolvedUri, '..');
+      }
+    } catch {
+      // Keep the original URI if metadata cannot be read.
+    }
   }
 
   let resultingFolderPath = '';
 
   if (isRootContext) {
-    const activeWorkspaceRoot = getWorkspaceRoot(config);
+    const activeWorkspaceRoot = getWorkspaceRoot(config, resolvedUri);
     if (activeWorkspaceRoot && resolvedUri) {
       resultingFolderPath = relative(activeWorkspaceRoot, resolvedUri.fsPath);
     }

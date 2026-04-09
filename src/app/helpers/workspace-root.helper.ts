@@ -4,7 +4,7 @@
  * generated files should be placed.
  */
 
-import { workspace } from 'vscode';
+import { Uri, workspace } from 'vscode';
 
 import { ExtensionConfig } from '../configs';
 
@@ -24,8 +24,15 @@ import { ExtensionConfig } from '../configs';
  */
 export const getWorkspaceRoot = (
   config: ExtensionConfig,
+  targetUri?: Uri,
 ): string | undefined => {
-  return (
-    config.workspaceSelection ?? workspace.workspaceFolders?.[0]?.uri.fsPath
-  );
+  if (targetUri) {
+    const targetWorkspaceFolder = workspace.getWorkspaceFolder(targetUri);
+
+    if (targetWorkspaceFolder) {
+      return targetWorkspaceFolder.uri.fsPath;
+    }
+  }
+
+  return config.workspaceSelection || undefined;
 };

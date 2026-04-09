@@ -1,11 +1,11 @@
 import {
+  commands,
   ExtensionContext,
+  env,
+  l10n,
   MessageItem,
   Uri,
   WorkspaceFolder,
-  commands,
-  env,
-  l10n,
   window,
   workspace,
 } from 'vscode';
@@ -514,7 +514,7 @@ F   */
       try {
         // if no args or first arg is not a Uri, resolve the active resource
         if (!args.length || !(args[0] instanceof Uri)) {
-          const resource = resolveFolderResource(undefined);
+          const resource = await resolveFolderResource(undefined);
           if (!resource) {
             window.showErrorMessage(l10n.t('No active file or folder found'));
             return;
