@@ -6,9 +6,10 @@
  */
 
 import { relative } from 'path';
-import { FileType, Uri, workspace } from 'vscode';
+import { Uri, workspace } from 'vscode';
 
 import { ExtensionConfig } from '../configs';
+import { asDirectoryUri } from './resolve.helper';
 import { getWorkspaceRoot } from './workspace-root.helper';
 
 /**
@@ -36,20 +37,7 @@ export const relativePath = async (
   isRootContext: boolean,
   config: ExtensionConfig,
 ): Promise<string> => {
-  let resolvedUri = targetUri;
-
-  // Resolve to parent directory when the URI points to a file.
-  if (resolvedUri) {
-    try {
-      const resourceStat = await workspace.fs.stat(resolvedUri);
-
-      if ((resourceStat.type & FileType.File) !== 0) {
-        resolvedUri = Uri.joinPath(resolvedUri, '..');
-      }
-    } catch {
-      // Keep the original URI if metadata cannot be read.
-    }
-  }
+  const resolvedUri = targetUri ? await asDirectoryUri(targetUri) : undefined;
 
   let resultingFolderPath = '';
 

@@ -2,11 +2,15 @@
 	"name": "vscode-auto-barrel",
 	"displayName": "Auto Barrel for VSCode",
 	"description": "🛢️ Automatically generate index files for your project.",
-	"version": "1.23.0",
+	"version": "1.23.1",
 	"icon": "icon.png",
 	"license": "MIT",
 	"publisher": "imgildev",
-	"author": "ManuelGil",
+	"author": {
+		"name": "Manuel Gil",
+		"email": "support@imgil.dev",
+		"url": "https://imgil.dev/"
+	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/ManuelGil"
 	},
@@ -338,7 +342,7 @@
 		"vscode:prepublish": "pnpm compile",
 		"compile": "rimraf out && esbuild src/extension.ts --bundle --platform=node --target=node22 --format=cjs --external:vscode --outfile=out/extension.js --minify",
 		"watch": "tsc -watch -p ./",
-		"pretest": "pnpm compile && pnpm lint",
+		"pretest": "pnpm compile && tsc -p ./ && pnpm lint",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --write .",
@@ -350,12 +354,12 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.13",
-		"@commitlint/cli": "^20.5.2",
-		"@commitlint/config-conventional": "^20.5.0",
+		"@biomejs/biome": "2.4.14",
+		"@commitlint/cli": "^20.5.3",
+		"@commitlint/config-conventional": "^20.5.3",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.19.17",
-		"@types/vscode": "^1.116.0",
+		"@types/vscode": "^1.102.0",
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/test-cli": "^0.0.12",
 		"@vscode/test-electron": "^2.5.2",
@@ -373,9 +377,8 @@
 	"pnpm": {
 		"overrides": {
 			"@conventional-changelog/git-client": "^2.0.0",
-			"axios": "^1.13.5",
-			"diff": "^8.0.3",
-			"serialize-javascript": "^7.0.3"
+			"serialize-javascript": "^7.0.5",
+			"diff": "^8.0.3"
 		},
 		"onlyBuiltDependencies": [
 			"esbuild"

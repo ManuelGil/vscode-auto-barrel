@@ -50,7 +50,7 @@ export const resolveFolderResource = async (
  * @param uri File or directory URI
  * @returns Directory URI
  */
-const asDirectoryUri = async (uri: Uri): Promise<Uri> => {
+export const asDirectoryUri = async (uri: Uri): Promise<Uri> => {
   try {
     const resourceStat = await workspace.fs.stat(uri);
 

@@ -18,6 +18,7 @@ import {
   EXTENSION_ID,
   EXTENSION_NAME,
   ExtensionConfig,
+  REPOSITORY_URL,
   USER_PUBLISHER,
 } from './app/configs';
 import { FilesController } from './app/controllers';
@@ -231,7 +232,7 @@ F   */
 
       // Open the changelog in the marketplace if requested by the user
       if (userSelection?.title === actionReleaseNotes.title) {
-        const changelogUrl = `https://marketplace.visualstudio.com/items/${USER_PUBLISHER}.${EXTENSION_NAME}/changelog`;
+        const changelogUrl = `${REPOSITORY_URL}/blob/main/CHANGELOG.md`;
         env.openExternal(Uri.parse(changelogUrl));
       }
 

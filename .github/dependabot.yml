@@ -6,18 +6,18 @@
 version: 2
 
 updates:
-  - package-ecosystem: "npm" # pnpm is handled via the npm ecosystem
+  - package-ecosystem: "npm" # pnpm projects are managed via the npm ecosystem
     directory: "/"
     target-branch: "main"
 
-    # Regular dependency updates
+    # Weekly updates during low-activity UTC window
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
       timezone: "Etc/UTC"
 
-    # Limit noise and cognitive load
+    # Limit concurrent update PRs to reduce maintenance noise
     open-pull-requests-limit: 2
 
     # Avoid automatic major upgrades to prevent breaking changes
@@ -26,6 +26,8 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+      - dependency-name: "vscode"
+      - dependency-name: "@types/vscode"
 
     # Group minor and patch updates together for cleaner review cycles
     groups:

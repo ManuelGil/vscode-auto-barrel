@@ -1,9 +1,6 @@
 # Auto Barrel
 
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/imgildev.vscode-auto-barrel?style=for-the-badge&label=VS%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel)
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/imgildev.vscode-auto-barrel?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel)
-[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/imgildev.vscode-auto-barrel?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel)
-[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/imgildev.vscode-auto-barrel?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel&ssr=false#review-details)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/ManuelGil/vscode-auto-barrel?style=for-the-badge&logo=github)](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel)
 [![GitHub Repo stars](https://img.shields.io/github/stars/ManuelGil/vscode-auto-barrel?style=for-the-badge&logo=github)](https://github.com/ManuelGil/vscode-auto-barrel)
 [![GitHub license](https://img.shields.io/github/license/ManuelGil/vscode-auto-barrel?style=for-the-badge&logo=github)](https://github.com/ManuelGil/vscode-auto-barrel/blob/main/LICENSE)
 

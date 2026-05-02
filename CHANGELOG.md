@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.23.0] - 2026-06-08
+## [1.23.1] - 2026-05-01
+
+### Changed
+
+- Improve Dependabot configuration for clearer npm ecosystem management.
+- Replace outdated Visual Studio Marketplace badges in README with a GitHub package version badge.
+- Enhance author metadata in `package.json` by adding email and URL.
+- Update changelog URL in extension runtime to point to the repository.
+- Update `relativePath` helper to use `asDirectoryUri` for improved URI handling.
+- Export `asDirectoryUri` for reuse across modules.
+
+### Fixed
+
+- Adjust `pretest` script in `package.json` to ensure TypeScript compilation runs before tests.
+
+## [1.23.0] - 2026-04-08
 
 ### Changed
 
@@ -260,7 +275,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic functionality for generating barrel files.
 - Add support for TypeScript and JavaScript projects.
 
-[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.23.0...HEAD
+[Unreleased]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.23.1...HEAD
+[1.23.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.23.0...v1.23.1
 [1.23.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.1...v1.23.0
 [1.22.1]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/ManuelGil/vscode-auto-barrel/compare/v1.21.0...v1.22.0
