@@ -17,7 +17,7 @@ jobs:
     steps:
       # Checkout full repository history (useful for future release workflows)
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -27,11 +27,11 @@ jobs:
 
       # Install pnpm explicitly for deterministic CI behavior
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       # Align Node.js version with local development (.nvmrc)
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "pnpm"

@@ -340,7 +340,8 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "pnpm compile",
-		"compile": "rimraf out && esbuild src/extension.ts --bundle --platform=node --target=node22 --format=cjs --external:vscode --outfile=out/extension.js --minify",
+		"typecheck": "tsc --noEmit -p ./",
+		"compile": "pnpm typecheck && rimraf out && esbuild src/extension.ts --bundle --platform=node --target=node22 --format=cjs --external:vscode --outfile=out/extension.js --minify",
 		"watch": "tsc -watch -p ./",
 		"pretest": "pnpm compile && tsc -p ./ && pnpm lint",
 		"format": "biome format --write .",
@@ -349,6 +350,7 @@
 		"check": "biome check .",
 		"check:fix": "biome check --write --unsafe .",
 		"test": "vscode-test",
+		"test:unit": "mocha -r ts-node/register src/**/*.test.ts",
 		"l10n:check": "node scripts/check-l10n.js",
 		"nls:check": "node scripts/check-nls.js",
 		"prepare": "husky"
@@ -376,9 +378,9 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"@conventional-changelog/git-client": "^2.0.0",
-			"serialize-javascript": "^7.0.5",
-			"diff": "^8.0.3"
+			"@conventional-changelog/git-client@<2.0.0": ">=2.0.0",
+			"diff@>=6.0.0 <8.0.3": ">=8.0.3",
+			"serialize-javascript@>=5.0.0 <7.0.5": ">=7.0.5"
 		},
 		"onlyBuiltDependencies": [
 			"esbuild"
