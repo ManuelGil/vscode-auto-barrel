@@ -360,7 +360,7 @@
 		"@commitlint/cli": "^20.5.3",
 		"@commitlint/config-conventional": "^20.5.3",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.19.21",
+		"@types/node": "^22.20.0",
 		"@types/vscode": "^1.102.0",
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/test-cli": "^0.0.12",
@@ -374,7 +374,7 @@
 	"dependencies": {
 		"fast-glob": "^3.3.3",
 		"ignore": "^7.0.5",
-		"vscode-marketplace-client": "^1.2.3"
+		"vscode-marketplace-client": "^1.2.4"
 	},
 	"pnpm": {
 		"overrides": {
