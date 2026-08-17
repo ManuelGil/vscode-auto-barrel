@@ -356,7 +356,7 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.7",
+		"@biomejs/biome": "2.5.8",
 		"@commitlint/cli": "^20.5.3",
 		"@commitlint/config-conventional": "^20.5.3",
 		"@types/mocha": "^10.0.10",
@@ -365,7 +365,7 @@
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/test-cli": "^0.0.15",
 		"@vscode/test-electron": "^2.5.2",
-		"esbuild": "^0.28.1",
+		"esbuild": "^0.28.2",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
 		"rimraf": "^6.1.3",
