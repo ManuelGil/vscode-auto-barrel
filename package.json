@@ -356,11 +356,11 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.12",
+		"@biomejs/biome": "2.5.13",
 		"@commitlint/cli": "^20.5.3",
 		"@commitlint/config-conventional": "^20.5.3",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.20.1",
+		"@types/node": "^22.20.2",
 		"@types/vscode": "^1.102.0",
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/test-cli": "^0.0.15",
@@ -373,7 +373,7 @@
 	},
 	"dependencies": {
 		"fast-glob": "^3.3.3",
-		"ignore": "^7.0.8",
+		"ignore": "^7.0.9",
 		"vscode-marketplace-client": "^1.2.5"
 	},
 	"pnpm": {
